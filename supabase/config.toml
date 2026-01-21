@@ -1,1 +1,16 @@
 project_id = "dyvhjmtnxtsjffrodhzk"
+
+[api]
+enabled = true
+
+[functions.check-subscription]
+verify_jwt = false
+
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.customer-portal]
+verify_jwt = false
+
+[functions.create-pattern-purchase]
+verify_jwt = false
