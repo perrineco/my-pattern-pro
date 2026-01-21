@@ -14,7 +14,129 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pattern_purchases: {
+        Row: {
+          id: string
+          pattern_type: string
+          purchased_at: string
+          stripe_payment_intent_id: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          pattern_type: string
+          purchased_at?: string
+          stripe_payment_intent_id?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          pattern_type?: string
+          purchased_at?: string
+          stripe_payment_intent_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_measurements: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          measurements: Json
+          name: string
+          pattern_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          measurements: Json
+          name?: string
+          pattern_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          measurements?: Json
+          name?: string
+          pattern_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          monthly_patterns_used: number
+          period_end: string | null
+          period_start: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          monthly_patterns_used?: number
+          period_end?: string | null
+          period_start?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          monthly_patterns_used?: number
+          period_end?: string | null
+          period_start?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +145,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      subscription_tier: "none" | "basic" | "pro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +272,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      subscription_tier: ["none", "basic", "pro"],
+    },
   },
 } as const
