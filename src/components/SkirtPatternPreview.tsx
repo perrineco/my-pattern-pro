@@ -1,11 +1,13 @@
 import { SkirtMeasurements } from '@/types/sloper';
 import { useEffect, useRef, useState } from 'react';
+import type { SeamAllowance } from '@/lib/pdf-export';
 
 interface SkirtPatternPreviewProps {
   measurements: SkirtMeasurements;
+  seamAllowance?: SeamAllowance;
 }
 
-export function SkirtPatternPreview({ measurements }: SkirtPatternPreviewProps) {
+export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 400, height: 500 });
 
@@ -82,6 +84,28 @@ export function SkirtPatternPreview({ measurements }: SkirtPatternPreviewProps) 
         className="w-full h-full"
         style={{ minHeight: '500px' }}
       >
+        {/* Seam allowance outline */}
+        {seamAllowance > 0 && (
+          <path
+            d={`
+              M ${offsetX - seamAllowance * scale} ${offsetY - seamAllowance * scale}
+              L ${offsetX + waistWidth / 2 - dartWidthScaled / 2} ${offsetY - seamAllowance * scale}
+              L ${offsetX + waistWidth / 2} ${offsetY + dartLengthScaled}
+              L ${offsetX + waistWidth / 2 + dartWidthScaled / 2} ${offsetY - seamAllowance * scale}
+              L ${offsetX + waistWidth + seamAllowance * scale} ${offsetY - seamAllowance * scale}
+              L ${offsetX + patternWidth + seamAllowance * scale} ${offsetY + waistToHipScaled}
+              L ${offsetX + patternWidth + seamAllowance * scale} ${offsetY + patternHeight + seamAllowance * scale}
+              L ${offsetX - seamAllowance * scale} ${offsetY + patternHeight + seamAllowance * scale}
+              Z
+            `}
+            fill="none"
+            stroke="hsl(var(--pattern-stroke))"
+            strokeWidth="1"
+            strokeDasharray="4,2"
+            opacity={0.5}
+          />
+        )}
+        
         {/* Pattern piece */}
         <path
           d={panelPath}
