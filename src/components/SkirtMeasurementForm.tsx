@@ -1,5 +1,6 @@
 import { SkirtMeasurements, Category } from '@/types/sloper';
 import { MeasurementInput } from './MeasurementInput';
+import { MeasurementGuide } from './MeasurementGuide';
 import { Card } from '@/components/ui/card';
 
 interface SkirtMeasurementFormProps {
@@ -31,12 +32,15 @@ export function SkirtMeasurementForm({
     <Card className="p-6 space-y-6 bg-card border-border">
       <div className="flex items-center justify-between">
         <h3 className="font-serif text-xl font-semibold text-foreground">Measurements</h3>
-        <button
-          onClick={handleReset}
-          className="text-sm text-muted-foreground hover:text-primary transition-colors"
-        >
-          Reset to default
-        </button>
+        <div className="flex items-center gap-2">
+          <MeasurementGuide category={category} />
+          <button
+            onClick={handleReset}
+            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            Reset
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4">
