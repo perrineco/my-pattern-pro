@@ -1,6 +1,8 @@
 import jsPDF from 'jspdf';
 import { SkirtMeasurements } from '@/types/sloper';
 
+export type SeamAllowance = 0 | 0.5 | 1 | 1.5;
+
 // A4 dimensions in mm
 const A4_WIDTH = 210;
 const A4_HEIGHT = 297;
@@ -25,16 +27,16 @@ interface TileInfo {
   totalPages: number;
 }
 
-function calculatePatternDimensions(measurements: SkirtMeasurements): PatternDimensions {
+function calculatePatternDimensions(measurements: SkirtMeasurements, seamAllowance: SeamAllowance = 1): PatternDimensions {
   const { waist, hip, skirtLength } = measurements;
   const hipQuarter = hip / 4;
   const waistQuarter = waist / 4;
   const ease = 1;
   const dartWidth = 2.5;
   
-  // Pattern piece dimensions in cm (actual size)
-  const widthCm = Math.max(hipQuarter + ease, waistQuarter + ease + dartWidth) + 4; // +4 for margins
-  const heightCm = skirtLength + 4; // +4 for margins
+  // Pattern piece dimensions in cm (actual size) + seam allowance on all sides
+  const widthCm = Math.max(hipQuarter + ease, waistQuarter + ease + dartWidth) + 4 + (seamAllowance * 2);
+  const heightCm = skirtLength + 4 + (seamAllowance * 2);
   
   return { widthCm, heightCm };
 }
@@ -110,10 +112,11 @@ function drawPatternPiece(
   doc: jsPDF,
   measurements: SkirtMeasurements,
   offsetX: number,
-  offsetY: number
+  offsetY: number,
+  seamAllowance: SeamAllowance = 1
 ) {
   const { waist, hip, waistToHip, skirtLength } = measurements;
-  
+  const seamMm = seamAllowance * 10; // Convert cm to mm
   // Calculate pattern dimensions (in mm for PDF)
   const waistQuarter = (waist / 4) * 10;
   const hipQuarter = (hip / 4) * 10;
@@ -126,10 +129,36 @@ function drawPatternPiece(
   const waistWidth = waistQuarter + ease + dartWidth;
   const patternWidth = hipQuarter + ease;
   
+  // Draw seam allowance outline first (if any)
+  if (seamMm > 0) {
+    doc.setDrawColor(150, 150, 150);
+    doc.setLineWidth(0.3);
+    doc.setLineDashPattern([2, 1], 0);
+    
+    // Seam allowance outline points
+    const seamPoints: [number, number][] = [
+      [offsetX - seamMm, offsetY - seamMm],
+      [offsetX + waistWidth / 2 - dartWidth / 2, offsetY - seamMm],
+      [offsetX + waistWidth / 2, offsetY + dartLength], // Dart tip stays the same
+      [offsetX + waistWidth / 2 + dartWidth / 2, offsetY - seamMm],
+      [offsetX + waistWidth + seamMm, offsetY - seamMm],
+      [offsetX + patternWidth + seamMm, offsetY + waistToHipMm],
+      [offsetX + patternWidth + seamMm, offsetY + lengthMm + seamMm],
+      [offsetX - seamMm, offsetY + lengthMm + seamMm],
+    ];
+    
+    for (let i = 0; i < seamPoints.length; i++) {
+      const next = (i + 1) % seamPoints.length;
+      doc.line(seamPoints[i][0], seamPoints[i][1], seamPoints[next][0], seamPoints[next][1]);
+    }
+    
+    doc.setLineDashPattern([], 0);
+  }
+  
+  // Main pattern outline (cutting line)
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.5);
   
-  // Main pattern outline
   const points: [number, number][] = [
     [offsetX, offsetY],
     [offsetX + waistWidth / 2 - dartWidth / 2, offsetY],
@@ -171,6 +200,13 @@ function drawPatternPiece(
   doc.setFontSize(8);
   doc.text('Cut 1 on fold', offsetX + patternWidth / 2, offsetY + lengthMm / 2 + 5, { align: 'center' });
   
+  // Seam allowance label
+  if (seamMm > 0) {
+    doc.setFontSize(7);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`SA: ${seamAllowance}cm`, offsetX + patternWidth / 2, offsetY + lengthMm / 2 + 12, { align: 'center' });
+  }
+  
   // Measurement annotations
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
@@ -195,8 +231,8 @@ function draw1cmTestSquare(doc: jsPDF) {
   doc.text('1cm test', MARGIN + 10, MARGIN + 20, { align: 'center' });
 }
 
-export function generatePatternPDF(measurements: SkirtMeasurements, patternType: string = 'skirt'): void {
-  const dimensions = calculatePatternDimensions(measurements);
+export function generatePatternPDF(measurements: SkirtMeasurements, patternType: string = 'skirt', seamAllowance: SeamAllowance = 1): void {
+  const dimensions = calculatePatternDimensions(measurements, seamAllowance);
   const tiles = calculateTiles(dimensions);
   
   const doc = new jsPDF({
@@ -241,7 +277,7 @@ export function generatePatternPDF(measurements: SkirtMeasurements, patternType:
       const patternX = patternMarginMm - viewOffsetX + MARGIN;
       const patternY = patternMarginMm - viewOffsetY + MARGIN;
       
-      drawPatternPiece(doc, measurements, patternX, patternY);
+      drawPatternPiece(doc, measurements, patternX, patternY, seamAllowance);
       
       doc.restoreGraphicsState();
     }
@@ -264,6 +300,7 @@ export function generatePatternPDF(measurements: SkirtMeasurements, patternType:
     '',
     `Pattern: ${patternType.charAt(0).toUpperCase() + patternType.slice(1)} Sloper - Front Panel`,
     `Total pages: ${tiles.totalPages} (${tiles.cols} columns × ${tiles.rows} rows)`,
+    `Seam Allowance: ${seamAllowance === 0 ? 'None (cut on line)' : `${seamAllowance}cm`}`,
     '',
     'Measurements used:',
     `  • Waist: ${measurements.waist}cm`,

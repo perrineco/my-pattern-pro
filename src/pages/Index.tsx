@@ -13,7 +13,8 @@ import { Card } from '@/components/ui/card';
 import { Download, Printer, Save, Lock, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getPatternsLimit, STRIPE_CONFIG } from '@/lib/stripe-config';
-import { generatePatternPDF } from '@/lib/pdf-export';
+import { generatePatternPDF, SeamAllowance } from '@/lib/pdf-export';
+
 const Index = () => {
   const navigate = useNavigate();
   const { user, session, subscription, purchasedPatterns, refreshPurchasedPatterns } = useAuth();
@@ -24,7 +25,7 @@ const Index = () => {
     defaultMeasurements.women
   );
   const [saving, setSaving] = useState(false);
-
+  const [seamAllowance, setSeamAllowance] = useState<SeamAllowance>(1);
   const handleCategoryChange = (newCategory: Category) => {
     setCategory(newCategory);
     setMeasurements(defaultMeasurements[newCategory]);
@@ -182,6 +183,26 @@ const Index = () => {
               category={category}
             />
 
+            {/* Seam Allowance Selector */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Seam Allowance
+              </label>
+              <div className="flex gap-2">
+                {([0, 0.5, 1, 1.5] as SeamAllowance[]).map((value) => (
+                  <Button
+                    key={value}
+                    variant={seamAllowance === value ? 'default' : 'outline'}
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setSeamAllowance(value)}
+                  >
+                    {value === 0 ? 'None' : `${value}cm`}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
             {/* Action buttons */}
             <div className="flex flex-col gap-3">
               {user && (
@@ -206,7 +227,7 @@ const Index = () => {
                   size="lg"
                   disabled={isPatternLocked}
                   onClick={() => {
-                    generatePatternPDF(measurements, patternType);
+                    generatePatternPDF(measurements, patternType, seamAllowance);
                     toast.success('PDF downloaded!');
                   }}
                 >
@@ -219,7 +240,7 @@ const Index = () => {
                   className="gap-2"
                   disabled={isPatternLocked}
                   onClick={() => {
-                    generatePatternPDF(measurements, patternType);
+                    generatePatternPDF(measurements, patternType, seamAllowance);
                     toast.info('PDF generated - print from your PDF viewer');
                   }}
                 >
@@ -302,7 +323,7 @@ const Index = () => {
               </div>
             </div>
             <div className="p-4">
-              <SkirtPatternPreview measurements={measurements} />
+              <SkirtPatternPreview measurements={measurements} seamAllowance={seamAllowance} />
             </div>
           </div>
         </div>
