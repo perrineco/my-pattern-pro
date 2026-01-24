@@ -13,7 +13,7 @@ import { Card } from '@/components/ui/card';
 import { Download, Printer, Save, Lock, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getPatternsLimit, STRIPE_CONFIG } from '@/lib/stripe-config';
-
+import { generatePatternPDF } from '@/lib/pdf-export';
 const Index = () => {
   const navigate = useNavigate();
   const { user, session, subscription, purchasedPatterns, refreshPurchasedPatterns } = useAuth();
@@ -201,11 +201,28 @@ const Index = () => {
                 </Button>
               )}
               <div className="flex gap-3">
-                <Button className="flex-1 gap-2" size="lg" disabled={isPatternLocked}>
+                <Button
+                  className="flex-1 gap-2"
+                  size="lg"
+                  disabled={isPatternLocked}
+                  onClick={() => {
+                    generatePatternPDF(measurements, patternType);
+                    toast.success('PDF downloaded!');
+                  }}
+                >
                   <Download className="w-4 h-4" />
                   Export PDF
                 </Button>
-                <Button variant="outline" size="lg" className="gap-2" disabled={isPatternLocked}>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="gap-2"
+                  disabled={isPatternLocked}
+                  onClick={() => {
+                    generatePatternPDF(measurements, patternType);
+                    toast.info('PDF generated - print from your PDF viewer');
+                  }}
+                >
                   <Printer className="w-4 h-4" />
                   Print
                 </Button>
