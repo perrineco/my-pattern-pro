@@ -1,6 +1,6 @@
-import { SkirtMeasurements } from "@/types/sloper";
-import { useEffect, useRef, useState } from "react";
-import type { SeamAllowance } from "@/lib/pdf-export";
+import { SkirtMeasurements } from '@/types/sloper';
+import { useEffect, useRef, useState } from 'react';
+import type { SeamAllowance } from '@/lib/pdf-export';
 
 interface SkirtPatternPreviewProps {
   measurements: SkirtMeasurements;
@@ -24,7 +24,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
   // Scale factor to fit the pattern in the view
   const scale = Math.min(
     (dimensions.width - 80) / (hipQuarter + ease + 10),
-    (dimensions.height - 80) / (skirtLength + 10),
+    (dimensions.height - 80) / (skirtLength + 10)
   );
 
   // Pattern coordinates (scaled)
@@ -39,23 +39,18 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
   const offsetX = (dimensions.width - patternWidth) / 2;
   const offsetY = 40;
 
-  // Calculer les points de contrôle pour les courbes
-  const hipCurveOffset = scale * 0.8; // Ajustez cette valeur pour plus/moins de courbe
-
   // Create the path for the front panel
   const panelPath = `
-  M ${offsetX} ${offsetY}
-  L ${offsetX + waistWidth / 2 - dartWidthScaled / 2} ${offsetY}
-  L ${offsetX + waistWidth / 2} ${offsetY + dartLengthScaled}
-  L ${offsetX + waistWidth / 2 + dartWidthScaled / 2} ${offsetY}
-  L ${offsetX + waistWidth} ${offsetY}
-  Q ${offsetX + waistWidth + hipCurveOffset} ${offsetY + waistToHipScaled / 2},
-    ${offsetX + patternWidth} ${offsetY + waistToHipScaled}
-  Q ${offsetX + patternWidth + scale * 0.3} ${offsetY + waistToHipScaled + (patternHeight - waistToHipScaled) / 2},
-    ${offsetX + patternWidth} ${offsetY + patternHeight}
-  L ${offsetX} ${offsetY + patternHeight}
-  Z
-`;
+    M ${offsetX} ${offsetY}
+    L ${offsetX + waistWidth / 2 - dartWidthScaled / 2} ${offsetY}
+    L ${offsetX + waistWidth / 2} ${offsetY + dartLengthScaled}
+    L ${offsetX + waistWidth / 2 + dartWidthScaled / 2} ${offsetY}
+    L ${offsetX + waistWidth} ${offsetY}
+    L ${offsetX + patternWidth} ${offsetY + waistToHipScaled}
+    L ${offsetX + patternWidth} ${offsetY + patternHeight}
+    L ${offsetX} ${offsetY + patternHeight}
+    Z
+  `;
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -65,8 +60,8 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
       }
     };
     updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
   return (
@@ -79,7 +74,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
             linear-gradient(hsl(var(--border)) 1px, transparent 1px),
             linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px)
           `,
-          backgroundSize: "20px 20px",
+          backgroundSize: '20px 20px',
         }}
       />
 
@@ -87,7 +82,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
         ref={svgRef}
         viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
         className="w-full h-full"
-        style={{ minHeight: "500px" }}
+        style={{ minHeight: '500px' }}
       >
         {/* Seam allowance outline */}
         {seamAllowance > 0 && (
@@ -110,7 +105,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
             opacity={0.5}
           />
         )}
-
+        
         {/* Pattern piece */}
         <path
           d={panelPath}
@@ -135,14 +130,21 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
 
         {/* Arrow marker definition */}
         <defs>
-          <marker id="arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <marker
+            id="arrow"
+            markerWidth="6"
+            markerHeight="6"
+            refX="3"
+            refY="3"
+            orient="auto"
+          >
             <polygon points="0,0 6,3 0,6" fill="hsl(var(--pattern-stroke))" />
           </marker>
         </defs>
 
         {/* Measurement labels */}
         {/* Waist measurement */}
-        <g className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+        <g className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
           <line
             x1={offsetX - 10}
             y1={offsetY - 15}
@@ -178,7 +180,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
         </g>
 
         {/* Hip measurement */}
-        <g className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+        <g className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <line
             x1={offsetX + patternWidth + 15}
             y1={offsetY + waistToHipScaled}
@@ -199,7 +201,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
         </g>
 
         {/* Length measurement */}
-        <g className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+        <g className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <line
             x1={offsetX - 25}
             y1={offsetY}
