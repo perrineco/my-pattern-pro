@@ -51,7 +51,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
   C ${offsetX + waistWidthScaled * 0.5} ${offsetY + 1.25 * 0.5 * scale}
     ${offsetX + waistWidthScaled * 0.7} ${offsetY + 1.25 * 0.75 * scale}
     ${offsetX + waistWidthScaled} ${offsetY + 1.25 * scale}
-  Q ${offsetX + waistWidth - hipCurveOffset} ${offsetY + waistToHipScaled / 2},
+  Q ${offsetX + waistWidthScaled - hipCurveOffset} ${offsetY + waistToHipScaled / 2},
     ${offsetX + patternWidth} ${offsetY + waistToHipScaled}
   Q ${offsetX + patternWidth + scale * 0.3} ${offsetY + waistToHipScaled + (patternHeight - waistToHipScaled) / 2},
     ${offsetX + patternWidth} ${offsetY + patternHeight}
@@ -96,10 +96,10 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
           <path
             d={`
               M ${offsetX - seamAllowance * scale} ${offsetY - seamAllowance * scale}
-              L ${offsetX + waistWidth / 2 - dartWidthScaled / 2} ${offsetY - seamAllowance * scale}
-              L ${offsetX + waistWidth / 2} ${offsetY + dartLengthScaled}
-              L ${offsetX + waistWidth / 2 + dartWidthScaled / 2} ${offsetY - seamAllowance * scale}
-              L ${offsetX + waistWidth + seamAllowance * scale} ${offsetY - seamAllowance * scale}
+              L ${offsetX + waistWidthScaled / 2 - dartWidthScaled / 2} ${offsetY - seamAllowance * scale}
+              L ${offsetX + waistWidthScaled / 2} ${offsetY + dartLengthScaled}
+              L ${offsetX + waistWidthScaled / 2 + dartWidthScaled / 2} ${offsetY - seamAllowance * scale}
+              L ${offsetX + waistWidthScaled + seamAllowance * scale} ${offsetY - seamAllowance * scale}
               L ${offsetX + patternWidth + seamAllowance * scale} ${offsetY + waistToHipScaled}
               L ${offsetX + patternWidth + seamAllowance * scale} ${offsetY + patternHeight + seamAllowance * scale}
               L ${offsetX - seamAllowance * scale} ${offsetY + patternHeight + seamAllowance * scale}
@@ -148,7 +148,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
           <line
             x1={offsetX - 10}
             y1={offsetY - 15}
-            x2={offsetX + waistWidth + 10}
+            x2={offsetX + waistWidthScaled + 10}
             y2={offsetY - 15}
             stroke="hsl(var(--measure-line))"
             strokeWidth="1"
@@ -162,15 +162,15 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
             strokeWidth="1"
           />
           <line
-            x1={offsetX + waistWidth}
+            x1={offsetX + waistWidthScaled}
             y1={offsetY - 20}
-            x2={offsetX + waistWidth}
+            x2={offsetX + waistWidthScaled}
             y2={offsetY - 10}
             stroke="hsl(var(--measure-line))"
             strokeWidth="1"
           />
           <text
-            x={offsetX + waistWidth / 2}
+            x={offsetX + waistWidthScaled / 2}
             y={offsetY - 22}
             textAnchor="middle"
             className="fill-primary text-xs font-sans"
