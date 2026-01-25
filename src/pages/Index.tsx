@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Category, PatternType, SkirtMeasurements } from '@/types/sloper';
+import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, Measurements, isBodiceMeasurements } from '@/types/sloper';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { CategorySelector } from '@/components/CategorySelector';
 import { PatternTypeNav } from '@/components/PatternTypeNav';
-import { SkirtMeasurementForm, defaultMeasurements } from '@/components/SkirtMeasurementForm';
+import { SkirtMeasurementForm, defaultMeasurements as defaultSkirtMeasurements } from '@/components/SkirtMeasurementForm';
+import { BodiceMeasurementForm, defaultBodiceMeasurements } from '@/components/BodiceMeasurementForm';
 import { SkirtPatternPreview } from '@/components/SkirtPatternPreview';
+import { BodicePatternPreview } from '@/components/BodicePatternPreview';
 import { ProfileManager } from '@/components/ProfileManager';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Download, Printer, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { getPatternsLimit, STRIPE_CONFIG } from '@/lib/stripe-config';
@@ -18,39 +21,54 @@ import { generatePatternPDF, SeamAllowance } from '@/lib/pdf-export';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, session, subscription, purchasedPatterns, refreshPurchasedPatterns } = useAuth();
+  const { user, session, subscription, purchasedPatterns } = useAuth();
   
   const [category, setCategory] = useState<Category>('women');
   const [patternType, setPatternType] = useState<PatternType>('skirt');
-  const [measurements, setMeasurements] = useState<SkirtMeasurements>(
-    defaultMeasurements.women
+  const [skirtMeasurements, setSkirtMeasurements] = useState<SkirtMeasurements>(
+    defaultSkirtMeasurements.women
+  );
+  const [bodiceMeasurements, setBodiceMeasurements] = useState<BodiceMeasurements>(
+    defaultBodiceMeasurements.women
   );
   const [seamAllowance, setSeamAllowance] = useState<SeamAllowance>(1);
+  const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
+
   const handleCategoryChange = (newCategory: Category) => {
     setCategory(newCategory);
-    setMeasurements(defaultMeasurements[newCategory]);
+    setSkirtMeasurements(defaultSkirtMeasurements[newCategory]);
+    setBodiceMeasurements(defaultBodiceMeasurements[newCategory]);
+  };
+
+  const handlePatternTypeChange = (type: PatternType) => {
+    setPatternType(type);
+  };
+
+  // Get current measurements based on pattern type
+  const getCurrentMeasurements = (): Measurements => {
+    if (patternType === 'bodice') {
+      return bodiceMeasurements;
+    }
+    return skirtMeasurements;
   };
 
   // Check if user can access the current pattern
   const canAccessPattern = (type: PatternType): boolean => {
-    // Skirt is always free
     if (type === 'skirt') return true;
-    
-    // Pro subscribers have unlimited access
     if (subscription.tier === 'pro') return true;
-    
-    // Basic subscribers can access if under limit
     if (subscription.tier === 'basic') {
       const limit = getPatternsLimit('basic');
       return subscription.patternsUsedThisMonth < limit;
     }
-    
-    // Check if user purchased this pattern
     return purchasedPatterns.includes(type);
   };
 
-  const handleLoadProfile = (loadedMeasurements: SkirtMeasurements) => {
-    setMeasurements(loadedMeasurements);
+  const handleLoadProfile = (loadedMeasurements: Measurements) => {
+    if (isBodiceMeasurements(loadedMeasurements)) {
+      setBodiceMeasurements(loadedMeasurements);
+    } else {
+      setSkirtMeasurements(loadedMeasurements as SkirtMeasurements);
+    }
   };
 
   const handlePatternPurchase = async (type: PatternType) => {
@@ -78,6 +96,12 @@ const Index = () => {
 
   const isPatternLocked = !canAccessPattern(patternType) && patternType !== 'skirt';
 
+  const handleExportPDF = () => {
+    const measurements = getCurrentMeasurements();
+    generatePatternPDF(measurements, patternType, seamAllowance);
+    toast.success('PDF downloaded!');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -94,18 +118,32 @@ const Index = () => {
             </div>
           </div>
 
-          <PatternTypeNav selected={patternType} onSelect={setPatternType} />
+          <PatternTypeNav selected={patternType} onSelect={handlePatternTypeChange} />
         </div>
 
         {/* Main content */}
         <div className="grid lg:grid-cols-[360px_1fr] gap-8">
           {/* Left panel - Measurements */}
           <div className="space-y-6">
-            <SkirtMeasurementForm
-              measurements={measurements}
-              onChange={setMeasurements}
-              category={category}
-            />
+            {patternType === 'skirt' ? (
+              <SkirtMeasurementForm
+                measurements={skirtMeasurements}
+                onChange={setSkirtMeasurements}
+                category={category}
+              />
+            ) : patternType === 'bodice' ? (
+              <BodiceMeasurementForm
+                measurements={bodiceMeasurements}
+                onChange={setBodiceMeasurements}
+                category={category}
+              />
+            ) : (
+              <SkirtMeasurementForm
+                measurements={skirtMeasurements}
+                onChange={setSkirtMeasurements}
+                category={category}
+              />
+            )}
 
             {/* Seam Allowance Selector */}
             <div className="space-y-2">
@@ -133,8 +171,8 @@ const Index = () => {
                 userId={user.id}
                 category={category}
                 patternType={patternType}
-                currentMeasurements={measurements}
-                onLoadProfile={handleLoadProfile}
+                currentMeasurements={getCurrentMeasurements() as SkirtMeasurements}
+                onLoadProfile={(m) => handleLoadProfile(m as Measurements)}
               />
             )}
 
@@ -145,10 +183,7 @@ const Index = () => {
                   className="flex-1 gap-2"
                   size="lg"
                   disabled={isPatternLocked}
-                  onClick={() => {
-                    generatePatternPDF(measurements, patternType, seamAllowance);
-                    toast.success('PDF downloaded!');
-                  }}
+                  onClick={handleExportPDF}
                 >
                   <Download className="w-4 h-4" />
                   Export PDF
@@ -159,7 +194,7 @@ const Index = () => {
                   className="gap-2"
                   disabled={isPatternLocked}
                   onClick={() => {
-                    generatePatternPDF(measurements, patternType, seamAllowance);
+                    handleExportPDF();
                     toast.info('PDF generated - print from your PDF viewer');
                   }}
                 >
@@ -169,7 +204,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Upgrade prompt for free users */}
+            {/* Upgrade prompts */}
             {!user && (
               <Card className="p-4 bg-primary/5 border-primary/20">
                 <p className="text-sm text-foreground mb-3">
@@ -188,7 +223,7 @@ const Index = () => {
             {user && subscription.tier === 'none' && (
               <Card className="p-4 bg-primary/5 border-primary/20">
                 <p className="text-sm text-foreground mb-3">
-                  <strong>Upgrade</strong> to access bodice, dress, pants, and sleeve patterns.
+                  <strong>Upgrade</strong> to access dress, pants, and sleeve patterns.
                 </p>
                 <Button
                   size="sm"
@@ -234,15 +269,37 @@ const Index = () => {
                   Pattern Preview
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Basic {patternType} sloper • Front panel
+                  Basic {patternType} sloper • {patternType === 'bodice' ? `${bodicePanel} panel` : 'Front panel'}
                 </p>
               </div>
-              <div className="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">
-                Scale: {((measurements.hip / 4 + 1) / 10).toFixed(1)}:10
+              <div className="flex items-center gap-3">
+                {patternType === 'bodice' && (
+                  <Tabs value={bodicePanel} onValueChange={(v) => setBodicePanel(v as 'front' | 'back')}>
+                    <TabsList className="h-8">
+                      <TabsTrigger value="front" className="text-xs px-3">Front</TabsTrigger>
+                      <TabsTrigger value="back" className="text-xs px-3">Back</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                )}
+                <div className="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">
+                  Scale: {patternType === 'skirt' 
+                    ? ((skirtMeasurements.hip / 4 + 1) / 10).toFixed(1)
+                    : ((bodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)}:10
+                </div>
               </div>
             </div>
             <div className="p-4">
-              <SkirtPatternPreview measurements={measurements} seamAllowance={seamAllowance} />
+              {patternType === 'skirt' ? (
+                <SkirtPatternPreview measurements={skirtMeasurements} seamAllowance={seamAllowance} />
+              ) : patternType === 'bodice' ? (
+                <BodicePatternPreview 
+                  measurements={bodiceMeasurements} 
+                  seamAllowance={seamAllowance}
+                  panel={bodicePanel}
+                />
+              ) : (
+                <SkirtPatternPreview measurements={skirtMeasurements} seamAllowance={seamAllowance} />
+              )}
             </div>
           </div>
         </div>
@@ -261,12 +318,12 @@ const Index = () => {
           </div>
           <div className="p-6 bg-card rounded-lg border border-border">
             <h3 className="font-serif text-lg font-semibold mb-2 text-foreground">
-              How to Measure
+              Bodice Pattern
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Use a flexible measuring tape. Measure your natural waist (the narrowest
-              part) and hips (the fullest part). Keep the tape level and snug but not
-              tight.
+              The bodice sloper includes front and back panels with bust darts for shaping.
+              It forms the basis for tops, dresses, and jackets with proper fit through
+              the torso.
             </p>
           </div>
           <div className="p-6 bg-card rounded-lg border border-border">
@@ -274,7 +331,7 @@ const Index = () => {
               Coming Soon
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Bodice, dress, pants, and sleeve slopers are in development. Each pattern
+              Dress, pants, and sleeve slopers are in development. Each pattern
               will include detailed construction guides and seam allowance options.
             </p>
           </div>
