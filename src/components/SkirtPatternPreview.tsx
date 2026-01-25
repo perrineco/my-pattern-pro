@@ -32,7 +32,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
   const patternHeight = skirtLength * scale;
   const centerToDartScaled = hipQuarter * 0.4 * scale;
   const waistWidthScaled = (waistQuarter + ease + dartWidth) * scale;
-  const dartWidthScaled = (hip - waist) * 0.4 * scale;
+  const dartWidthScaled = dartWidth * scale;
   const dartLengthScaled = dartLength * scale;
   const waistToHipScaled = waistToHip * scale;
 
