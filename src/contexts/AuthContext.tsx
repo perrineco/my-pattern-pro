@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { SubscriptionTier, getSubscriptionTierFromProductId } from '@/lib/stripe-config';
+import { SubscriptionTier, getSubscriptionTierFromProductId, isTestProAccount } from '@/lib/stripe-config';
 
 interface SubscriptionState {
   tier: SubscriptionTier;
@@ -45,6 +45,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('Error checking subscription:', error);
+        return;
+      }
+
+      // Check for test account bypass
+      const userEmail = session?.user?.email;
+      if (isTestProAccount(userEmail)) {
+        setSubscription({
+          tier: 'pro',
+          subscriptionEnd: null,
+          patternsUsedThisMonth: 0,
+        });
         return;
       }
 
