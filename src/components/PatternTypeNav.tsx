@@ -8,7 +8,7 @@ interface PatternTypeNavProps {
 
 const patternTypes: { value: PatternType; label: string; available: boolean }[] = [
   { value: 'skirt', label: 'Skirt', available: true },
-  { value: 'bodice', label: 'Bodice', available: false },
+  { value: 'bodice', label: 'Bodice', available: true },
   { value: 'dress', label: 'Dress', available: false },
   { value: 'pants', label: 'Pants', available: false },
   { value: 'sleeve', label: 'Sleeve', available: false },
