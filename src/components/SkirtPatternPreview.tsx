@@ -30,7 +30,7 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
   // Pattern coordinates (scaled)
   const patternWidth = (hipQuarter + ease) * scale;
   const patternHeight = skirtLength * scale;
-  const centerToDartScaled = hipQuarter * 0.2 * scale;
+  const centerToDartScaled = hipQuarter * 0.4 * scale;
   const waistWidthScaled = (waistQuarter + ease + dartWidth) * scale;
   const dartWidthScaled = dartWidth * scale;
   const dartLengthScaled = dartLength * scale;
@@ -48,13 +48,13 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
   L ${offsetX + centerToDartScaled} ${offsetY}
   L ${offsetX + centerToDartScaled + dartWidthScaled / 2} ${offsetY + dartLengthScaled}
   L ${offsetX + centerToDartScaled + dartWidthScaled} ${offsetY}
-  C ${offsetX + waistWidthScaled * 0.5} ${offsetY + 1.25 * 0.5 * scale}
-    ${offsetX + waistWidthScaled * 0.7} ${offsetY + 1.25 * 0.75 * scale}
-    ${offsetX + waistWidthScaled} ${offsetY + 1.25 * scale}
-  Q ${offsetX + waistWidthScaled - hipCurveOffset} ${offsetY + waistToHipScaled / 2},
-    ${offsetX + patternWidth} ${offsetY + waistToHipScaled}
-  Q ${offsetX + patternWidth + scale * 0.3} ${offsetY + waistToHipScaled + (patternHeight - waistToHipScaled) / 2},
-    ${offsetX + patternWidth} ${offsetY + patternHeight}
+  C ${offsetX + waistWidthScaled * 0.5} ${offsetY - 1.25 * 0.5 * scale}
+    ${offsetX + waistWidthScaled * 0.7} ${offsetY - 1.25 * 0.75 * scale}
+    ${offsetX + waistWidthScaled} ${offsetY - 1.25 * scale}
+  C ${offsetX + patternWidth * 0.6} ${offsetY + waistToHipScaled * 0.4 + 1.25 * scale}
+    ${offsetX + patternWidth * 0.8}  ${offsetY + waistToHipScaled * 0.8 + 1.25 * scale}
+    ${offsetX + patternWidth} ${offsetY + waistToHipScaled + 1.25 * scale}
+  L ${offsetX + patternWidth} ${offsetY + patternHeight}
   L ${offsetX} ${offsetY + patternHeight}
   Z
 `;
