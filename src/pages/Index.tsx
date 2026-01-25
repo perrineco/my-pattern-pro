@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Category, PatternType, SkirtMeasurements } from '@/types/sloper';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,9 +8,10 @@ import { CategorySelector } from '@/components/CategorySelector';
 import { PatternTypeNav } from '@/components/PatternTypeNav';
 import { SkirtMeasurementForm, defaultMeasurements } from '@/components/SkirtMeasurementForm';
 import { SkirtPatternPreview } from '@/components/SkirtPatternPreview';
+import { ProfileManager } from '@/components/ProfileManager';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Download, Printer, Save, Lock, Loader2 } from 'lucide-react';
+import { Download, Printer, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { getPatternsLimit, STRIPE_CONFIG } from '@/lib/stripe-config';
 import { generatePatternPDF, SeamAllowance } from '@/lib/pdf-export';
@@ -24,7 +25,6 @@ const Index = () => {
   const [measurements, setMeasurements] = useState<SkirtMeasurements>(
     defaultMeasurements.women
   );
-  const [saving, setSaving] = useState(false);
   const [seamAllowance, setSeamAllowance] = useState<SeamAllowance>(1);
   const handleCategoryChange = (newCategory: Category) => {
     setCategory(newCategory);
@@ -49,6 +49,10 @@ const Index = () => {
     return purchasedPatterns.includes(type);
   };
 
+  const handleLoadProfile = (loadedMeasurements: SkirtMeasurements) => {
+    setMeasurements(loadedMeasurements);
+  };
+
   const handlePatternPurchase = async (type: PatternType) => {
     if (!user) {
       toast.error('Please sign in to purchase patterns');
@@ -71,86 +75,6 @@ const Index = () => {
       toast.error('Failed to start checkout');
     }
   };
-
-  const handleSaveMeasurements = async () => {
-    if (!user) {
-      toast.error('Please sign in to save measurements');
-      navigate('/auth');
-      return;
-    }
-
-    setSaving(true);
-    try {
-      // First check if a record exists
-      const { data: existing } = await supabase
-        .from('saved_measurements')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('category', category)
-        .eq('pattern_type', patternType)
-        .maybeSingle();
-
-      let error;
-      if (existing) {
-        // Update existing record
-        const result = await supabase
-          .from('saved_measurements')
-          .update({
-            measurements: JSON.parse(JSON.stringify(measurements)),
-            name: `${category} ${patternType}`,
-          })
-          .eq('id', existing.id);
-        error = result.error;
-      } else {
-        // Insert new record
-        const result = await supabase.from('saved_measurements').insert([{
-          user_id: user.id,
-          category,
-          pattern_type: patternType,
-          measurements: JSON.parse(JSON.stringify(measurements)),
-          name: `${category} ${patternType}`,
-        }]);
-        error = result.error;
-      }
-
-      if (error) throw error;
-      toast.success('Measurements saved!');
-    } catch (err) {
-      console.error('Save error:', err);
-      toast.error('Failed to save measurements');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // Load saved measurements when user logs in
-  useEffect(() => {
-    const loadSavedMeasurements = async () => {
-      if (!user) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('saved_measurements')
-          .select('measurements')
-          .eq('user_id', user.id)
-          .eq('category', category)
-          .eq('pattern_type', patternType)
-          .maybeSingle();
-
-        if (error) throw error;
-        if (data?.measurements) {
-          const parsed = data.measurements as unknown as SkirtMeasurements;
-          if (parsed && typeof parsed.waist === 'number') {
-            setMeasurements(parsed);
-          }
-        }
-      } catch (err) {
-        console.error('Load measurements error:', err);
-      }
-    };
-
-    loadSavedMeasurements();
-  }, [user, category, patternType]);
 
   const isPatternLocked = !canAccessPattern(patternType) && patternType !== 'skirt';
 
@@ -203,24 +127,19 @@ const Index = () => {
               </div>
             </div>
 
+            {/* Profile Manager */}
+            {user && (
+              <ProfileManager
+                userId={user.id}
+                category={category}
+                patternType={patternType}
+                currentMeasurements={measurements}
+                onLoadProfile={handleLoadProfile}
+              />
+            )}
+
             {/* Action buttons */}
             <div className="flex flex-col gap-3">
-              {user && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full gap-2"
-                  onClick={handleSaveMeasurements}
-                  disabled={saving}
-                >
-                  {saving ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )}
-                  Save Measurements
-                </Button>
-              )}
               <div className="flex gap-3">
                 <Button
                   className="flex-1 gap-2"
