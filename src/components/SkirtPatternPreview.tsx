@@ -48,10 +48,10 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
   L ${offsetX + waistWidth / 2} ${offsetY + dartLengthScaled}
   L ${offsetX + waistWidth / 2 + dartWidthScaled / 2} ${offsetY}
   L ${offsetX + waistWidth} ${offsetY}
-  Q ${offsetX + waistWidth - hipCurveOffset} ${offsetY + waistToHipScaled / 2},
-    ${offsetX + patternWidth} ${offsetY + waistToHipScaled}
-  Q ${offsetX + patternWidth + scale * 0.3} ${offsetY + waistToHipScaled + (patternHeight - waistToHipScaled) / 2},
-    ${offsetX + patternWidth} ${offsetY + patternHeight}
+  C ${offsetX + waistWidth + (patternWidth - waistWidth)} ${offsetY},
+      ${offsetX + patternWidth} ${offsetY + waistToHipScaled * 0.5},
+      ${offsetX + patternWidth} ${offsetY + waistToHipScaled}
+  L ${offsetX + patternWidth} ${offsetY + patternHeight}
   L ${offsetX} ${offsetY + patternHeight}
   Z
 `;
