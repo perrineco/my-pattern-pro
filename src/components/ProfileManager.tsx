@@ -28,12 +28,12 @@ import {
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Category, PatternType, SkirtMeasurements } from '@/types/sloper';
+import { Category, PatternType, Measurements } from '@/types/sloper';
 
 interface SavedProfile {
   id: string;
   name: string;
-  measurements: SkirtMeasurements;
+  measurements: Measurements;
   created_at: string;
 }
 
@@ -41,8 +41,8 @@ interface ProfileManagerProps {
   userId: string;
   category: Category;
   patternType: PatternType;
-  currentMeasurements: SkirtMeasurements;
-  onLoadProfile: (measurements: SkirtMeasurements) => void;
+  currentMeasurements: Measurements;
+  onLoadProfile: (measurements: Measurements) => void;
   onProfileSaved?: () => void;
 }
 
@@ -85,7 +85,7 @@ export function ProfileManager({
       const parsed = (data || []).map((item) => ({
         id: item.id,
         name: item.name,
-        measurements: item.measurements as unknown as SkirtMeasurements,
+        measurements: item.measurements as unknown as Measurements,
         created_at: item.created_at,
       }));
 
@@ -139,7 +139,7 @@ export function ProfileManager({
       const newProfile: SavedProfile = {
         id: data.id,
         name: data.name,
-        measurements: data.measurements as unknown as SkirtMeasurements,
+        measurements: data.measurements as unknown as Measurements,
         created_at: data.created_at,
       };
 
