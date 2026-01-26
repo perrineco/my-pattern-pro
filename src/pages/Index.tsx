@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, Measurements, isBodiceMeasurements } from '@/types/sloper';
+import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, Measurements, isBodiceMeasurements, UnifiedMeasurements } from '@/types/sloper';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
@@ -13,6 +13,8 @@ import { SkirtPatternPreview } from '@/components/SkirtPatternPreview';
 import { BodicePatternPreview } from '@/components/BodicePatternPreview';
 import { DartlessBodicePatternPreview } from '@/components/DartlessBodicePatternPreview';
 import { ProfileManager } from '@/components/ProfileManager';
+import { ProfileManagerSimple } from '@/components/ProfileManagerSimple';
+import { UnifiedMeasurementForm, defaultUnifiedMeasurements } from '@/components/UnifiedMeasurementForm';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -40,12 +42,20 @@ const Index = () => {
   );
   const [seamAllowance, setSeamAllowance] = useState<SeamAllowance>(1);
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
+  
+  // Profile mode state
+  const [unifiedMeasurements, setUnifiedMeasurements] = useState<UnifiedMeasurements>(
+    defaultUnifiedMeasurements.women
+  );
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
 
   const handleCategoryChange = (newCategory: Category) => {
     setCategory(newCategory);
     setSkirtMeasurements(defaultSkirtMeasurements[newCategory]);
     setBodiceMeasurements(defaultBodiceMeasurements[newCategory]);
     setDartlessBodiceMeasurements(defaultDartlessBodiceMeasurements[newCategory]);
+    setUnifiedMeasurements(defaultUnifiedMeasurements[newCategory]);
+    setSelectedProfileId(null);
   };
 
   const handlePatternTypeChange = (type: PatternType) => {
@@ -164,59 +174,31 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                  Category
-                </label>
-                <CategorySelector selected={category} onSelect={handleCategoryChange} />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                  Pattern Type
-                </label>
-                <PatternTypeNav selected={patternType} onSelect={handlePatternTypeChange} />
-              </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground block">
+                Category
+              </label>
+              <CategorySelector selected={category} onSelect={handleCategoryChange} />
             </div>
 
-            {/* Profile Manager */}
+            {/* Profile Manager - displayed first */}
             {user && (subscription.tier === 'basic' || subscription.tier === 'pro') && (
-              <ProfileManager
+              <ProfileManagerSimple
                 userId={user.id}
                 category={category}
-                patternType={patternType}
-                currentMeasurements={getCurrentMeasurements() as Measurements}
-                onLoadProfile={(m) => handleLoadProfile(m)}
+                currentMeasurements={unifiedMeasurements}
+                onLoadProfile={(m) => setUnifiedMeasurements(m)}
+                selectedProfileId={selectedProfileId}
+                onSelectProfile={setSelectedProfileId}
               />
             )}
 
-            {/* Measurements Form */}
-            {patternType === 'skirt' ? (
-              <SkirtMeasurementForm
-                measurements={skirtMeasurements}
-                onChange={setSkirtMeasurements}
-                category={category}
-              />
-            ) : isBodiceDartless ? (
-              <DartlessBodiceMeasurementForm
-                measurements={dartlessBodiceMeasurements}
-                onChange={setDartlessBodiceMeasurements}
-                category={category}
-              />
-            ) : patternType === 'bodice' ? (
-              <BodiceMeasurementForm
-                measurements={bodiceMeasurements}
-                onChange={setBodiceMeasurements}
-                category={category}
-              />
-            ) : (
-              <SkirtMeasurementForm
-                measurements={skirtMeasurements}
-                onChange={setSkirtMeasurements}
-                category={category}
-              />
-            )}
+            {/* Unified Measurements Form */}
+            <UnifiedMeasurementForm
+              measurements={unifiedMeasurements}
+              onChange={setUnifiedMeasurements}
+              category={category}
+            />
           </div>
         ) : (
           /* Normal Pattern Mode */
