@@ -8,8 +8,10 @@ import { CategorySelector } from '@/components/CategorySelector';
 import { PatternTypeNav } from '@/components/PatternTypeNav';
 import { SkirtMeasurementForm, defaultMeasurements as defaultSkirtMeasurements } from '@/components/SkirtMeasurementForm';
 import { BodiceMeasurementForm, defaultBodiceMeasurements } from '@/components/BodiceMeasurementForm';
+import { DartlessBodiceMeasurementForm, DartlessBodiceMeasurements, defaultDartlessBodiceMeasurements } from '@/components/DartlessBodiceMeasurementForm';
 import { SkirtPatternPreview } from '@/components/SkirtPatternPreview';
 import { BodicePatternPreview } from '@/components/BodicePatternPreview';
+import { DartlessBodicePatternPreview } from '@/components/DartlessBodicePatternPreview';
 import { ProfileManager } from '@/components/ProfileManager';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -31,6 +33,9 @@ const Index = () => {
   const [bodiceMeasurements, setBodiceMeasurements] = useState<BodiceMeasurements>(
     defaultBodiceMeasurements.women
   );
+  const [dartlessBodiceMeasurements, setDartlessBodiceMeasurements] = useState<DartlessBodiceMeasurements>(
+    defaultDartlessBodiceMeasurements.women
+  );
   const [seamAllowance, setSeamAllowance] = useState<SeamAllowance>(1);
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
 
@@ -38,14 +43,22 @@ const Index = () => {
     setCategory(newCategory);
     setSkirtMeasurements(defaultSkirtMeasurements[newCategory]);
     setBodiceMeasurements(defaultBodiceMeasurements[newCategory]);
+    setDartlessBodiceMeasurements(defaultDartlessBodiceMeasurements[newCategory]);
   };
 
   const handlePatternTypeChange = (type: PatternType) => {
     setPatternType(type);
   };
 
+  // Helper to check if current pattern is a bodice variant
+  const isBodiceVariant = patternType.startsWith('bodice');
+  const isBodiceDartless = patternType === 'bodice-dartless';
+
   // Get current measurements based on pattern type
-  const getCurrentMeasurements = (): Measurements => {
+  const getCurrentMeasurements = (): Measurements | DartlessBodiceMeasurements => {
+    if (isBodiceDartless) {
+      return dartlessBodiceMeasurements;
+    }
     if (patternType === 'bodice') {
       return bodiceMeasurements;
     }
@@ -98,7 +111,25 @@ const Index = () => {
 
   const handleExportPDF = () => {
     const measurements = getCurrentMeasurements();
-    generatePatternPDF(measurements, patternType, seamAllowance);
+    // For dartless bodice, we need to convert to regular bodice measurements format for PDF
+    if (isBodiceDartless) {
+      const dartlessMeasurements = measurements as DartlessBodiceMeasurements;
+      const bodiceFormat: BodiceMeasurements = {
+        bust: dartlessMeasurements.bust,
+        waist: dartlessMeasurements.waist,
+        shoulderToWaist: dartlessMeasurements.shoulderToWaist,
+        bustHeight: dartlessMeasurements.armholeDepth, // Use armhole depth as approximation
+        shoulderWidth: dartlessMeasurements.shoulderWidth,
+        backWidth: dartlessMeasurements.backWidth,
+        chestWidth: dartlessMeasurements.backWidth - 2, // Approximate
+        armholeDepth: dartlessMeasurements.armholeDepth,
+        neckWidth: dartlessMeasurements.neckWidth,
+        shoulderSlope: dartlessMeasurements.shoulderSlope,
+      };
+      generatePatternPDF(bodiceFormat, 'bodice-dartless', seamAllowance);
+    } else {
+      generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, seamAllowance);
+    }
     toast.success('PDF downloaded!');
   };
 
@@ -129,6 +160,12 @@ const Index = () => {
               <SkirtMeasurementForm
                 measurements={skirtMeasurements}
                 onChange={setSkirtMeasurements}
+                category={category}
+              />
+            ) : isBodiceDartless ? (
+              <DartlessBodiceMeasurementForm
+                measurements={dartlessBodiceMeasurements}
+                onChange={setDartlessBodiceMeasurements}
                 category={category}
               />
             ) : patternType === 'bodice' ? (
@@ -269,11 +306,11 @@ const Index = () => {
                   Pattern Preview
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Basic {patternType} sloper • {patternType === 'bodice' ? `${bodicePanel} panel` : 'Front panel'}
+                  {isBodiceDartless ? 'Dartless' : 'Basic'} {patternType.replace('bodice-dartless', 'bodice')} sloper • {isBodiceVariant ? `${bodicePanel} panel` : 'Front panel'}
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                {patternType === 'bodice' && (
+                {isBodiceVariant && (
                   <Tabs value={bodicePanel} onValueChange={(v) => setBodicePanel(v as 'front' | 'back')}>
                     <TabsList className="h-8">
                       <TabsTrigger value="front" className="text-xs px-3">Front</TabsTrigger>
@@ -284,13 +321,21 @@ const Index = () => {
                 <div className="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">
                   Scale: {patternType === 'skirt' 
                     ? ((skirtMeasurements.hip / 4 + 1) / 10).toFixed(1)
-                    : ((bodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)}:10
+                    : isBodiceDartless
+                      ? ((dartlessBodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)
+                      : ((bodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)}:10
                 </div>
               </div>
             </div>
             <div className="p-4">
               {patternType === 'skirt' ? (
                 <SkirtPatternPreview measurements={skirtMeasurements} seamAllowance={seamAllowance} />
+              ) : isBodiceDartless ? (
+                <DartlessBodicePatternPreview 
+                  measurements={dartlessBodiceMeasurements} 
+                  seamAllowance={seamAllowance}
+                  panel={bodicePanel}
+                />
               ) : patternType === 'bodice' ? (
                 <BodicePatternPreview 
                   measurements={bodiceMeasurements} 
