@@ -156,7 +156,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    // Clear local state first to ensure user is logged out regardless of API response
+    setUser(null);
+    setSession(null);
+    setSubscription({ tier: 'none', subscriptionEnd: null, patternsUsedThisMonth: 0 });
+    setPurchasedPatterns([]);
+    
+    // Then try to sign out from server (might fail if session already expired)
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.log('Sign out from server failed, but local state cleared');
+    }
   };
 
   return (
