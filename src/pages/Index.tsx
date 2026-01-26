@@ -202,14 +202,14 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Profile Manager */}
-            {user && (
+            {/* Profile Manager - Basic/Pro only */}
+            {user && (subscription.tier === 'basic' || subscription.tier === 'pro') && (
               <ProfileManager
                 userId={user.id}
                 category={category}
                 patternType={patternType}
-                currentMeasurements={getCurrentMeasurements() as SkirtMeasurements}
-                onLoadProfile={(m) => handleLoadProfile(m as Measurements)}
+                currentMeasurements={getCurrentMeasurements() as Measurements}
+                onLoadProfile={(m) => handleLoadProfile(m)}
               />
             )}
 
