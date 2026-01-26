@@ -156,6 +156,19 @@ const Index = () => {
         <div className="grid lg:grid-cols-[360px_1fr] gap-8">
           {/* Left panel - Measurements */}
           <div className="space-y-6">
+            {/* Profile Manager - Basic/Pro only - Now at top */}
+            {user && (subscription.tier === 'basic' || subscription.tier === 'pro') && (
+              <div id="profile-manager">
+                <ProfileManager
+                  userId={user.id}
+                  category={category}
+                  patternType={patternType}
+                  currentMeasurements={getCurrentMeasurements() as Measurements}
+                  onLoadProfile={(m) => handleLoadProfile(m)}
+                />
+              </div>
+            )}
+
             {patternType === 'skirt' ? (
               <SkirtMeasurementForm
                 measurements={skirtMeasurements}
@@ -201,17 +214,6 @@ const Index = () => {
                 ))}
               </div>
             </div>
-
-            {/* Profile Manager - Basic/Pro only */}
-            {user && (subscription.tier === 'basic' || subscription.tier === 'pro') && (
-              <ProfileManager
-                userId={user.id}
-                category={category}
-                patternType={patternType}
-                currentMeasurements={getCurrentMeasurements() as Measurements}
-                onLoadProfile={(m) => handleLoadProfile(m)}
-              />
-            )}
 
             {/* Action buttons */}
             <div className="flex flex-col gap-3">
