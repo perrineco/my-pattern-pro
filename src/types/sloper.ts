@@ -1,5 +1,6 @@
 export type Category = 'women' | 'men' | 'kids';
-export type PatternType = 'skirt' | 'bodice' | 'dress' | 'pants' | 'sleeve';
+export type PatternType = 'skirt' | 'bodice' | 'bodice-dartless' | 'bodice-with-darts' | 'bodice-knit' | 'dress' | 'pants' | 'sleeve';
+export type BodiceVariant = 'dartless' | 'with-darts' | 'knit';
 
 export interface SkirtMeasurements {
   waist: number;
