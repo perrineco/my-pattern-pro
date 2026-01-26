@@ -40,8 +40,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Check for test account bypass FIRST - before calling edge function
     const userEmail = session?.user?.email;
-    if (isTestProAccount(userEmail)) {
-      console.log('Test Pro account detected:', userEmail);
+    console.log('checkSubscription - userEmail:', userEmail, 'isTestPro:', isTestProAccount(userEmail));
+    
+    if (userEmail && isTestProAccount(userEmail)) {
+      console.log('Test Pro account detected, setting tier to pro');
       setSubscription({
         tier: 'pro',
         subscriptionEnd: null,
