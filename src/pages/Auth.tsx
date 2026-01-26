@@ -21,8 +21,20 @@ const emailSchema = z.object({
 
 type AuthMode = 'login' | 'signup' | 'forgot-password' | 'reset-password';
 
+// Check for recovery token synchronously before component renders
+const getInitialMode = (): AuthMode => {
+  const hashParams = new URLSearchParams(window.location.hash.substring(1));
+  const type = hashParams.get('type');
+  const accessToken = hashParams.get('access_token');
+  
+  if (type === 'recovery' && accessToken) {
+    return 'reset-password';
+  }
+  return 'login';
+};
+
 export default function Auth() {
-  const [mode, setMode] = useState<AuthMode>('login');
+  const [mode, setMode] = useState<AuthMode>(getInitialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -34,21 +46,11 @@ export default function Auth() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Don't redirect if we're in reset-password mode
     if (user && mode !== 'reset-password') {
       navigate('/');
     }
   }, [user, navigate, mode]);
-
-  // Check for password reset token in URL
-  useEffect(() => {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get('type');
-    const accessToken = hashParams.get('access_token');
-    
-    if (type === 'recovery' && accessToken) {
-      setMode('reset-password');
-    }
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
