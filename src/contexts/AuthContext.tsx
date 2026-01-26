@@ -38,6 +38,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkSubscription = async () => {
     if (!session?.access_token) return;
 
+    // Check for test account bypass FIRST - before calling edge function
+    const userEmail = session?.user?.email;
+    if (isTestProAccount(userEmail)) {
+      console.log('Test Pro account detected:', userEmail);
+      setSubscription({
+        tier: 'pro',
+        subscriptionEnd: null,
+        patternsUsedThisMonth: 0,
+      });
+      return;
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke('check-subscription', {
         headers: { Authorization: `Bearer ${session.access_token}` },
@@ -45,17 +57,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('Error checking subscription:', error);
-        return;
-      }
-
-      // Check for test account bypass
-      const userEmail = session?.user?.email;
-      if (isTestProAccount(userEmail)) {
-        setSubscription({
-          tier: 'pro',
-          subscriptionEnd: null,
-          patternsUsedThisMonth: 0,
-        });
         return;
       }
 
