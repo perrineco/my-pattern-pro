@@ -79,6 +79,17 @@ export function Header() {
                           </p>
                         </div>
                         <DropdownMenuSeparator />
+                        {(subscription.tier === 'basic' || subscription.tier === 'pro') && (
+                          <DropdownMenuItem onClick={() => {
+                            navigate('/');
+                            setTimeout(() => {
+                              document.getElementById('profile-manager')?.scrollIntoView({ behavior: 'smooth' });
+                            }, 100);
+                          }}>
+                            <User className="w-4 h-4 mr-2" />
+                            Manage Profiles
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onClick={() => navigate('/pricing')}>
                           <CreditCard className="w-4 h-4 mr-2" />
                           Manage Subscription
