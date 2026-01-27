@@ -41,14 +41,13 @@ function calculateSkirtDimensions(measurements: SkirtMeasurements, seamAllowance
 }
 
 function calculateBodiceDimensions(measurements: BodiceMeasurements, seamAllowance: SeamAllowance = 1): PatternDimensions {
-  const { bust, waist, shoulderToWaist, shoulderWidth } = measurements;
+  const { bust, backWidth, backLength, shoulderLength } = measurements;
   const bustQuarter = bust / 4;
-  const waistQuarter = waist / 4;
-  const shoulderHalf = shoulderWidth / 2;
+  const backWidthHalf = backWidth / 2;
   const ease = 1;
   
-  const widthCm = Math.max(bustQuarter, waistQuarter, shoulderHalf) + ease + 5 + (seamAllowance * 2);
-  const heightCm = shoulderToWaist + 5 + (seamAllowance * 2);
+  const widthCm = Math.max(bustQuarter, backWidthHalf) + ease + 5 + (seamAllowance * 2);
+  const heightCm = backLength + 5 + (seamAllowance * 2);
   
   return { widthCm, heightCm };
 }
@@ -221,13 +220,10 @@ function drawBodicePatternPiece(
 ) {
   const {
     bust,
-    waist,
-    shoulderToWaist,
-    bustHeight,
-    shoulderWidth,
-    armholeDepth,
-    neckWidth,
-    shoulderSlope,
+    neckCircumference,
+    shoulderLength,
+    backWidth,
+    backLength,
   } = measurements;
   
   const seamMm = seamAllowance * 10;
@@ -235,34 +231,27 @@ function drawBodicePatternPiece(
   
   // Convert to mm
   const bustQuarterMm = (bust / 4 + 1) * 10;
-  const waistQuarterMm = (waist / 4 + 1) * 10;
-  const shoulderHalfMm = (shoulderWidth / 2) * 10;
-  const shoulderToWaistMm = shoulderToWaist * 10;
-  const bustHeightMm = bustHeight * 10;
-  const armholeDepthMm = armholeDepth * 10;
-  const neckHalfMm = (neckWidth / 2) * 10;
-  const shoulderSlopeMm = shoulderSlope * 10;
+  const backWidthHalfMm = (backWidth / 2) * 10;
+  const neckWidthMm = (neckCircumference / 6) * 10; // Approximate neck width
+  const shoulderLengthMm = shoulderLength * 10;
+  const backLengthMm = backLength * 10;
+  const shoulderSlopeMm = 40; // Standard 4cm slope
+  
+  // Armhole depth derived from back length
+  const armholeDepthMm = backLength * 0.5 * 10;
   
   const isFront = panel === 'front';
   const neckDropMm = isFront ? 15 : 0; // Front has lower neckline
-  
-  // Dart dimensions
-  const waistDartWidth = 20; // 2cm
-  const waistDartDepth = shoulderToWaistMm * 0.35;
-  const bustDartWidth = isFront ? 25 : 0; // 2.5cm bust dart for front only
-  const bustDartDepth = isFront ? bustHeightMm * 0.8 : 0;
   
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.5);
   
   // Build pattern points
-  const neckX = offsetX + neckHalfMm;
-  const shoulderX = offsetX + shoulderHalfMm;
+  const neckX = offsetX + neckWidthMm;
+  const shoulderEndX = offsetX + neckWidthMm + shoulderLengthMm;
   const shoulderY = offsetY + shoulderSlopeMm;
-  const armholeX = offsetX + bustQuarterMm;
-  const armholeY = offsetY + armholeDepthMm;
-  const waistX = offsetX + waistQuarterMm;
-  const waistY = offsetY + shoulderToWaistMm;
+  const sideX = offsetX + bustQuarterMm;
+  const waistY = offsetY + backLengthMm;
   
   // Draw seam allowance first
   if (seamMm > 0) {
@@ -272,10 +261,10 @@ function drawBodicePatternPiece(
     
     // Simplified seam allowance outline
     doc.line(offsetX - seamMm, offsetY + neckDropMm - seamMm, neckX, offsetY - seamMm);
-    doc.line(neckX, offsetY - seamMm, shoulderX + seamMm, shoulderY - seamMm);
-    doc.line(shoulderX + seamMm, shoulderY - seamMm, armholeX + seamMm, armholeY);
-    doc.line(armholeX + seamMm, armholeY, waistX + seamMm, waistY + seamMm);
-    doc.line(waistX + seamMm, waistY + seamMm, offsetX - seamMm, waistY + seamMm);
+    doc.line(neckX, offsetY - seamMm, shoulderEndX + seamMm, shoulderY - seamMm);
+    doc.line(shoulderEndX + seamMm, shoulderY - seamMm, sideX + seamMm, offsetY + armholeDepthMm);
+    doc.line(sideX + seamMm, offsetY + armholeDepthMm, sideX + seamMm, waistY + seamMm);
+    doc.line(sideX + seamMm, waistY + seamMm, offsetX - seamMm, waistY + seamMm);
     doc.line(offsetX - seamMm, waistY + seamMm, offsetX - seamMm, offsetY + neckDropMm - seamMm);
     
     doc.setLineDashPattern([], 0);
@@ -292,33 +281,21 @@ function drawBodicePatternPiece(
   doc.line(offsetX, offsetY + neckDropMm, neckX, offsetY);
   
   // Shoulder line
-  doc.line(neckX, offsetY, shoulderX, shoulderY);
+  doc.line(neckX, offsetY, shoulderEndX, shoulderY);
   
   // Armhole curve (simplified)
-  doc.line(shoulderX, shoulderY, armholeX, armholeY);
+  doc.line(shoulderEndX, shoulderY, sideX, offsetY + armholeDepthMm);
   
   // Side seam
-  doc.line(armholeX, armholeY, waistX, waistY);
+  doc.line(sideX, offsetY + armholeDepthMm, sideX, waistY);
   
-  // Waist with dart
-  const waistDartX = offsetX + waistQuarterMm / 2;
-  doc.line(waistX, waistY, waistDartX + waistDartWidth / 2, waistY);
-  doc.line(waistDartX + waistDartWidth / 2, waistY, waistDartX, waistY - waistDartDepth);
-  doc.line(waistDartX, waistY - waistDartDepth, waistDartX - waistDartWidth / 2, waistY);
-  doc.line(waistDartX - waistDartWidth / 2, waistY, offsetX, waistY);
-  
-  // Bust dart for front panel
-  if (isFront && bustDartDepth > 0) {
-    const bustDartY = offsetY + bustHeightMm;
-    doc.setDrawColor(180, 80, 80);
-    doc.line(armholeX, bustDartY - bustDartWidth / 2, armholeX - bustDartDepth, bustDartY);
-    doc.line(armholeX - bustDartDepth, bustDartY, armholeX, bustDartY + bustDartWidth / 2);
-  }
+  // Waist line
+  doc.line(sideX, waistY, offsetX, waistY);
   
   // Grain line
   const grainX = offsetX + bustQuarterMm * 0.4;
-  const grainTop = offsetY + shoulderToWaistMm * 0.2;
-  const grainBottom = offsetY + shoulderToWaistMm * 0.8;
+  const grainTop = offsetY + backLengthMm * 0.2;
+  const grainBottom = offsetY + backLengthMm * 0.8;
   
   doc.setDrawColor(0, 0, 0);
   doc.setLineDashPattern([3, 2], 0);
@@ -334,22 +311,22 @@ function drawBodicePatternPiece(
   // Labels
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
-  doc.text(isFront ? 'FRONT' : 'BACK', offsetX + bustQuarterMm / 2, offsetY + shoulderToWaistMm / 2 - 5, { align: 'center' });
+  doc.text(isFront ? 'FRONT' : 'BACK', offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 - 5, { align: 'center' });
   
   doc.setFontSize(8);
-  doc.text('Cut 1 on fold', offsetX + bustQuarterMm / 2, offsetY + shoulderToWaistMm / 2 + 5, { align: 'center' });
+  doc.text('Cut 1 on fold', offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 5, { align: 'center' });
   
   if (seamMm > 0) {
     doc.setFontSize(7);
     doc.setTextColor(100, 100, 100);
-    doc.text(`SA: ${seamAllowance}cm`, offsetX + bustQuarterMm / 2, offsetY + shoulderToWaistMm / 2 + 12, { align: 'center' });
+    doc.text(`SA: ${seamAllowance}cm`, offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 12, { align: 'center' });
   }
   
   // Measurement annotations
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
-  doc.text(`¼ bust = ${(bust / 4 + 1).toFixed(1)}cm`, offsetX + bustQuarterMm / 2, armholeY + 5);
-  doc.text(`Length = ${shoulderToWaist}cm`, offsetX - 8, offsetY + shoulderToWaistMm / 2, { angle: 90 });
+  doc.text(`¼ bust = ${(bust / 4 + 1).toFixed(1)}cm`, offsetX + bustQuarterMm / 2, offsetY + armholeDepthMm + 5);
+  doc.text(`Back length = ${backLength}cm`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
 }
 
 function draw1cmTestSquare(doc: jsPDF) {
@@ -446,11 +423,10 @@ export function generatePatternPDF(
   const measurementLines = isBodice
     ? [
         `  • Bust: ${(measurements as BodiceMeasurements).bust}cm`,
-        `  • Waist: ${(measurements as BodiceMeasurements).waist}cm`,
-        `  • Shoulder to Waist: ${(measurements as BodiceMeasurements).shoulderToWaist}cm`,
-        `  • Bust Height: ${(measurements as BodiceMeasurements).bustHeight}cm`,
-        `  • Shoulder Width: ${(measurements as BodiceMeasurements).shoulderWidth}cm`,
-        `  • Armhole Depth: ${(measurements as BodiceMeasurements).armholeDepth}cm`,
+        `  • Neckline: ${(measurements as BodiceMeasurements).neckCircumference}cm`,
+        `  • Shoulder Length: ${(measurements as BodiceMeasurements).shoulderLength}cm`,
+        `  • Back Width: ${(measurements as BodiceMeasurements).backWidth}cm`,
+        `  • Back Length: ${(measurements as BodiceMeasurements).backLength}cm`,
       ]
     : [
         `  • Waist: ${(measurements as SkirtMeasurements).waist}cm`,
@@ -491,6 +467,5 @@ export function generatePatternPDF(
     }
   }
   
-  const filename = `sloper-${patternType}-${new Date().toISOString().split('T')[0]}.pdf`;
-  doc.save(filename);
+  doc.save(`${patternType}-pattern.pdf`);
 }
