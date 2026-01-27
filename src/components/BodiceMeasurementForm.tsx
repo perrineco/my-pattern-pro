@@ -14,39 +14,24 @@ interface BodiceMeasurementFormProps {
 export const defaultBodiceMeasurements: Record<Category, BodiceMeasurements> = {
   women: {
     bust: 92,
-    waist: 70,
-    shoulderToWaist: 42,
-    bustHeight: 26,
-    shoulderWidth: 38,
+    neckCircumference: 36,
+    shoulderLength: 13,
     backWidth: 36,
-    chestWidth: 34,
-    armholeDepth: 21,
-    neckWidth: 14,
-    shoulderSlope: 4,
+    backLength: 42,
   },
   men: {
-    bust: 100,
-    waist: 84,
-    shoulderToWaist: 46,
-    bustHeight: 28,
-    shoulderWidth: 44,
+    bust: 102,
+    neckCircumference: 40,
+    shoulderLength: 15,
     backWidth: 42,
-    chestWidth: 40,
-    armholeDepth: 24,
-    neckWidth: 16,
-    shoulderSlope: 5,
+    backLength: 46,
   },
   kids: {
-    bust: 66,
-    waist: 54,
-    shoulderToWaist: 30,
-    bustHeight: 18,
-    shoulderWidth: 28,
-    backWidth: 26,
-    chestWidth: 24,
-    armholeDepth: 14,
-    neckWidth: 11,
-    shoulderSlope: 3,
+    bust: 68,
+    neckCircumference: 30,
+    shoulderLength: 10,
+    backWidth: 28,
+    backLength: 30,
   },
 };
 
@@ -90,93 +75,47 @@ export function BodiceMeasurementForm({
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Core
           </span>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3">
             <MeasurementInput
               label="Bust"
               value={measurements.bust}
               onChange={handleChange('bust')}
-              hint={category === 'women' ? '82-110' : category === 'men' ? '90-120' : '56-76'}
+              hint="Tour de poitrine"
             />
             <MeasurementInput
-              label="Waist"
-              value={measurements.waist}
-              onChange={handleChange('waist')}
-              hint={category === 'women' ? '60-90' : category === 'men' ? '70-110' : '46-62'}
-            />
-          </div>
-        </div>
-
-        {/* Vertical measurements */}
-        <div className="space-y-1">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Vertical
-          </span>
-          <div className="grid grid-cols-2 gap-3">
-            <MeasurementInput
-              label="Shoulder to Waist"
-              value={measurements.shoulderToWaist}
-              onChange={handleChange('shoulderToWaist')}
-              hint="Front length"
-            />
-            <MeasurementInput
-              label="Bust Height"
-              value={measurements.bustHeight}
-              onChange={handleChange('bustHeight')}
-              hint="To bust point"
-            />
-            <MeasurementInput
-              label="Armhole Depth"
-              value={measurements.armholeDepth}
-              onChange={handleChange('armholeDepth')}
-              hint="From shoulder"
+              label="Neckline Circumference"
+              value={measurements.neckCircumference}
+              onChange={handleChange('neckCircumference')}
+              hint="Tour de cou"
             />
           </div>
         </div>
 
-        {/* Width measurements */}
+        {/* Width & Length measurements */}
         <div className="space-y-1">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Width
+            Width & Length
           </span>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3">
             <MeasurementInput
-              label="Shoulder Width"
-              value={measurements.shoulderWidth}
-              onChange={handleChange('shoulderWidth')}
-              hint="Across back"
+              label="Shoulder Length"
+              value={measurements.shoulderLength}
+              onChange={handleChange('shoulderLength')}
+              hint="Longueur d'épaule"
             />
             <MeasurementInput
               label="Back Width"
               value={measurements.backWidth}
               onChange={handleChange('backWidth')}
-              hint="Armhole to armhole"
+              hint="Carrure dos"
             />
             <MeasurementInput
-              label="Chest Width"
-              value={measurements.chestWidth}
-              onChange={handleChange('chestWidth')}
-              hint="Front width"
-            />
-            <MeasurementInput
-              label="Neck Width"
-              value={measurements.neckWidth}
-              onChange={handleChange('neckWidth')}
-              hint="Base of neck"
+              label="Back Length"
+              value={measurements.backLength}
+              onChange={handleChange('backLength')}
+              hint="Longueur taille-dos"
             />
           </div>
-        </div>
-
-        {/* Shoulder */}
-        <div className="space-y-1">
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Shoulder
-          </span>
-          <MeasurementInput
-            label="Shoulder Slope"
-            value={measurements.shoulderSlope}
-            onChange={handleChange('shoulderSlope')}
-            hint="Drop in cm"
-          />
         </div>
       </CardContent>
     </Card>

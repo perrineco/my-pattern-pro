@@ -128,15 +128,10 @@ const Index = () => {
       const dartlessMeasurements = measurements as DartlessBodiceMeasurements;
       const bodiceFormat: BodiceMeasurements = {
         bust: dartlessMeasurements.bust,
-        waist: dartlessMeasurements.waist,
-        shoulderToWaist: dartlessMeasurements.shoulderToWaist,
-        bustHeight: dartlessMeasurements.armholeDepth, // Use armhole depth as approximation
-        shoulderWidth: dartlessMeasurements.shoulderWidth,
+        neckCircumference: dartlessMeasurements.neckWidth * 2.5, // Approximate from neck width
+        shoulderLength: dartlessMeasurements.shoulderWidth / 3, // Approximate
         backWidth: dartlessMeasurements.backWidth,
-        chestWidth: dartlessMeasurements.backWidth - 2, // Approximate
-        armholeDepth: dartlessMeasurements.armholeDepth,
-        neckWidth: dartlessMeasurements.neckWidth,
-        shoulderSlope: dartlessMeasurements.shoulderSlope,
+        backLength: dartlessMeasurements.shoulderToWaist,
       };
       generatePatternPDF(bodiceFormat, 'bodice-dartless', seamAllowance);
     } else {

@@ -31,26 +31,21 @@ export function BodicePatternPreview({
 
   const {
     bust,
-    waist,
-    shoulderToWaist,
-    bustHeight,
-    shoulderWidth,
+    neckCircumference,
+    shoulderLength,
     backWidth,
-    chestWidth,
-    armholeDepth,
-    neckWidth,
-    shoulderSlope,
+    backLength,
   } = measurements;
 
   // Calculate pattern dimensions (half panel - center front/back)
   const bustQuarter = bust / 4;
-  const waistQuarter = waist / 4;
-  const shoulderHalf = shoulderWidth / 2;
+  const backWidthHalf = backWidth / 2;
+  const neckWidthCalc = neckCircumference / 6; // Approximate neck width from circumference
   const ease = 1;
 
   // Pattern dimensions
-  const patternWidth = Math.max(bustQuarter, waistQuarter, shoulderHalf) + ease + 5;
-  const patternHeight = shoulderToWaist + 5;
+  const patternWidth = Math.max(bustQuarter, backWidthHalf) + ease + 5;
+  const patternHeight = backLength + 5;
 
   // Calculate scale to fit in view
   const padding = 60;
@@ -68,26 +63,17 @@ export function BodicePatternPreview({
   const sa = seamAllowance * scale;
 
   // Key pattern points (relative to top-left of pattern)
-  const neckHalfWidth = (neckWidth / 2) * scale;
-  const shoulderHalfWidth = (shoulderHalf) * scale;
+  const neckHalfWidth = neckWidthCalc * scale;
+  const shoulderLengthScaled = s(shoulderLength);
   const bustQuarterScaled = (bustQuarter + ease) * scale;
-  const waistQuarterScaled = (waistQuarter + ease) * scale;
-  const armholeDepthScaled = s(armholeDepth);
-  const bustHeightScaled = s(bustHeight);
-  const shoulderToWaistScaled = s(shoulderToWaist);
-  const shoulderSlopeScaled = s(shoulderSlope);
+  const backLengthScaled = s(backLength);
+  const shoulderSlopeScaled = s(4); // Standard shoulder slope
 
-  // Front panel has bust dart, back panel has smaller shoulder dart
+  // Armhole depth derived from back length (approximately 50% of back length)
+  const armholeDepthScaled = s(backLength * 0.5);
+
+  // Front panel has lower neckline
   const isFront = panel === 'front';
-  
-  // Dart calculations
-  const bustDartWidth = isFront ? s(2.5) : 0;
-  const bustDartDepth = isFront ? s(bustHeight * 0.85) : 0;
-  const waistDartWidth = s(2);
-  const waistDartDepth = s(shoulderToWaist * 0.35);
-
-  // Calculate dart position (at bust point)
-  const bustDartX = offsetX + bustQuarterScaled / 2;
 
   // Build pattern path
   const buildPatternPath = () => {
@@ -99,24 +85,19 @@ export function BodicePatternPreview({
     // Neck curve
     points.push(`Q ${offsetX + neckHalfWidth * 0.3} ${offsetY} ${offsetX + neckHalfWidth} ${offsetY}`);
     
-    // Shoulder line (with slope)
-    points.push(`L ${offsetX + shoulderHalfWidth} ${offsetY + shoulderSlopeScaled}`);
+    // Shoulder line (shoulder length from neck point)
+    const shoulderEndX = offsetX + neckHalfWidth + shoulderLengthScaled;
+    points.push(`L ${shoulderEndX} ${offsetY + shoulderSlopeScaled}`);
     
     // Armhole curve
     const armholeControlX = offsetX + bustQuarterScaled + s(1);
     points.push(`Q ${armholeControlX} ${offsetY + shoulderSlopeScaled + armholeDepthScaled * 0.3} ${offsetX + bustQuarterScaled} ${offsetY + armholeDepthScaled}`);
     
     // Side seam to waist
-    points.push(`L ${offsetX + waistQuarterScaled} ${offsetY + shoulderToWaistScaled}`);
-    
-    // Waist dart (center of waist)
-    const waistDartX = offsetX + waistQuarterScaled / 2;
-    points.push(`L ${waistDartX + waistDartWidth / 2} ${offsetY + shoulderToWaistScaled}`);
-    points.push(`L ${waistDartX} ${offsetY + shoulderToWaistScaled - waistDartDepth}`);
-    points.push(`L ${waistDartX - waistDartWidth / 2} ${offsetY + shoulderToWaistScaled}`);
+    points.push(`L ${offsetX + bustQuarterScaled} ${offsetY + backLengthScaled}`);
     
     // Back to center front
-    points.push(`L ${offsetX} ${offsetY + shoulderToWaistScaled}`);
+    points.push(`L ${offsetX} ${offsetY + backLengthScaled}`);
     
     // Center front/back line back up
     points.push(`Z`);
@@ -128,32 +109,20 @@ export function BodicePatternPreview({
   const buildSeamAllowancePath = () => {
     if (seamAllowance === 0) return '';
     
+    const shoulderEndX = offsetX + neckHalfWidth + shoulderLengthScaled;
+    
     const points: string[] = [];
     
     // Outer boundary with seam allowance
     points.push(`M ${offsetX - sa} ${offsetY + (isFront ? s(1.5) : 0) - sa}`);
     points.push(`L ${offsetX + neckHalfWidth} ${offsetY - sa}`);
-    points.push(`L ${offsetX + shoulderHalfWidth + sa} ${offsetY + shoulderSlopeScaled - sa}`);
+    points.push(`L ${shoulderEndX + sa} ${offsetY + shoulderSlopeScaled - sa}`);
     points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + armholeDepthScaled}`);
-    points.push(`L ${offsetX + waistQuarterScaled + sa} ${offsetY + shoulderToWaistScaled + sa}`);
-    points.push(`L ${offsetX - sa} ${offsetY + shoulderToWaistScaled + sa}`);
+    points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + backLengthScaled + sa}`);
+    points.push(`L ${offsetX - sa} ${offsetY + backLengthScaled + sa}`);
     points.push(`Z`);
     
     return points.join(' ');
-  };
-
-  // Bust dart for front panel (side dart)
-  const buildBustDartPath = () => {
-    if (!isFront) return '';
-    
-    const dartY = offsetY + bustHeightScaled;
-    const sideX = offsetX + bustQuarterScaled;
-    
-    return `
-      M ${sideX} ${dartY - bustDartWidth}
-      L ${sideX - bustDartDepth} ${dartY}
-      L ${sideX} ${dartY + bustDartWidth}
-    `;
   };
 
   return (
@@ -210,33 +179,12 @@ export function BodicePatternPreview({
         strokeWidth="2"
       />
 
-      {/* Bust dart (front only) */}
-      {isFront && (
-        <path
-          d={buildBustDartPath()}
-          fill="none"
-          stroke="hsl(var(--primary))"
-          strokeWidth="1.5"
-        />
-      )}
-
-      {/* Waist dart visualization */}
-      <line
-        x1={offsetX + waistQuarterScaled / 2}
-        y1={offsetY + shoulderToWaistScaled}
-        x2={offsetX + waistQuarterScaled / 2}
-        y2={offsetY + shoulderToWaistScaled - waistDartDepth}
-        stroke="hsl(var(--muted-foreground))"
-        strokeWidth="1"
-        strokeDasharray="2,2"
-      />
-
       {/* Grain line */}
       <line
         x1={offsetX + bustQuarterScaled * 0.3}
-        y1={offsetY + shoulderToWaistScaled * 0.25}
+        y1={offsetY + backLengthScaled * 0.25}
         x2={offsetX + bustQuarterScaled * 0.3}
-        y2={offsetY + shoulderToWaistScaled * 0.75}
+        y2={offsetY + backLengthScaled * 0.75}
         stroke="hsl(var(--pattern-stroke))"
         strokeWidth="1.5"
         markerEnd="url(#bodiceArrow)"
@@ -245,7 +193,7 @@ export function BodicePatternPreview({
       {/* Labels */}
       <text
         x={offsetX + bustQuarterScaled / 2}
-        y={offsetY + shoulderToWaistScaled / 2}
+        y={offsetY + backLengthScaled / 2}
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
       >
@@ -253,7 +201,7 @@ export function BodicePatternPreview({
       </text>
       <text
         x={offsetX + bustQuarterScaled / 2}
-        y={offsetY + shoulderToWaistScaled / 2 + 16}
+        y={offsetY + backLengthScaled / 2 + 16}
         textAnchor="middle"
         className="fill-muted-foreground text-xs"
       >
@@ -264,47 +212,38 @@ export function BodicePatternPreview({
       {/* Bust line */}
       <line
         x1={offsetX + bustQuarterScaled + 15}
-        y1={offsetY + bustHeightScaled}
+        y1={offsetY + armholeDepthScaled}
         x2={offsetX + bustQuarterScaled + 35}
-        y2={offsetY + bustHeightScaled}
+        y2={offsetY + armholeDepthScaled}
         stroke="hsl(var(--primary))"
         strokeWidth="1"
       />
       <text
         x={offsetX + bustQuarterScaled + 40}
-        y={offsetY + bustHeightScaled + 4}
+        y={offsetY + armholeDepthScaled + 4}
         className="fill-primary text-[10px]"
       >
         Bust: {bust / 4}cm
       </text>
 
-      {/* Waist */}
-      <text
-        x={offsetX + waistQuarterScaled + 10}
-        y={offsetY + shoulderToWaistScaled - 5}
-        className="fill-muted-foreground text-[10px]"
-      >
-        Waist: {waist / 4}cm
-      </text>
-
-      {/* Length */}
+      {/* Back length */}
       <text
         x={offsetX - 5}
-        y={offsetY + shoulderToWaistScaled / 2}
+        y={offsetY + backLengthScaled / 2}
         textAnchor="end"
         className="fill-muted-foreground text-[10px]"
-        transform={`rotate(-90 ${offsetX - 5} ${offsetY + shoulderToWaistScaled / 2})`}
+        transform={`rotate(-90 ${offsetX - 5} ${offsetY + backLengthScaled / 2})`}
       >
-        {shoulderToWaist}cm
+        {backLength}cm
       </text>
 
       {/* Legend */}
-      <g transform={`translate(${dimensions.width - 120}, ${dimensions.height - 80})`}>
+      <g transform={`translate(${dimensions.width - 120}, ${dimensions.height - 65})`}>
         <rect
           x="0"
           y="0"
           width="110"
-          height="70"
+          height="55"
           fill="hsl(var(--card))"
           stroke="hsl(var(--border))"
           rx="4"
@@ -315,11 +254,8 @@ export function BodicePatternPreview({
         <line x1="8" y1="30" x2="28" y2="30" stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="4,2" />
         <text x="34" y="33" className="fill-foreground text-[9px]">Seam allowance</text>
         
-        <line x1="8" y1="45" x2="28" y2="45" stroke="hsl(var(--primary))" strokeWidth="1.5" />
-        <text x="34" y="48" className="fill-foreground text-[9px]">Bust dart</text>
-        
-        <line x1="8" y1="60" x2="28" y2="60" stroke="hsl(var(--pattern-stroke))" strokeWidth="1.5" markerEnd="url(#bodiceArrow)" />
-        <text x="34" y="63" className="fill-foreground text-[9px]">Grain line</text>
+        <line x1="8" y1="45" x2="28" y2="45" stroke="hsl(var(--pattern-stroke))" strokeWidth="1.5" markerEnd="url(#bodiceArrow)" />
+        <text x="34" y="48" className="fill-foreground text-[9px]">Grain line</text>
       </g>
     </svg>
   );
