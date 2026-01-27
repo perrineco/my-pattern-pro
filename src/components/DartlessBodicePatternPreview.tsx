@@ -81,7 +81,6 @@ export function DartlessBodicePatternPreview({
     points.push(`M ${offsetX} ${offsetY + neckDepth}`);
 
     // Neck curve to shoulder
-    // Point de contrôle 1 : AB86 * 0.65 (X), 0 (Y relatif)
     const cp1x = offsetX + neckHalfWidth * 0.65;
     const cp1y = offsetY;
 
