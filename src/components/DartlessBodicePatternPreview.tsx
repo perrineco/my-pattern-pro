@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect } from 'react';
-import { DartlessBodiceMeasurements } from '@/components/DartlessBodiceMeasurementForm';
+import { BodiceMeasurements } from '@/types/sloper';
 import { SeamAllowance } from '@/lib/pdf-export';
 
 interface DartlessBodicePatternPreviewProps {
-  measurements: DartlessBodiceMeasurements;
+  measurements: BodiceMeasurements;
   seamAllowance?: SeamAllowance;
   panel?: 'front' | 'back';
 }
@@ -31,28 +31,27 @@ export function DartlessBodicePatternPreview({
 
   const {
     bust,
-    waist,
-    shoulderToWaist,
-    shoulderWidth,
+    neckCircumference,
+    shoulderLength,
     backWidth,
-    armholeDepth,
-    neckWidth,
-    neckDepthFront,
-    neckDepthBack,
-    shoulderSlope,
+    backLength,
   } = measurements;
 
   const isFront = panel === 'front';
 
-  // Calculate pattern dimensions (half panel - center front/back)
-  const bustQuarter = bust / 4;
-  const waistQuarter = waist / 4;
-  const shoulderHalf = shoulderWidth / 2;
+  // Derive pattern dimensions from the 5 core measurements
+  const neckWidth = neckCircumference / Math.PI; // Approximate neck width from circumference
+  const armholeDepth = backLength * 0.5; // Armhole depth as proportion of back length
+  const shoulderSlope = backLength * 0.1; // Shoulder slope as proportion
   const ease = 1.5; // Ease for dartless bodice
 
-  // Pattern dimensions with extra ease for dartless fit
-  const patternWidth = Math.max(bustQuarter + ease, waistQuarter + ease, shoulderHalf) + 5;
-  const patternHeight = shoulderToWaist + 5;
+  // Calculate pattern dimensions (half panel - center front/back)
+  const bustQuarter = bust / 4;
+  const backWidthHalf = backWidth / 2;
+
+  // Pattern dimensions
+  const patternWidth = Math.max(bustQuarter + ease, backWidthHalf) + 5;
+  const patternHeight = backLength + 5;
 
   // Calculate scale to fit in view
   const padding = 60;
@@ -71,13 +70,13 @@ export function DartlessBodicePatternPreview({
 
   // Key pattern points (relative to top-left of pattern)
   const neckHalfWidth = (neckWidth / 2) * scale;
-  const shoulderHalfWidth = shoulderHalf * scale;
+  const shoulderLengthScaled = s(shoulderLength);
   const bustQuarterScaled = (bustQuarter + ease) * scale;
-  const waistQuarterScaled = (waistQuarter + ease) * scale;
+  const backWidthHalfScaled = (backWidthHalf) * scale;
   const armholeDepthScaled = s(armholeDepth);
-  const shoulderToWaistScaled = s(shoulderToWaist);
+  const backLengthScaled = s(backLength);
   const shoulderSlopeScaled = s(shoulderSlope);
-  const neckDepth = isFront ? s(neckDepthFront) : s(neckDepthBack);
+  const neckDepth = isFront ? s(neckWidth * 0.5) : s(neckWidth * 0.15);
 
   // Build pattern path - simple dartless shape
   const buildPatternPath = () => {
@@ -91,21 +90,22 @@ export function DartlessBodicePatternPreview({
     const neckControlY = offsetY + (isFront ? neckDepth * 0.3 : 0);
     points.push(`Q ${neckControlX} ${neckControlY} ${offsetX + neckHalfWidth} ${offsetY}`);
     
-    // Shoulder line (with slope)
-    points.push(`L ${offsetX + shoulderHalfWidth} ${offsetY + shoulderSlopeScaled}`);
+    // Shoulder line (with slope) - using shoulder length
+    const shoulderEndX = offsetX + neckHalfWidth + shoulderLengthScaled;
+    points.push(`L ${shoulderEndX} ${offsetY + shoulderSlopeScaled}`);
     
     // Armhole curve - smooth curve to side seam
-    const armholeControlX1 = offsetX + bustQuarterScaled + s(2);
-    const armholeControlY1 = offsetY + shoulderSlopeScaled + armholeDepthScaled * 0.2;
+    const armholeControlX1 = shoulderEndX + s(2);
+    const armholeControlY1 = offsetY + shoulderSlopeScaled + armholeDepthScaled * 0.3;
     const armholeControlX2 = offsetX + bustQuarterScaled + s(1);
     const armholeControlY2 = offsetY + armholeDepthScaled * 0.7;
     points.push(`C ${armholeControlX1} ${armholeControlY1} ${armholeControlX2} ${armholeControlY2} ${offsetX + bustQuarterScaled} ${offsetY + armholeDepthScaled}`);
     
     // Side seam - straight to waist (no side dart)
-    points.push(`L ${offsetX + waistQuarterScaled} ${offsetY + shoulderToWaistScaled}`);
+    points.push(`L ${offsetX + bustQuarterScaled} ${offsetY + backLengthScaled}`);
     
     // Waist line back to center
-    points.push(`L ${offsetX} ${offsetY + shoulderToWaistScaled}`);
+    points.push(`L ${offsetX} ${offsetY + backLengthScaled}`);
     
     // Center front/back line back up
     points.push(`Z`);
@@ -117,15 +117,17 @@ export function DartlessBodicePatternPreview({
   const buildSeamAllowancePath = () => {
     if (seamAllowance === 0) return '';
     
+    const shoulderEndX = offsetX + neckHalfWidth + shoulderLengthScaled;
+    
     const points: string[] = [];
     
     // Outer boundary with seam allowance
     points.push(`M ${offsetX - sa} ${offsetY + neckDepth}`);
     points.push(`Q ${offsetX + neckHalfWidth * 0.5} ${offsetY - sa} ${offsetX + neckHalfWidth + sa * 0.5} ${offsetY - sa}`);
-    points.push(`L ${offsetX + shoulderHalfWidth + sa} ${offsetY + shoulderSlopeScaled - sa}`);
+    points.push(`L ${shoulderEndX + sa} ${offsetY + shoulderSlopeScaled - sa}`);
     points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + armholeDepthScaled}`);
-    points.push(`L ${offsetX + waistQuarterScaled + sa} ${offsetY + shoulderToWaistScaled + sa}`);
-    points.push(`L ${offsetX - sa} ${offsetY + shoulderToWaistScaled + sa}`);
+    points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + backLengthScaled + sa}`);
+    points.push(`L ${offsetX - sa} ${offsetY + backLengthScaled + sa}`);
     points.push(`Z`);
     
     return points.join(' ');
@@ -199,9 +201,9 @@ export function DartlessBodicePatternPreview({
       {/* Grain line */}
       <line
         x1={offsetX + bustQuarterScaled * 0.3}
-        y1={offsetY + shoulderToWaistScaled * 0.25}
+        y1={offsetY + backLengthScaled * 0.25}
         x2={offsetX + bustQuarterScaled * 0.3}
-        y2={offsetY + shoulderToWaistScaled * 0.75}
+        y2={offsetY + backLengthScaled * 0.75}
         stroke="hsl(var(--pattern-stroke))"
         strokeWidth="1.5"
         markerEnd="url(#dartlessBodiceArrow)"
@@ -212,7 +214,7 @@ export function DartlessBodicePatternPreview({
         x1={offsetX}
         y1={offsetY + neckDepth}
         x2={offsetX}
-        y2={offsetY + shoulderToWaistScaled}
+        y2={offsetY + backLengthScaled}
         stroke="hsl(var(--primary))"
         strokeWidth="1"
         strokeDasharray="8,4"
@@ -221,7 +223,7 @@ export function DartlessBodicePatternPreview({
       {/* Labels */}
       <text
         x={offsetX + bustQuarterScaled / 2}
-        y={offsetY + shoulderToWaistScaled / 2}
+        y={offsetY + backLengthScaled / 2}
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
       >
@@ -229,7 +231,7 @@ export function DartlessBodicePatternPreview({
       </text>
       <text
         x={offsetX + bustQuarterScaled / 2}
-        y={offsetY + shoulderToWaistScaled / 2 + 16}
+        y={offsetY + backLengthScaled / 2 + 16}
         textAnchor="middle"
         className="fill-muted-foreground text-xs"
       >
@@ -237,7 +239,7 @@ export function DartlessBodicePatternPreview({
       </text>
       <text
         x={offsetX + bustQuarterScaled / 2}
-        y={offsetY + shoulderToWaistScaled / 2 + 30}
+        y={offsetY + backLengthScaled / 2 + 30}
         textAnchor="middle"
         className="fill-primary/70 text-[10px] italic"
       >
@@ -262,32 +264,32 @@ export function DartlessBodicePatternPreview({
         Bust: {(bust / 4 + ease).toFixed(1)}cm
       </text>
 
-      {/* Waist */}
+      {/* Back width */}
       <text
-        x={offsetX + waistQuarterScaled + 10}
-        y={offsetY + shoulderToWaistScaled - 5}
+        x={offsetX + bustQuarterScaled + 10}
+        y={offsetY + backLengthScaled - 5}
         className="fill-muted-foreground text-[10px]"
       >
-        Waist: {(waist / 4 + ease).toFixed(1)}cm
+        Back width: {(backWidth / 2).toFixed(1)}cm
       </text>
 
       {/* Length */}
       <text
         x={offsetX - 8}
-        y={offsetY + shoulderToWaistScaled / 2}
+        y={offsetY + backLengthScaled / 2}
         textAnchor="end"
         className="fill-muted-foreground text-[10px]"
-        transform={`rotate(-90 ${offsetX - 8} ${offsetY + shoulderToWaistScaled / 2})`}
+        transform={`rotate(-90 ${offsetX - 8} ${offsetY + backLengthScaled / 2})`}
       >
-        {shoulderToWaist}cm
+        {backLength}cm
       </text>
 
       {/* Fold line indicator */}
       <text
         x={offsetX + 3}
-        y={offsetY + shoulderToWaistScaled / 2}
+        y={offsetY + backLengthScaled / 2}
         className="fill-primary text-[9px]"
-        transform={`rotate(-90 ${offsetX + 3} ${offsetY + shoulderToWaistScaled / 2})`}
+        transform={`rotate(-90 ${offsetX + 3} ${offsetY + backLengthScaled / 2})`}
       >
         FOLD
       </text>
