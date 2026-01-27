@@ -35,51 +35,33 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
             <div className="space-y-4">
               <MeasurementInstruction
                 number={1}
-                name="Bust"
+                name="Bust (Tour de poitrine)"
                 color="hsl(var(--primary))"
-                description="Measure around the fullest part of the bust, keeping the tape level."
+                description="Measure around the fullest part of the bust, keeping the tape horizontal and snug but not tight."
               />
               <MeasurementInstruction
                 number={2}
-                name="Waist"
+                name="Neckline Circumference (Tour de cou)"
                 color="hsl(var(--chart-2))"
-                description="Measure at your natural waistline, the narrowest part of your torso."
+                description="Measure around the base of the neck where a collar would sit, keeping the tape close but comfortable."
               />
               <MeasurementInstruction
                 number={3}
-                name="Shoulder to Waist"
+                name="Shoulder Length (Longueur d'épaule)"
                 color="hsl(var(--chart-3))"
-                description="From the shoulder point (where sleeve would attach) down to the waist."
+                description="Measure from the base of the neck (where it meets the shoulder) to the shoulder point (where the arm begins)."
               />
               <MeasurementInstruction
                 number={4}
-                name="Bust Height"
+                name="Back Width (Carrure dos)"
                 color="hsl(var(--chart-4))"
-                description="From the shoulder point down to the apex of the bust."
+                description="Measure across the back from armhole to armhole, approximately 10-15cm below the nape of the neck. Keep arms relaxed at sides."
               />
               <MeasurementInstruction
                 number={5}
-                name="Shoulder Width"
+                name="Back Length (Longueur taille-dos)"
                 color="hsl(var(--chart-5))"
-                description="Across the back from one shoulder point to the other."
-              />
-              <MeasurementInstruction
-                number={6}
-                name="Armhole Depth"
-                color="hsl(15 55% 42%)"
-                description="From the shoulder point straight down to the underarm level."
-              />
-              <MeasurementInstruction
-                number={7}
-                name="Back Width"
-                color="hsl(200 55% 45%)"
-                description="Across the back between the armholes, about 10cm below the nape."
-              />
-              <MeasurementInstruction
-                number={8}
-                name="Neck Width"
-                color="hsl(280 55% 55%)"
-                description="Measure across the base of the neck from side to side."
+                description="Measure from the prominent bone at the back of the neck (7th cervical vertebra) straight down to the natural waistline."
               />
             </div>
           </div>
@@ -92,6 +74,7 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
               <li>• Keep the tape snug but not tight</li>
               <li>• Have someone help for back measurements</li>
               <li>• Take measurements over fitted clothing or undergarments</li>
+              <li>• For back width (carrure dos), locate it by feeling where the arms connect to the body</li>
             </ul>
           </div>
         </ScrollArea>
@@ -129,16 +112,16 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
   const isMen = category === 'men';
 
   // Adjust proportions based on category
-  const bodyHeight = isKids ? 180 : 220;
   const shoulderWidth = isMen ? 90 : isKids ? 60 : 75;
   const bustWidth = isMen ? 85 : isKids ? 55 : 80;
   const waistWidth = isMen ? 75 : isKids ? 50 : 60;
   
   // Vertical positions
+  const neckBaseY = 55;
   const shoulderY = 50;
   const bustY = isKids ? 100 : isMen ? 110 : 105;
   const waistY = isKids ? 140 : isMen ? 165 : 155;
-  const armholeY = isKids ? 85 : isMen ? 95 : 90;
+  const backWidthY = isKids ? 75 : isMen ? 80 : 78; // Position for carrure dos
 
   const centerX = 100;
 
@@ -166,17 +149,25 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         fill="none"
       />
 
+      {/* Nape point (7th cervical vertebra) */}
+      <circle
+        cx={centerX}
+        cy={neckBaseY - 5}
+        r="3"
+        fill="hsl(var(--chart-5))"
+      />
+
       {/* Body outline */}
       <path
         d={`
           M ${centerX - shoulderWidth / 2} ${shoulderY}
-          Q ${centerX - shoulderWidth / 2 - 5} ${armholeY} ${centerX - bustWidth / 2} ${bustY}
+          Q ${centerX - shoulderWidth / 2 - 5} ${(shoulderY + bustY) / 2} ${centerX - bustWidth / 2} ${bustY}
           Q ${centerX - waistWidth / 2 - 5} ${(bustY + waistY) / 2} ${centerX - waistWidth / 2} ${waistY}
-          L ${centerX - waistWidth / 2} ${bodyHeight}
-          L ${centerX + waistWidth / 2} ${bodyHeight}
+          L ${centerX - waistWidth / 2} 200
+          L ${centerX + waistWidth / 2} 200
           L ${centerX + waistWidth / 2} ${waistY}
           Q ${centerX + waistWidth / 2 + 5} ${(bustY + waistY) / 2} ${centerX + bustWidth / 2} ${bustY}
-          Q ${centerX + shoulderWidth / 2 + 5} ${armholeY} ${centerX + shoulderWidth / 2} ${shoulderY}
+          Q ${centerX + shoulderWidth / 2 + 5} ${(shoulderY + bustY) / 2} ${centerX + shoulderWidth / 2} ${shoulderY}
           L ${centerX + 8} 55
           Q ${centerX} 50 ${centerX - 8} 55
           L ${centerX - shoulderWidth / 2} ${shoulderY}
@@ -207,97 +198,116 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         x2={centerX + bustWidth / 2 + 15}
         y2={bustY}
         stroke="hsl(var(--primary))"
-        strokeWidth="2"
+        strokeWidth="2.5"
         strokeDasharray="4,2"
       />
-      <circle cx={centerX - bustWidth / 2 - 20} cy={bustY} r="8" fill="hsl(var(--primary))" />
+      <circle cx={centerX - bustWidth / 2 - 20} cy={bustY} r="10" fill="hsl(var(--primary))" />
       <text x={centerX - bustWidth / 2 - 20} y={bustY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">1</text>
 
-      {/* 2: Waist line */}
-      <line
-        x1={centerX - waistWidth / 2 - 15}
-        y1={waistY}
-        x2={centerX + waistWidth / 2 + 15}
-        y2={waistY}
+      {/* 2: Neckline circumference */}
+      <ellipse
+        cx={centerX}
+        cy={neckBaseY}
+        rx={12}
+        ry={6}
+        fill="none"
         stroke="hsl(var(--chart-2))"
-        strokeWidth="2"
-        strokeDasharray="4,2"
+        strokeWidth="2.5"
+        strokeDasharray="3,2"
       />
-      <circle cx={centerX - waistWidth / 2 - 20} cy={waistY} r="8" fill="hsl(var(--chart-2))" />
-      <text x={centerX - waistWidth / 2 - 20} y={waistY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">2</text>
+      <circle cx={centerX + 20} cy={neckBaseY} r="10" fill="hsl(var(--chart-2))" />
+      <text x={centerX + 20} y={neckBaseY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">2</text>
 
-      {/* 3: Shoulder to waist (right side) */}
+      {/* 3: Shoulder length (left shoulder highlighted) */}
       <line
-        x1={centerX + shoulderWidth / 2}
-        y1={shoulderY}
-        x2={centerX + waistWidth / 2}
-        y2={waistY}
+        x1={centerX - 8}
+        y1={neckBaseY}
+        x2={centerX - shoulderWidth / 2}
+        y2={shoulderY}
         stroke="hsl(var(--chart-3))"
-        strokeWidth="2"
+        strokeWidth="3"
       />
-      <circle cx={centerX + shoulderWidth / 2 + 5} cy={(shoulderY + waistY) / 2} r="8" fill="hsl(var(--chart-3))" />
-      <text x={centerX + shoulderWidth / 2 + 5} y={(shoulderY + waistY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">3</text>
+      <circle cx={centerX - shoulderWidth / 2} cy={shoulderY} r="4" fill="hsl(var(--chart-3))" />
+      <circle cx={centerX - 8} cy={neckBaseY} r="4" fill="hsl(var(--chart-3))" />
+      <circle cx={centerX - shoulderWidth / 4 - 4} cy={(neckBaseY + shoulderY) / 2} r="10" fill="hsl(var(--chart-3))" />
+      <text x={centerX - shoulderWidth / 4 - 4} y={(neckBaseY + shoulderY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">3</text>
 
-      {/* 4: Bust height (left side) */}
+      {/* 4: Back width (Carrure dos) */}
       <line
-        x1={centerX - shoulderWidth / 2 + 10}
-        y1={shoulderY}
-        x2={centerX - bustWidth / 2 + 15}
-        y2={bustY}
+        x1={centerX - bustWidth / 2 + 8}
+        y1={backWidthY}
+        x2={centerX + bustWidth / 2 - 8}
+        y2={backWidthY}
+        stroke="hsl(var(--chart-4))"
+        strokeWidth="3"
+      />
+      {/* Small vertical indicators at endpoints */}
+      <line
+        x1={centerX - bustWidth / 2 + 8}
+        y1={backWidthY - 5}
+        x2={centerX - bustWidth / 2 + 8}
+        y2={backWidthY + 5}
         stroke="hsl(var(--chart-4))"
         strokeWidth="2"
       />
-      <circle cx={centerX - shoulderWidth / 2} cy={(shoulderY + bustY) / 2} r="8" fill="hsl(var(--chart-4))" />
-      <text x={centerX - shoulderWidth / 2} y={(shoulderY + bustY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">4</text>
-
-      {/* 5: Shoulder width */}
       <line
-        x1={centerX - shoulderWidth / 2}
-        y1={shoulderY - 8}
-        x2={centerX + shoulderWidth / 2}
-        y2={shoulderY - 8}
+        x1={centerX + bustWidth / 2 - 8}
+        y1={backWidthY - 5}
+        x2={centerX + bustWidth / 2 - 8}
+        y2={backWidthY + 5}
+        stroke="hsl(var(--chart-4))"
+        strokeWidth="2"
+      />
+      <circle cx={centerX} cy={backWidthY - 12} r="10" fill="hsl(var(--chart-4))" />
+      <text x={centerX} y={backWidthY - 8} textAnchor="middle" className="fill-white text-[10px] font-bold">4</text>
+      {/* Label for clarity */}
+      <text x={centerX} y={backWidthY + 15} textAnchor="middle" className="fill-muted-foreground text-[8px]">Carrure dos</text>
+
+      {/* 5: Back length (from nape to waist) */}
+      <line
+        x1={centerX + 15}
+        y1={neckBaseY - 5}
+        x2={centerX + 15}
+        y2={waistY}
+        stroke="hsl(var(--chart-5))"
+        strokeWidth="3"
+      />
+      {/* Horizontal indicators */}
+      <line
+        x1={centerX + 10}
+        y1={neckBaseY - 5}
+        x2={centerX + 20}
+        y2={neckBaseY - 5}
         stroke="hsl(var(--chart-5))"
         strokeWidth="2"
       />
-      <circle cx={centerX} cy={shoulderY - 12} r="8" fill="hsl(var(--chart-5))" />
-      <text x={centerX} y={shoulderY - 8} textAnchor="middle" className="fill-white text-[10px] font-bold">5</text>
-
-      {/* 6: Armhole depth (left) */}
       <line
-        x1={centerX - shoulderWidth / 2 - 8}
-        y1={shoulderY}
-        x2={centerX - shoulderWidth / 2 - 8}
-        y2={armholeY}
-        stroke="hsl(15 55% 42%)"
+        x1={centerX + 10}
+        y1={waistY}
+        x2={centerX + 20}
+        y2={waistY}
+        stroke="hsl(var(--chart-5))"
         strokeWidth="2"
       />
-      <circle cx={centerX - shoulderWidth / 2 - 12} cy={(shoulderY + armholeY) / 2} r="8" fill="hsl(15 55% 42%)" />
-      <text x={centerX - shoulderWidth / 2 - 12} y={(shoulderY + armholeY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">6</text>
+      <circle cx={centerX + 30} cy={(neckBaseY + waistY) / 2} r="10" fill="hsl(var(--chart-5))" />
+      <text x={centerX + 30} y={(neckBaseY + waistY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">5</text>
 
-      {/* 7: Back width marker */}
+      {/* Waist line indicator (reference) */}
       <line
-        x1={centerX - bustWidth / 2 + 5}
-        y1={armholeY + 10}
-        x2={centerX + bustWidth / 2 - 5}
-        y2={armholeY + 10}
-        stroke="hsl(200 55% 45%)"
-        strokeWidth="2"
-        strokeDasharray="3,2"
+        x1={centerX - waistWidth / 2 - 10}
+        y1={waistY}
+        x2={centerX + waistWidth / 2 + 10}
+        y2={waistY}
+        stroke="hsl(var(--muted-foreground))"
+        strokeWidth="1"
+        strokeDasharray="3,3"
       />
-      <circle cx={centerX + bustWidth / 2 + 5} cy={armholeY + 10} r="8" fill="hsl(200 55% 45%)" />
-      <text x={centerX + bustWidth / 2 + 5} y={armholeY + 14} textAnchor="middle" className="fill-white text-[10px] font-bold">7</text>
+      <text x={centerX + waistWidth / 2 + 15} y={waistY + 4} className="fill-muted-foreground text-[8px]">Waist</text>
 
-      {/* 8: Neck width */}
-      <line
-        x1={centerX - 12}
-        y1={55}
-        x2={centerX + 12}
-        y2={55}
-        stroke="hsl(280 55% 55%)"
-        strokeWidth="2"
-      />
-      <circle cx={centerX + 18} cy={55} r="8" fill="hsl(280 55% 55%)" />
-      <text x={centerX + 18} y={59} textAnchor="middle" className="fill-white text-[10px] font-bold">8</text>
+      {/* Labels */}
+      <text x={centerX} y={245} textAnchor="middle" className="fill-muted-foreground text-[9px]">
+        {category === 'women' ? 'Women' : category === 'men' ? 'Men' : 'Kids'}
+      </text>
     </svg>
   );
 }

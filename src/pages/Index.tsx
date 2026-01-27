@@ -8,7 +8,7 @@ import { CategorySelector } from '@/components/CategorySelector';
 import { PatternTypeNav } from '@/components/PatternTypeNav';
 import { SkirtMeasurementForm, defaultMeasurements as defaultSkirtMeasurements } from '@/components/SkirtMeasurementForm';
 import { BodiceMeasurementForm, defaultBodiceMeasurements } from '@/components/BodiceMeasurementForm';
-import { DartlessBodiceMeasurementForm, DartlessBodiceMeasurements, defaultDartlessBodiceMeasurements } from '@/components/DartlessBodiceMeasurementForm';
+import { DartlessBodiceMeasurementForm, defaultDartlessBodiceMeasurements } from '@/components/DartlessBodiceMeasurementForm';
 import { SkirtPatternPreview } from '@/components/SkirtPatternPreview';
 import { BodicePatternPreview } from '@/components/BodicePatternPreview';
 import { DartlessBodicePatternPreview } from '@/components/DartlessBodicePatternPreview';
@@ -37,7 +37,7 @@ const Index = () => {
   const [bodiceMeasurements, setBodiceMeasurements] = useState<BodiceMeasurements>(
     defaultBodiceMeasurements.women
   );
-  const [dartlessBodiceMeasurements, setDartlessBodiceMeasurements] = useState<DartlessBodiceMeasurements>(
+  const [dartlessBodiceMeasurements, setDartlessBodiceMeasurements] = useState<BodiceMeasurements>(
     defaultDartlessBodiceMeasurements.women
   );
   const [seamAllowance, setSeamAllowance] = useState<SeamAllowance>(1);
@@ -67,7 +67,7 @@ const Index = () => {
   const isBodiceDartless = patternType === 'bodice-dartless';
 
   // Get current measurements based on pattern type
-  const getCurrentMeasurements = (): Measurements | DartlessBodiceMeasurements => {
+  const getCurrentMeasurements = (): Measurements => {
     if (isBodiceDartless) {
       return dartlessBodiceMeasurements;
     }
@@ -123,20 +123,8 @@ const Index = () => {
 
   const handleExportPDF = () => {
     const measurements = getCurrentMeasurements();
-    // For dartless bodice, we need to convert to regular bodice measurements format for PDF
-    if (isBodiceDartless) {
-      const dartlessMeasurements = measurements as DartlessBodiceMeasurements;
-      const bodiceFormat: BodiceMeasurements = {
-        bust: dartlessMeasurements.bust,
-        neckCircumference: dartlessMeasurements.neckWidth * 2.5, // Approximate from neck width
-        shoulderLength: dartlessMeasurements.shoulderWidth / 3, // Approximate
-        backWidth: dartlessMeasurements.backWidth,
-        backLength: dartlessMeasurements.shoulderToWaist,
-      };
-      generatePatternPDF(bodiceFormat, 'bodice-dartless', seamAllowance);
-    } else {
-      generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, seamAllowance);
-    }
+    // Both dartless and regular bodice now use the same BodiceMeasurements type
+    generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, seamAllowance);
     toast.success('PDF downloaded!');
   };
 
