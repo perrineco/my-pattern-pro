@@ -78,18 +78,18 @@ export function DartlessBodicePatternPreview({
     const points: string[] = [];
 
     // Start at neck center (with front/back neck depth difference)
-    points.push(`M ${offsetX} ${offsetY + neckHalfHeight}`);
+    points.push(`M ${offsetX} ${offsetY + neckDepth}`);
 
     // Neck curve to shoulder
     // Point de contrôle 1 : AB86 * 0.65 (X), 0 (Y relatif)
-    const cp1x = startX + neckHalfWidth * 0.65;
-    const cp1y = startY;
+    const cp1x = offsetX + neckHalfWidth * 0.65;
+    const cp1y = offsetY;
 
-    const cp2x = startX + neckHalfWidth * 0.85;
-    const cp2y = startY - neckHalfHeight * 0.5;
+    const cp2x = offsetX + neckHalfWidth * 0.85;
+    const cp2y = offsetY - neckHalfHeight * 0.5;
 
-    const endX = startX + neckHalfWidth;
-    const endY = startY - neckHalfHeight;
+    const endX = offsetX + neckHalfWidth;
+    const endY = offsetY - neckHalfHeight;
 
     // Construction de la courbe de Bézier cubique (C)
     points.push(`C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`);
