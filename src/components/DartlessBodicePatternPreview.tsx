@@ -94,8 +94,17 @@ export function DartlessBodicePatternPreview({
     points.push(`C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`);
 
     // Shoulder line (with slope) - using shoulder length
-    const shoulderEndX = offsetX + neckHalfWidth + shoulderLengthScaled;
-    points.push(`L ${shoulderEndX} ${offsetY + shoulderSlopeScaled}`);
+    const angleRad = (25 * Math.PI) / 180;
+    const shoulderSlopeY = Math.sin(angleRad) * shoulderLengthScaled;
+
+    const shoulderWidthX = Math.cos(angleRad) * shoulderLengthScaled;
+
+    const neckEndX = offsetX + neckHalfWidth;
+    const neckEndY = offsetY + neckDepth - neckHalfHeight;
+
+    const shoulderEndX = neckEndX + shoulderWidthX;
+    const shoulderEndY = neckEndY + shoulderSlopeY;
+    points.push(`L ${shoulderEndX} ${shoulderEndY}`);
 
     // Armhole curve - smooth curve to side seam
     const armholeControlX1 = shoulderEndX + s(2);
