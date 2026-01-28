@@ -21,7 +21,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Download, Printer, Lock, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { getPatternsLimit, STRIPE_CONFIG } from '@/lib/stripe-config';
-import { generatePatternPDF, SeamAllowance } from '@/lib/pdf-export';
+import { generatePatternPDF } from '@/lib/pdf-export';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -40,7 +40,6 @@ const Index = () => {
   const [dartlessBodiceMeasurements, setDartlessBodiceMeasurements] = useState<BodiceMeasurements>(
     defaultDartlessBodiceMeasurements.women
   );
-  const [seamAllowance, setSeamAllowance] = useState<SeamAllowance>(1);
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
   
   // Profile mode state
@@ -124,7 +123,7 @@ const Index = () => {
   const handleExportPDF = () => {
     const measurements = getCurrentMeasurements();
     // Both dartless and regular bodice now use the same BodiceMeasurements type
-    generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, seamAllowance);
+    generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType);
     toast.success('PDF downloaded!');
   };
 
@@ -242,27 +241,6 @@ const Index = () => {
                     category={category}
                   />
                 )}
-
-                {/* Seam Allowance Selector */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">
-                    Seam Allowance
-                  </label>
-                  <div className="flex gap-2">
-                    {([0, 0.5, 1, 1.5] as SeamAllowance[]).map((value) => (
-                      <Button
-                        key={value}
-                        variant={seamAllowance === value ? 'default' : 'outline'}
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => setSeamAllowance(value)}
-                      >
-                        {value === 0 ? 'None' : `${value}cm`}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Action buttons */}
                 <div className="flex flex-col gap-3">
                   <div className="flex gap-3">
@@ -379,21 +357,19 @@ const Index = () => {
                 </div>
                 <div className="p-4">
                   {patternType === 'skirt' ? (
-                    <SkirtPatternPreview measurements={skirtMeasurements} seamAllowance={seamAllowance} />
+                    <SkirtPatternPreview measurements={skirtMeasurements} />
                   ) : isBodiceDartless ? (
                     <DartlessBodicePatternPreview 
                       measurements={dartlessBodiceMeasurements} 
-                      seamAllowance={seamAllowance}
                       panel={bodicePanel}
                     />
                   ) : patternType === 'bodice' ? (
                     <BodicePatternPreview 
                       measurements={bodiceMeasurements} 
-                      seamAllowance={seamAllowance}
                       panel={bodicePanel}
                     />
                   ) : (
-                    <SkirtPatternPreview measurements={skirtMeasurements} seamAllowance={seamAllowance} />
+                    <SkirtPatternPreview measurements={skirtMeasurements} />
                   )}
                 </div>
               </div>

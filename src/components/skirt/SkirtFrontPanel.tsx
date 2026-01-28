@@ -16,7 +16,6 @@ interface SkirtFrontPanelProps {
   waistToHipScaled: number;
   offsetX: number;
   offsetY: number;
-  seamAllowance: number;
 }
 
 export function SkirtFrontPanel({
@@ -24,7 +23,6 @@ export function SkirtFrontPanel({
   ease,
   dartWidth,
   skirtLength,
-  waistToHip,
   scale,
   patternWidth,
   patternHeight,
@@ -34,7 +32,6 @@ export function SkirtFrontPanel({
   waistToHipScaled,
   offsetX,
   offsetY,
-  seamAllowance,
 }: SkirtFrontPanelProps) {
   const centerToDartScaled = patternWidth * 0.4;
 
@@ -57,28 +54,6 @@ export function SkirtFrontPanel({
 
   return (
     <g className="front-panel">
-      {/* Seam allowance outline */}
-      {seamAllowance > 0 && (
-        <path
-          d={`
-            M ${offsetX - seamAllowance * scale} ${offsetY - seamAllowance * scale}
-            L ${offsetX + waistWidthScaled / 2 - dartWidthScaled / 2} ${offsetY - seamAllowance * scale}
-            L ${offsetX + waistWidthScaled / 2} ${offsetY + dartLengthScaled}
-            L ${offsetX + waistWidthScaled / 2 + dartWidthScaled / 2} ${offsetY - seamAllowance * scale}
-            L ${offsetX + waistWidthScaled + seamAllowance * scale} ${offsetY - seamAllowance * scale}
-            L ${offsetX + patternWidth + seamAllowance * scale} ${offsetY + waistToHipScaled}
-            L ${offsetX + patternWidth + seamAllowance * scale} ${offsetY + patternHeight + seamAllowance * scale}
-            L ${offsetX - seamAllowance * scale} ${offsetY + patternHeight + seamAllowance * scale}
-            Z
-          `}
-          fill="none"
-          stroke="hsl(var(--pattern-stroke))"
-          strokeWidth="1"
-          strokeDasharray="4,2"
-          opacity={0.5}
-        />
-      )}
-
       {/* Pattern piece */}
       <path
         d={panelPath}

@@ -1,16 +1,13 @@
 import { useRef, useState, useEffect } from "react";
 import { BodiceMeasurements } from "@/types/sloper";
-import { SeamAllowance } from "@/lib/pdf-export";
 
 interface DartlessBodicePatternPreviewProps {
   measurements: BodiceMeasurements;
-  seamAllowance?: SeamAllowance;
   panel?: "front" | "back";
 }
 
 export function DartlessBodicePatternPreview({
   measurements,
-  seamAllowance = 1,
   panel = "front",
 }: DartlessBodicePatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -60,7 +57,6 @@ export function DartlessBodicePatternPreview({
 
   // Scaled measurements
   const s = (v: number) => v * scale;
-  const sa = seamAllowance * scale;
 
   // Key pattern points (relative to top-left of pattern)
   const neckHalfWidth = (neckCircumference / 6 + 1.6) * scale;
@@ -149,28 +145,6 @@ export function DartlessBodicePatternPreview({
     return points.join(" ");
   };
 
-  // Build seam allowance path
-  const buildSeamAllowancePath = () => {
-    if (seamAllowance === 0) return "";
-
-    const shoulderEndX = offsetX + neckHalfWidth + shoulderLengthScaled;
-
-    const points: string[] = [];
-
-    // Outer boundary with seam allowance
-    points.push(`M ${offsetX - sa} ${offsetY + neckDepth}`);
-    points.push(
-      `Q ${offsetX + neckHalfWidth * 0.5} ${offsetY - sa} ${offsetX + neckHalfWidth + sa * 0.5} ${offsetY - sa}`,
-    );
-    points.push(`L ${shoulderEndX + sa} ${offsetY + shoulderSlopeY - sa}`);
-    points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + armholeDepthScaled}`);
-    points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + backLengthScaled + sa}`);
-    points.push(`L ${offsetX - sa} ${offsetY + backLengthScaled + sa}`);
-    points.push(`Z`);
-
-    return points.join(" ");
-  };
-
   return (
     <svg ref={svgRef} viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full min-h-[400px]">
       {/* Grid background */}
@@ -184,17 +158,6 @@ export function DartlessBodicePatternPreview({
       </defs>
 
       <rect width="100%" height="100%" fill="url(#dartlessBodiceGrid)" />
-
-      {/* Seam allowance outline */}
-      {seamAllowance > 0 && (
-        <path
-          d={buildSeamAllowancePath()}
-          fill="none"
-          stroke="hsl(var(--muted-foreground))"
-          strokeWidth="1"
-          strokeDasharray="4,2"
-        />
-      )}
 
       {/* Main pattern piece */}
       <path
@@ -315,28 +278,15 @@ export function DartlessBodicePatternPreview({
       </text>
 
       {/* Legend */}
-      <g transform={`translate(${dimensions.width - 120}, ${dimensions.height - 70})`}>
-        <rect x="0" y="0" width="110" height="60" fill="hsl(var(--card))" stroke="hsl(var(--border))" rx="4" />
+      <g transform={`translate(${dimensions.width - 120}, ${dimensions.height - 55})`}>
+        <rect x="0" y="0" width="110" height="45" fill="hsl(var(--card))" stroke="hsl(var(--border))" rx="4" />
         <line x1="8" y1="15" x2="28" y2="15" stroke="hsl(var(--pattern-stroke))" strokeWidth="2" />
         <text x="34" y="18" className="fill-foreground text-[9px]">
           Pattern edge
         </text>
 
-        <line
-          x1="8"
-          y1="30"
-          x2="28"
-          y2="30"
-          stroke="hsl(var(--muted-foreground))"
-          strokeWidth="1"
-          strokeDasharray="4,2"
-        />
+        <line x1="8" y1="30" x2="28" y2="30" stroke="hsl(var(--primary))" strokeWidth="1" strokeDasharray="8,4" />
         <text x="34" y="33" className="fill-foreground text-[9px]">
-          Seam allowance
-        </text>
-
-        <line x1="8" y1="45" x2="28" y2="45" stroke="hsl(var(--primary))" strokeWidth="1" strokeDasharray="8,4" />
-        <text x="34" y="48" className="fill-foreground text-[9px]">
           Fold line
         </text>
       </g>

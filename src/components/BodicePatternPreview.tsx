@@ -1,16 +1,13 @@
 import { useRef, useState, useEffect } from 'react';
 import { BodiceMeasurements } from '@/types/sloper';
-import { SeamAllowance } from '@/lib/pdf-export';
 
 interface BodicePatternPreviewProps {
   measurements: BodiceMeasurements;
-  seamAllowance?: SeamAllowance;
   panel?: 'front' | 'back';
 }
 
 export function BodicePatternPreview({
   measurements,
-  seamAllowance = 1,
   panel = 'front',
 }: BodicePatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -60,7 +57,6 @@ export function BodicePatternPreview({
 
   // Scaled measurements
   const s = (v: number) => v * scale;
-  const sa = seamAllowance * scale;
 
   // Key pattern points (relative to top-left of pattern)
   const neckHalfWidth = neckWidthCalc * scale;
@@ -105,26 +101,6 @@ export function BodicePatternPreview({
     return points.join(' ');
   };
 
-  // Build seam allowance path
-  const buildSeamAllowancePath = () => {
-    if (seamAllowance === 0) return '';
-    
-    const shoulderEndX = offsetX + neckHalfWidth + shoulderLengthScaled;
-    
-    const points: string[] = [];
-    
-    // Outer boundary with seam allowance
-    points.push(`M ${offsetX - sa} ${offsetY + (isFront ? s(1.5) : 0) - sa}`);
-    points.push(`L ${offsetX + neckHalfWidth} ${offsetY - sa}`);
-    points.push(`L ${shoulderEndX + sa} ${offsetY + shoulderSlopeScaled - sa}`);
-    points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + armholeDepthScaled}`);
-    points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + backLengthScaled + sa}`);
-    points.push(`L ${offsetX - sa} ${offsetY + backLengthScaled + sa}`);
-    points.push(`Z`);
-    
-    return points.join(' ');
-  };
-
   return (
     <svg
       ref={svgRef}
@@ -159,17 +135,6 @@ export function BodicePatternPreview({
       </defs>
 
       <rect width="100%" height="100%" fill="url(#bodiceGrid)" />
-
-      {/* Seam allowance outline */}
-      {seamAllowance > 0 && (
-        <path
-          d={buildSeamAllowancePath()}
-          fill="none"
-          stroke="hsl(var(--muted-foreground))"
-          strokeWidth="1"
-          strokeDasharray="4,2"
-        />
-      )}
 
       {/* Main pattern piece */}
       <path
@@ -238,12 +203,12 @@ export function BodicePatternPreview({
       </text>
 
       {/* Legend */}
-      <g transform={`translate(${dimensions.width - 120}, ${dimensions.height - 65})`}>
+      <g transform={`translate(${dimensions.width - 120}, ${dimensions.height - 50})`}>
         <rect
           x="0"
           y="0"
           width="110"
-          height="55"
+          height="40"
           fill="hsl(var(--card))"
           stroke="hsl(var(--border))"
           rx="4"
@@ -251,11 +216,8 @@ export function BodicePatternPreview({
         <line x1="8" y1="15" x2="28" y2="15" stroke="hsl(var(--pattern-stroke))" strokeWidth="2" />
         <text x="34" y="18" className="fill-foreground text-[9px]">Pattern edge</text>
         
-        <line x1="8" y1="30" x2="28" y2="30" stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="4,2" />
-        <text x="34" y="33" className="fill-foreground text-[9px]">Seam allowance</text>
-        
-        <line x1="8" y1="45" x2="28" y2="45" stroke="hsl(var(--pattern-stroke))" strokeWidth="1.5" markerEnd="url(#bodiceArrow)" />
-        <text x="34" y="48" className="fill-foreground text-[9px]">Grain line</text>
+        <line x1="8" y1="30" x2="28" y2="30" stroke="hsl(var(--pattern-stroke))" strokeWidth="1.5" markerEnd="url(#bodiceArrow)" />
+        <text x="34" y="33" className="fill-foreground text-[9px]">Grain line</text>
       </g>
     </svg>
   );
