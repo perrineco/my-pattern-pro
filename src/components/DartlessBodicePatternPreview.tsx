@@ -96,7 +96,6 @@ export function DartlessBodicePatternPreview({
     // Shoulder line (with slope) - using shoulder length
     const angleRad = (25 * Math.PI) / 180;
     const shoulderSlopeY = Math.sin(angleRad) * shoulderLengthScaled;
-
     const shoulderWidthX = Math.cos(angleRad) * shoulderLengthScaled;
 
     const neckEndX = offsetX + neckHalfWidth;
@@ -107,13 +106,35 @@ export function DartlessBodicePatternPreview({
     points.push(`L ${shoulderEndX} ${shoulderEndY}`);
 
     // Armhole curve - smooth curve to side seam
-    const armholeControlX1 = shoulderEndX + s(2);
-    const armholeControlY1 = offsetY + shoulderSlopeScaled + armholeDepthScaled * 0.3;
-    const armholeControlX2 = offsetX + bustQuarterScaled + s(1);
-    const armholeControlY2 = offsetY + armholeDepthScaled * 0.7;
-    points.push(
-      `C ${armholeControlX1} ${armholeControlY1} ${armholeControlX2} ${armholeControlY2} ${offsetX + bustQuarterScaled} ${offsetY + armholeDepthScaled}`,
-    );
+    // --- Calcul du point intermédiaire de l'emmanchure ---
+    const armholeRetreatX = s(bust / 4 + ease * 2 - backWidth / 2);
+    const midPointX = offsetX + bustQuarterScaled - armholeRetreatX;
+
+    // Position Y = (Ligne de poitrine) - (backLength / 6)
+    const armholeRiseY = s(backLength / 6);
+    const midPointY = offsetY + armholeDepthScaled - armholeRiseY;
+
+    // --- Tracé des deux courbes ---
+
+    // 1ère courbe : de l'épaule au point intermédiaire
+    const cp1_1x = shoulderEndX;
+    const cp1_1y = shoulderEndY + (midPointY - shoulderEndY) * 0.5;
+    const cp1_2x = midPointX;
+    const cp1_2y = midPointY + s(1); // Légère cambrure
+
+    points.push(`C ${cp1_1x} ${cp1_1y}, ${cp1_2x} ${cp1_2y}, ${midPointX} ${midPointY}`);
+
+    // 2ème courbe : du point intermédiaire au dessous de l'aisselle
+    // On veut une arrivée horizontale à l'aisselle (tangente)
+    const endX = offsetX + bustQuarterScaled;
+    const endY = offsetY + armholeDepthScaled;
+
+    const cp2_1x = midPointX;
+    const cp2_1y = midPointY + (endY - midPointY) * 0.8;
+    const cp2_2x = endX - (endX - midPointX) * 0.5;
+    const cp2_2y = endY;
+
+    points.push(`C ${cp2_1x} ${cp2_1y}, ${cp2_2x} ${cp2_2y}, ${endX} ${endY}`);
 
     // Side seam - straight to waist (no side dart)
     points.push(`L ${offsetX + bustQuarterScaled} ${offsetY + backLengthScaled}`);
