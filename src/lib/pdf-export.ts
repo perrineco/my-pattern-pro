@@ -118,20 +118,28 @@ function drawSkirtPatternPiece(
   measurements: SkirtMeasurements,
   offsetX: number,
   offsetY: number,
-  seamAllowance: SeamAllowance = 1
+  seamAllowance: SeamAllowance = 1,
+  panel: 'front' | 'back' = 'front'
 ) {
   const { waist, hip, waistToHip, skirtLength } = measurements;
   const seamMm = seamAllowance * 10;
   const waistQuarter = (waist / 4) * 10;
   const hipQuarter = (hip / 4) * 10;
   const ease = 10;
-  const dartWidth = 25;
-  const dartLength = (waistToHip * 0.7) * 10;
+  
+  // Back panel has larger dart
+  const isFront = panel === 'front';
+  const dartWidthBase = ((hip - waist) * 25) / 240; // Match preview calculation
+  const dartWidth = (isFront ? dartWidthBase : dartWidthBase * 1.2) * 10;
+  const dartLength = (waistToHip * (isFront ? 0.5 : 0.55)) * 10; // Back dart slightly longer
   const waistToHipMm = waistToHip * 10;
   const lengthMm = skirtLength * 10;
   
   const waistWidth = waistQuarter + ease + dartWidth;
   const patternWidth = hipQuarter + ease;
+  
+  // Dart position: front at 40%, back at 35% from center
+  const centerToDart = patternWidth * (isFront ? 0.4 : 0.35);
   
   if (seamMm > 0) {
     doc.setDrawColor(150, 150, 150);
@@ -140,9 +148,9 @@ function drawSkirtPatternPiece(
     
     const seamPoints: [number, number][] = [
       [offsetX - seamMm, offsetY - seamMm],
-      [offsetX + waistWidth / 2 - dartWidth / 2, offsetY - seamMm],
-      [offsetX + waistWidth / 2, offsetY + dartLength],
-      [offsetX + waistWidth / 2 + dartWidth / 2, offsetY - seamMm],
+      [offsetX + centerToDart, offsetY - seamMm],
+      [offsetX + centerToDart + dartWidth / 2, offsetY + dartLength],
+      [offsetX + centerToDart + dartWidth, offsetY - seamMm],
       [offsetX + waistWidth + seamMm, offsetY - seamMm],
       [offsetX + patternWidth + seamMm, offsetY + waistToHipMm],
       [offsetX + patternWidth + seamMm, offsetY + lengthMm + seamMm],
@@ -162,9 +170,9 @@ function drawSkirtPatternPiece(
   
   const points: [number, number][] = [
     [offsetX, offsetY],
-    [offsetX + waistWidth / 2 - dartWidth / 2, offsetY],
-    [offsetX + waistWidth / 2, offsetY + dartLength],
-    [offsetX + waistWidth / 2 + dartWidth / 2, offsetY],
+    [offsetX + centerToDart, offsetY],
+    [offsetX + centerToDart + dartWidth / 2, offsetY + dartLength],
+    [offsetX + centerToDart + dartWidth, offsetY],
     [offsetX + waistWidth, offsetY],
     [offsetX + patternWidth, offsetY + waistToHipMm],
     [offsetX + patternWidth, offsetY + lengthMm],
@@ -192,7 +200,7 @@ function drawSkirtPatternPiece(
   
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
-  doc.text('FRONT', offsetX + patternWidth / 2, offsetY + lengthMm / 2 - 5, { align: 'center' });
+  doc.text(isFront ? 'FRONT' : 'BACK', offsetX + patternWidth / 2, offsetY + lengthMm / 2 - 5, { align: 'center' });
   
   doc.setFontSize(8);
   doc.text('Cut 1 on fold', offsetX + patternWidth / 2, offsetY + lengthMm / 2 + 5, { align: 'center' });
@@ -205,7 +213,8 @@ function drawSkirtPatternPiece(
   
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
-  doc.text(`¼ waist + dart = ${(waist / 4 + 2.5 + 1).toFixed(1)}cm`, offsetX + waistWidth / 2, offsetY - 5, { align: 'center' });
+  const dartWidthCm = isFront ? dartWidthBase : dartWidthBase * 1.2;
+  doc.text(`¼ waist + dart = ${(waist / 4 + dartWidthCm + 1).toFixed(1)}cm`, offsetX + waistWidth / 2, offsetY - 5, { align: 'center' });
   doc.text(`Length = ${skirtLength}cm`, offsetX - 8, offsetY + lengthMm / 2, { angle: 90 });
   doc.text(`¼ hip = ${(hip / 4 + 1).toFixed(1)}cm`, offsetX + patternWidth + 8, offsetY + waistToHipMm + (lengthMm - waistToHipMm) / 2, { angle: 270 });
 }
@@ -360,8 +369,8 @@ export function generatePatternPDF(
   const patternMarginMm = 20;
   let pageNum = 0;
   
-  // For bodice, we generate front and back panels
-  const panels: ('front' | 'back')[] = isBodice ? ['front', 'back'] : ['front'];
+  // Both skirt and bodice now have front and back panels
+  const panels: ('front' | 'back')[] = ['front', 'back'];
   
   for (const panel of panels) {
     for (let row = 0; row < tiles.rows; row++) {
@@ -390,7 +399,7 @@ export function generatePatternPDF(
         if (isBodice) {
           drawBodicePatternPiece(doc, measurements, patternX, patternY, seamAllowance, panel);
         } else {
-          drawSkirtPatternPiece(doc, measurements as SkirtMeasurements, patternX, patternY, seamAllowance);
+          drawSkirtPatternPiece(doc, measurements as SkirtMeasurements, patternX, patternY, seamAllowance, panel);
         }
         
         doc.restoreGraphicsState();
@@ -413,7 +422,7 @@ export function generatePatternPDF(
     '5. Tape or glue pages together, starting from the top-left corner.',
     '6. Once assembled, cut out the pattern piece along the solid black line.',
     '',
-    `Pattern: ${patternType.charAt(0).toUpperCase() + patternType.slice(1)} Sloper${isBodice ? ' - Front & Back Panels' : ' - Front Panel'}`,
+    `Pattern: ${patternType.charAt(0).toUpperCase() + patternType.slice(1)} Sloper - Front & Back Panels`,
     `Total pages: ${tiles.totalPages * panels.length}`,
     `Seam Allowance: ${seamAllowance === 0 ? 'None (cut on line)' : `${seamAllowance}cm`}`,
     '',
