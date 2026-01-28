@@ -63,8 +63,8 @@ export function DartlessBodicePatternPreview({
   const sa = seamAllowance * scale;
 
   // Key pattern points (relative to top-left of pattern)
-  const neckHalfWidth = ((neckCircumference * 10) / 6 + 16) * scale;
-  const neckHalfHeight = ((neckCircumference * 10) / 6 + 20) * scale;
+  const neckHalfWidth = (neckCircumference / 6 + 1.6) * scale;
+  const neckHalfHeight = (neckCircumference / 6 + 2) * scale;
   const shoulderLengthScaled = s(shoulderLength);
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backWidthHalfScaled = backWidthHalf * scale;
@@ -92,6 +92,7 @@ export function DartlessBodicePatternPreview({
 
     // Construction de la courbe de Bézier cubique (C)
     points.push(`C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`);
+
     // Shoulder line (with slope) - using shoulder length
     const shoulderEndX = offsetX + neckHalfWidth + shoulderLengthScaled;
     points.push(`L ${shoulderEndX} ${offsetY + shoulderSlopeScaled}`);
