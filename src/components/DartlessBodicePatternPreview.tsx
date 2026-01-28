@@ -36,6 +36,7 @@ export function DartlessBodicePatternPreview({
   // Derive pattern dimensions from the 5 core measurements
   const neckWidth = neckCircumference / Math.PI; // Approximate neck width from circumference
   const armholeDepth = backLength * 0.5; // Armhole depth as proportion of back length
+  const shoulderSlope = backLength * 0.1; // Shoulder slope as proportion
   const ease = 1.5; // Ease for dartless bodice
 
   // Calculate pattern dimensions (half panel - center front/back)
@@ -69,6 +70,7 @@ export function DartlessBodicePatternPreview({
   const backWidthHalfScaled = backWidthHalf * scale;
   const armholeDepthScaled = s(armholeDepth);
   const backLengthScaled = s(backLength);
+  const shoulderSlopeScaled = s(shoulderSlope);
   const neckDepth = isFront ? s(neckWidth * 0.5) : s(neckWidth * 0.15);
 
   // Build pattern path - simple dartless shape
@@ -161,7 +163,7 @@ export function DartlessBodicePatternPreview({
     points.push(
       `Q ${offsetX + neckHalfWidth * 0.5} ${offsetY - sa} ${offsetX + neckHalfWidth + sa * 0.5} ${offsetY - sa}`,
     );
-    points.push(`L ${shoulderEndX + sa} ${offsetY + shoulderSlopeY - sa}`);
+    points.push(`L ${shoulderEndX + sa} ${offsetY + shoulderSlopeScaled - sa}`);
     points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + armholeDepthScaled}`);
     points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + backLengthScaled + sa}`);
     points.push(`L ${offsetX - sa} ${offsetY + backLengthScaled + sa}`);
@@ -247,9 +249,6 @@ export function DartlessBodicePatternPreview({
       </text>
       <text x={bustQuarterScaled + 5} y={backLengthScaled} fontSize="10" fill="red">
         neckHalfHeight: {Math.round(neckHalfHeight)}, {Math.round(neckHalfWidth)}
-      </text>
-      <text x={bustQuarterScaled + 5} y={backLengthScaled + 5} fontSize="10" fill="red">
-        shoulderSlopeY: {Math.round(shoulderWidthX)}, {Math.round(shoulderSlopeY)}
       </text>
       <text
         x={offsetX + bustQuarterScaled / 2}
