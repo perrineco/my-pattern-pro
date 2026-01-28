@@ -126,15 +126,15 @@ export function DartlessBodicePatternPreview({
 
     // 2ème courbe : du point intermédiaire au dessous de l'aisselle
     // On veut une arrivée horizontale à l'aisselle (tangente)
-    const endX = offsetX + bustQuarterScaled;
-    const endY = offsetY + armholeDepthScaled;
+    const ArmholeDendX = offsetX + bustQuarterScaled;
+    const ArmholeDendY = offsetY + armholeDepthScaled;
 
     const cp2_1x = midPointX;
-    const cp2_1y = midPointY + (endY - midPointY) * 0.8;
-    const cp2_2x = endX - (endX - midPointX) * 0.5;
-    const cp2_2y = endY;
+    const cp2_1y = midPointY + (ArmholeDendY - midPointY) * 0.8;
+    const cp2_2x = ArmholeDendX - (ArmholeDendX - midPointX) * 0.5;
+    const cp2_2y = ArmholeDendY;
 
-    points.push(`C ${cp2_1x} ${cp2_1y}, ${cp2_2x} ${cp2_2y}, ${endX} ${endY}`);
+    points.push(`C ${cp2_1x} ${cp2_1y}, ${cp2_2x} ${cp2_2y}, ${ArmholeDendX} ${ArmholeDendY}`);
 
     // Side seam - straight to waist (no side dart)
     points.push(`L ${offsetX + bustQuarterScaled} ${offsetY + backLengthScaled}`);
