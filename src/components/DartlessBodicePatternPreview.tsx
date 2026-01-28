@@ -245,7 +245,7 @@ export function DartlessBodicePatternPreview({
       >
         {isFront ? "FRONT" : "BACK"}
       </text>
-      <text x={midPointX + 5} y={midPointY} fontSize="10" fill="red">
+      <text x={bustQuarterScaled + 5} y={backLengthScaled} fontSize="10" fill="red">
         neckHalfHeight: {Math.round(neckHalfHeight)}, {Math.round(neckHalfWidth)}
       </text>
       <text
