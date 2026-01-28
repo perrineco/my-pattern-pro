@@ -96,7 +96,9 @@ export function DartlessBodicePatternPreview({
     // Shoulder line (with slope) - using shoulder length
     const angleRad = (25 * Math.PI) / 180;
     const shoulderSlopeY = Math.sin(angleRad) * shoulderLengthScaled;
-    const shoulderWidthX = Math.cos(angleRad) * shoulderLengthScaled;
+    const shoulderWidthX = Math.sqrt(
+      (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
+    );
 
     const neckEndX = offsetX + neckHalfWidth;
     const neckEndY = offsetY + neckDepth - neckHalfHeight;
