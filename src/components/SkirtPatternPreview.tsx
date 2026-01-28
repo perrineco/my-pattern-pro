@@ -1,16 +1,14 @@
 import { SkirtMeasurements } from "@/types/sloper";
 import { useEffect, useRef, useState } from "react";
-import type { SeamAllowance } from "@/lib/pdf-export";
 import { SkirtFrontPanel } from "./skirt/SkirtFrontPanel";
 import { SkirtBackPanel } from "./skirt/SkirtBackPanel";
 import { SkirtLegend } from "./skirt/SkirtLegend";
 
 interface SkirtPatternPreviewProps {
   measurements: SkirtMeasurements;
-  seamAllowance?: SeamAllowance;
 }
 
-export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPatternPreviewProps) {
+export function SkirtPatternPreview({ measurements }: SkirtPatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
 
@@ -74,7 +72,6 @@ export function SkirtPatternPreview({ measurements, seamAllowance = 1 }: SkirtPa
     dartLengthScaled,
     waistToHipScaled,
     offsetY,
-    seamAllowance,
   };
 
   return (

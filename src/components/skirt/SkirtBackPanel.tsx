@@ -16,7 +16,6 @@ interface SkirtBackPanelProps {
   waistToHipScaled: number;
   offsetX: number;
   offsetY: number;
-  seamAllowance: number;
 }
 
 export function SkirtBackPanel({
@@ -34,7 +33,6 @@ export function SkirtBackPanel({
   waistToHipScaled,
   offsetX,
   offsetY,
-  seamAllowance,
 }: SkirtBackPanelProps) {
   // Back panel has larger dart, positioned differently
   const backDartWidthScaled = dartWidthScaled * 1.2; // Slightly larger dart for back
@@ -60,28 +58,6 @@ export function SkirtBackPanel({
 
   return (
     <g className="back-panel">
-      {/* Seam allowance outline */}
-      {seamAllowance > 0 && (
-        <path
-          d={`
-            M ${offsetX - seamAllowance * scale} ${offsetY - seamAllowance * scale}
-            L ${offsetX + waistWidthScaled / 2 - backDartWidthScaled / 2} ${offsetY - seamAllowance * scale}
-            L ${offsetX + waistWidthScaled / 2} ${offsetY + backDartLengthScaled}
-            L ${offsetX + waistWidthScaled / 2 + backDartWidthScaled / 2} ${offsetY - seamAllowance * scale}
-            L ${offsetX + waistWidthScaled + seamAllowance * scale} ${offsetY - seamAllowance * scale}
-            L ${offsetX + patternWidth + seamAllowance * scale} ${offsetY + waistToHipScaled}
-            L ${offsetX + patternWidth + seamAllowance * scale} ${offsetY + patternHeight + seamAllowance * scale}
-            L ${offsetX - seamAllowance * scale} ${offsetY + patternHeight + seamAllowance * scale}
-            Z
-          `}
-          fill="none"
-          stroke="hsl(var(--pattern-stroke))"
-          strokeWidth="1"
-          strokeDasharray="4,2"
-          opacity={0.5}
-        />
-      )}
-
       {/* Pattern piece */}
       <path
         d={panelPath}
