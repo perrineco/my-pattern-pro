@@ -247,6 +247,12 @@ export function DartlessBodicePatternPreview({
       >
         {isFront ? "FRONT" : "BACK"}
       </text>
+      <text x={bustQuarterScaled + 5} y={backLengthScaled} fontSize="10" fill="red">
+        neckHalfHeight: {Math.round(neckHalfHeight)}, {Math.round(neckHalfWidth)}
+      </text>
+      <text x={bustQuarterScaled + 5} y={backLengthScaled + 6} fontSize="10" fill="red">
+        shoulderSlopeY: {Math.round(shoulderWidthX)}, {Math.round(shoulderSlopeY)}
+      </text>
       <text
         x={offsetX + bustQuarterScaled / 2}
         y={offsetY + backLengthScaled / 2 + 16}
