@@ -251,7 +251,7 @@ export function DartlessBodicePatternPreview({
         neckHalfHeight: {Math.round(neckHalfHeight)}, {Math.round(neckHalfWidth)}
       </text>
       <text x={bustQuarterScaled + 5} y={backLengthScaled + 5} fontSize="10" fill="red">
-        shoulderSlopeY: {Math.round(neckHalfHeight)}, {Math.round(neckHalfWidth)}
+        shoulderSlopeY: {Math.round(shoulderWidthX)}, {Math.round(shoulderSlopeY)}
       </text>
       <text
         x={offsetX + bustQuarterScaled / 2}
