@@ -66,6 +66,11 @@ export function DartlessBodicePatternPreview({
   const neckHalfWidth = (neckCircumference / 6 + 1.6) * scale;
   const neckHalfHeight = (neckCircumference / 6 + 2) * scale;
   const shoulderLengthScaled = s(shoulderLength);
+  const angleRad = (25 * Math.PI) / 180;
+  const shoulderSlopeY = Math.sin(angleRad) * shoulderLengthScaled;
+  const shoulderWidthX = Math.sqrt(
+    (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
+  );
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backWidthHalfScaled = backWidthHalf * scale;
   const armholeDepthScaled = s(armholeDepth);
@@ -93,16 +98,7 @@ export function DartlessBodicePatternPreview({
     points.push(`C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`);
 
     // Shoulder line (with slope) - using shoulder length
-    const angleRad = (25 * Math.PI) / 180;
-    const shoulderSlopeY = Math.sin(angleRad) * shoulderLengthScaled;
-    const shoulderWidthX = Math.sqrt(
-      (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
-    );
 
-    console.log("DEBUG PATRON:", {
-      épaule: { x: shoulderWidthX, y: shoulderSlopeY },
-      échelle: scale,
-    });
     const neckEndX = offsetX + neckHalfWidth;
     const neckEndY = offsetY + neckDepth - neckHalfHeight;
 
