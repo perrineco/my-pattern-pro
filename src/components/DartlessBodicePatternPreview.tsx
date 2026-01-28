@@ -89,8 +89,6 @@ export function DartlessBodicePatternPreview({
 
     const endX = offsetX + neckHalfWidth;
     const endY = offsetY - neckHalfHeight;
-
-    // Construction de la courbe de Bézier cubique (C)
     points.push(`C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`);
 
     // Shoulder line (with slope) - using shoulder length
@@ -106,35 +104,36 @@ export function DartlessBodicePatternPreview({
     points.push(`L ${shoulderEndX} ${shoulderEndY}`);
 
     // Armhole curve - smooth curve to side seam
-    // --- Calcul du point intermédiaire de l'emmanchure ---
     const armholeRetreatX = s(bust / 4 + ease * 2 - backWidth / 2);
     const midPointX = offsetX + bustQuarterScaled - armholeRetreatX;
-
-    // Position Y = (Ligne de poitrine) - (backLength / 6)
     const armholeRiseY = s(backLength / 6);
     const midPointY = offsetY + armholeDepthScaled - armholeRiseY;
 
-    // --- Tracé des deux courbes ---
-
-    // 1ère courbe : de l'épaule au point intermédiaire
-    const cp1_1x = shoulderEndX;
-    const cp1_1y = shoulderEndY + (midPointY - shoulderEndY) * 0.5;
-    const cp1_2x = midPointX;
-    const cp1_2y = midPointY + s(1); // Légère cambrure
-
-    points.push(`C ${cp1_1x} ${cp1_1y}, ${cp1_2x} ${cp1_2y}, ${midPointX} ${midPointY}`);
-
-    // 2ème courbe : du point intermédiaire au dessous de l'aisselle
-    // On veut une arrivée horizontale à l'aisselle (tangente)
     const ArmholeDendX = offsetX + bustQuarterScaled;
     const ArmholeDendY = offsetY + armholeDepthScaled;
 
+    // --- Courbe 1 : Épaule -> MidPoint ---
+    // Vecteur perpendiculaire à l'épaule (angle 115° pour un départ à 90°)
+    const angle90Rad = (115 * Math.PI) / 180;
+    const cp1_1x = shoulderEndX + Math.cos(angle90Rad) * s(3); // s(3) définit la force du départ
+    const cp1_1y = shoulderEndY + Math.sin(angle90Rad) * s(3);
+
+    // Pour une jonction lisse, le cp1_2 doit être aligné verticalement (ou selon une tangente)
+    const cp1_2x = midPointX;
+    const cp1_2y = midPointY - s(2);
+
+    points.push(`C ${cp1_1x} ${cp1_1y}, ${cp1_2x} ${cp1_2y}, ${midPointX} ${midPointY}`);
+
+    // --- Courbe 2 : MidPoint -> Aisselle ---
+    // Pour que ce soit smooth, cp2_1 doit être l'opposé symétrique de cp1_2 par rapport au MidPoint
     const cp2_1x = midPointX;
-    const cp2_1y = midPointY + (ArmholeDendY - midPointY) * 0.8;
+    const cp2_1y = midPointY + s(2); // Aligné avec cp1_2 pour la fluidité
+
+    // Arrivée horizontale à l'aisselle
     const cp2_2x = ArmholeDendX - (ArmholeDendX - midPointX) * 0.5;
     const cp2_2y = ArmholeDendY;
 
-    points.push(`C ${cp2_1x} ${cp2_1y}, ${cp2_2x} ${cp2_2y}, ${ArmholeDendX} ${ArmholeDendY}`);
+    points.push(`C ${cp2_1x} ${cp2_1y}, ${cp2_2x} ${cp2_2y}, ${endX} ${endY}`);
 
     // Side seam - straight to waist (no side dart)
     points.push(`L ${offsetX + bustQuarterScaled} ${offsetY + backLengthScaled}`);
