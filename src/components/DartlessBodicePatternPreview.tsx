@@ -99,6 +99,10 @@ export function DartlessBodicePatternPreview({
       (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
     );
 
+    console.log("DEBUG PATRON:", {
+      épaule: { x: shoulderWidthX, y: shoulderSlopeY },
+      échelle: scale,
+    });
     const neckEndX = offsetX + neckHalfWidth;
     const neckEndY = offsetY + neckDepth - neckHalfHeight;
 
@@ -162,7 +166,7 @@ export function DartlessBodicePatternPreview({
     points.push(
       `Q ${offsetX + neckHalfWidth * 0.5} ${offsetY - sa} ${offsetX + neckHalfWidth + sa * 0.5} ${offsetY - sa}`,
     );
-    points.push(`L ${shoulderEndX + sa} ${offsetY + shoulderEndX - sa}`);
+    points.push(`L ${shoulderEndX + sa} ${offsetY + shoulderSlopeY - sa}`);
     points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + armholeDepthScaled}`);
     points.push(`L ${offsetX + bustQuarterScaled + sa} ${offsetY + backLengthScaled + sa}`);
     points.push(`L ${offsetX - sa} ${offsetY + backLengthScaled + sa}`);
