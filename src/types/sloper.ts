@@ -18,6 +18,17 @@ export interface BodiceMeasurements {
   backLength: number;        // Longueur taille-dos
 }
 
+export interface PantsMeasurements {
+  waist: number;             // Tour de taille
+  hip: number;               // Tour de hanches
+  thigh: number;             // Tour de cuisse
+  knee: number;              // Tour de genou
+  ankle: number;             // Tour de cheville
+  crotchDepth: number;       // Hauteur d'entrejambe (rise)
+  outseamLength: number;     // Longueur extérieure
+  inseamLength: number;      // Longueur intérieure
+}
+
 // Unified profile measurements (all measurements in one)
 export interface UnifiedMeasurements {
   // Skirt measurements
@@ -40,7 +51,7 @@ export interface PatternDimensions {
 }
 
 // Union type for all measurement types
-export type Measurements = SkirtMeasurements | BodiceMeasurements;
+export type Measurements = SkirtMeasurements | BodiceMeasurements | PantsMeasurements;
 
 // Type guards
 export function isSkirtMeasurements(m: Measurements): m is SkirtMeasurements {
@@ -49,6 +60,10 @@ export function isSkirtMeasurements(m: Measurements): m is SkirtMeasurements {
 
 export function isBodiceMeasurements(m: Measurements): m is BodiceMeasurements {
   return 'bust' in m && 'backLength' in m;
+}
+
+export function isPantsMeasurements(m: Measurements): m is PantsMeasurements {
+  return 'crotchDepth' in m && 'inseamLength' in m;
 }
 
 // Convert unified measurements to specific pattern measurements

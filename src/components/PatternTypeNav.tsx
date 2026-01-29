@@ -30,7 +30,7 @@ const patternTypes: PatternTypeConfig[] = [
     ]
   },
   { value: 'dress', label: 'Dress', available: false },
-  { value: 'pants', label: 'Pants', available: false },
+  { value: 'pants', label: 'Pants', available: true },
   { value: 'sleeve', label: 'Sleeve', available: false },
 ];
 
