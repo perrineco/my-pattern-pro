@@ -90,7 +90,6 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
     points.push(`C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`);
 
     // Shoulder line (with slope) - using shoulder length
-
     const neckEndX = offsetX + neckHalfWidth;
     const neckEndY = offsetY - neckHalfHeight;
 
@@ -110,7 +109,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
     const cp1_1x = shoulderEndX;
     const cp1_1y = shoulderEndY;
     const cp1_2x = midPointX;
-    const cp1_2y = midPointY + (armholeDepthScaled - armholeRiseY) * 0.5;
+    const cp1_2y = midPointY + (shoulderEndY - midPointY) * 0.5;
 
     points.push(`C ${cp1_1x} ${cp1_1y}, ${cp1_2x} ${cp1_2y}, ${midPointX} ${midPointY}`);
 
