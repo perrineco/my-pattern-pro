@@ -68,19 +68,17 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
   const backWidthHalfScaled = backWidthHalf * scale;
   const armholeDepthScaled = s(armholeDepth);
   const backLengthScaled = s(backLength);
-  const neckDepth = isFront ? s(neckWidth * 0.5) : s(neckWidth * 0.15);
 
   // Build pattern path - simple dartless shape
   const buildPatternPath = () => {
     const points: string[] = [];
 
     // Start at neck center (with front/back neck depth difference)
-    points.push(`M ${offsetX} ${offsetY + neckDepth}`);
+    points.push(`M ${offsetX} ${offsetY}`);
 
     // Neck curve to shoulder
     const cp1x = offsetX + neckHalfWidth * 0.65;
     const cp1y = offsetY;
-    +neckDepth;
 
     const cp2x = offsetX + neckHalfWidth * 0.85;
     const cp2y = offsetY - neckHalfHeight * 0.5;
@@ -94,7 +92,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
     // Shoulder line (with slope) - using shoulder length
 
     const neckEndX = offsetX + neckHalfWidth;
-    const neckEndY = offsetY + neckDepth - neckHalfHeight;
+    const neckEndY = offsetY - neckHalfHeight;
 
     const shoulderEndX = neckEndX + shoulderWidthX;
     const shoulderEndY = neckEndY + shoulderSlopeY;
@@ -190,7 +188,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
       {/* Center front/back fold line indicator */}
       <line
         x1={offsetX}
-        y1={offsetY + neckDepth}
+        y1={offsetY}
         x2={offsetX}
         y2={offsetY + backLengthScaled}
         stroke="hsl(var(--primary))"
