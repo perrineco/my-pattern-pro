@@ -65,7 +65,7 @@ export function DartlessBodicePatternPreview({
   // Key pattern points (relative to top-left of pattern)
   const neckHalfWidth = (neckCircumference / 6 + 1.6) * scale;
   const neckHalfHeight = (neckCircumference / 6 + 2) * scale;
-  const shoulderLengthScaled = shoulderLength * scale;
+  const shoulderLengthScaled = s(shoulderLength);
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backWidthHalfScaled = backWidthHalf * scale;
   const armholeDepthScaled = s(armholeDepth);
@@ -247,7 +247,7 @@ export function DartlessBodicePatternPreview({
       </text>
       <text x={bustQuarterScaled + 5} y={backLengthScaled} fontSize="14" fill="red">
         neckHalfHeight: {Math.round(neckHalfHeight)}, {Math.round(neckHalfWidth)}
-        épaule: {Math.round(shoulderWidthX)}, {Math.round(shoulderLengthScaled)}
+        épaule: {Math.round(shoulderWidthX)}, {Math.round(shoulderSlopeY)}
       </text>
       <text
         x={offsetX + bustQuarterScaled / 2}
