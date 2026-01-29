@@ -361,7 +361,6 @@ const Index = () => {
                   ) : isBodiceDartless ? (
                     <DartlessBodicePatternPreview 
                       measurements={dartlessBodiceMeasurements} 
-                      panel={bodicePanel}
                     />
                   ) : patternType === 'bodice' ? (
                     <BodicePatternPreview 
