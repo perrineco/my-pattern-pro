@@ -99,7 +99,6 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
     points.push(`L ${shoulderEndX} ${shoulderEndY}`);
 
     // Armhole curve - smooth curve to side seam
-    // --- Calcul du point intermédiaire de l'emmanchure ---
     const armholeRetreatX = s(bust / 4 + ease * 2 - backWidth / 2);
     const midPointX = offsetX + bustQuarterScaled - armholeRetreatX;
 
@@ -107,13 +106,11 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
     const armholeRiseY = s(backLength / 6);
     const midPointY = offsetY + armholeDepthScaled - armholeRiseY;
 
-    // --- Tracé des deux courbes ---
-
     // 1ère courbe : de l'épaule au point intermédiaire
     const cp1_1x = shoulderEndX;
     const cp1_1y = shoulderEndY;
     const cp1_2x = midPointX;
-    const cp1_2y = midPointY + (armholeDepthScaled - armholeRiseY) * 0.5; // Légère cambrure
+    const cp1_2y = midPointY + (armholeDepthScaled - armholeRiseY) * 0.5;
 
     points.push(`C ${cp1_1x} ${cp1_1y}, ${cp1_2x} ${cp1_2y}, ${midPointX} ${midPointY}`);
 
