@@ -58,7 +58,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
   // Key pattern points (relative to top-left of pattern)
   const neckHalfWidth = (neckCircumference / 6 + 1.6) * scale;
   const neckHalfHeight = (neckCircumference / 6 + 2) * scale;
-  const shoulderLengthScaled = s(shoulderLength);
+  const shoulderLengthScaled = shoulderLength * scale;
   const angleRad = (25 * Math.PI) / 180;
   const shoulderSlopeY = Math.sin(angleRad) * shoulderLengthScaled;
   const shoulderWidthX = Math.sqrt(
