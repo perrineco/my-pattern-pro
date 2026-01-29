@@ -111,9 +111,9 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
 
     // 1ère courbe : de l'épaule au point intermédiaire
     const cp1_1x = shoulderEndX;
-    const cp1_1y = shoulderEndY + (midPointY - shoulderEndY) * 0.5;
+    const cp1_1y = shoulderEndY;
     const cp1_2x = midPointX;
-    const cp1_2y = midPointY + s(1); // Légère cambrure
+    const cp1_2y = midPointY + (midPointY - shoulderEndY) * 0.5; // Légère cambrure
 
     points.push(`C ${cp1_1x} ${cp1_1y}, ${cp1_2x} ${cp1_2y}, ${midPointX} ${midPointY}`);
 
