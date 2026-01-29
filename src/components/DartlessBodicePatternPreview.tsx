@@ -68,17 +68,19 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
   const backWidthHalfScaled = backWidthHalf * scale;
   const armholeDepthScaled = s(armholeDepth);
   const backLengthScaled = s(backLength);
+  const neckDepth = isFront ? s(neckWidth * 0.5) : s(neckWidth * 0.15);
 
   // Build pattern path - simple dartless shape
   const buildPatternPath = () => {
     const points: string[] = [];
 
     // Start at neck center (with front/back neck depth difference)
-    points.push(`M ${offsetX} ${offsetY}`);
+    points.push(`M ${offsetX} ${offsetY + neckDepth}`);
 
     // Neck curve to shoulder
     const cp1x = offsetX + neckHalfWidth * 0.65;
     const cp1y = offsetY;
+    +neckDepth;
 
     const cp2x = offsetX + neckHalfWidth * 0.85;
     const cp2y = offsetY - neckHalfHeight * 0.5;
@@ -92,7 +94,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
     // Shoulder line (with slope) - using shoulder length
 
     const neckEndX = offsetX + neckHalfWidth;
-    const neckEndY = offsetY - neckHalfHeight;
+    const neckEndY = offsetY + neckDepth - neckHalfHeight;
 
     const shoulderEndX = neckEndX + shoulderWidthX;
     const shoulderEndY = neckEndY + shoulderSlopeY;
@@ -111,7 +113,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
 
     // 1ère courbe : de l'épaule au point intermédiaire
     const cp1_1x = shoulderEndX;
-    const cp1_1y = shoulderEndY - (midPointY - shoulderEndY) * 0.5;
+    const cp1_1y = shoulderEndY + (midPointY - shoulderEndY) * 0.5;
     const cp1_2x = midPointX;
     const cp1_2y = midPointY + s(1); // Légère cambrure
 
@@ -188,7 +190,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
       {/* Center front/back fold line indicator */}
       <line
         x1={offsetX}
-        y1={offsetY}
+        y1={offsetY + neckDepth}
         x2={offsetX}
         y2={offsetY + backLengthScaled}
         stroke="hsl(var(--primary))"
