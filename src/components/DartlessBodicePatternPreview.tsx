@@ -31,7 +31,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
   const neckWidth = neckCircumference / Math.PI; // Approximate neck width from circumference
   const armholeDepth = backLength * 0.5; // Armhole depth as proportion of back length
 
-  const ease = 1.5; // Ease for dartless bodice
+  const ease = 2; // Ease for dartless bodice
 
   // Calculate pattern dimensions (half panel - center front/back)
   const bustQuarter = bust / 4;
