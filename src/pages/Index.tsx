@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, Measurements, isBodiceMeasurements, UnifiedMeasurements } from '@/types/sloper';
+import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, PantsMeasurements, Measurements, isBodiceMeasurements, isPantsMeasurements, UnifiedMeasurements } from '@/types/sloper';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
@@ -9,9 +9,11 @@ import { PatternTypeNav } from '@/components/PatternTypeNav';
 import { SkirtMeasurementForm, defaultMeasurements as defaultSkirtMeasurements } from '@/components/SkirtMeasurementForm';
 import { BodiceMeasurementForm, defaultBodiceMeasurements } from '@/components/BodiceMeasurementForm';
 import { DartlessBodiceMeasurementForm, defaultDartlessBodiceMeasurements } from '@/components/DartlessBodiceMeasurementForm';
+import { PantsMeasurementForm, defaultPantsMeasurements } from '@/components/PantsMeasurementForm';
 import { SkirtPatternPreview } from '@/components/SkirtPatternPreview';
 import { BodicePatternPreview } from '@/components/BodicePatternPreview';
 import { DartlessBodicePatternPreview } from '@/components/DartlessBodicePatternPreview';
+import { PantsPatternPreview } from '@/components/PantsPatternPreview';
 import { ProfileManager } from '@/components/ProfileManager';
 import { ProfileManagerSimple } from '@/components/ProfileManagerSimple';
 import { UnifiedMeasurementForm, defaultUnifiedMeasurements } from '@/components/UnifiedMeasurementForm';
@@ -40,6 +42,9 @@ const Index = () => {
   const [dartlessBodiceMeasurements, setDartlessBodiceMeasurements] = useState<BodiceMeasurements>(
     defaultDartlessBodiceMeasurements.women
   );
+  const [pantsMeasurements, setPantsMeasurements] = useState<PantsMeasurements>(
+    defaultPantsMeasurements.women
+  );
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
   
   // Profile mode state
@@ -53,6 +58,7 @@ const Index = () => {
     setSkirtMeasurements(defaultSkirtMeasurements[newCategory]);
     setBodiceMeasurements(defaultBodiceMeasurements[newCategory]);
     setDartlessBodiceMeasurements(defaultDartlessBodiceMeasurements[newCategory]);
+    setPantsMeasurements(defaultPantsMeasurements[newCategory]);
     setUnifiedMeasurements(defaultUnifiedMeasurements[newCategory]);
     setSelectedProfileId(null);
   };
@@ -73,6 +79,9 @@ const Index = () => {
     if (patternType === 'bodice') {
       return bodiceMeasurements;
     }
+    if (patternType === 'pants') {
+      return pantsMeasurements;
+    }
     return skirtMeasurements;
   };
 
@@ -90,6 +99,8 @@ const Index = () => {
   const handleLoadProfile = (loadedMeasurements: Measurements) => {
     if (isBodiceMeasurements(loadedMeasurements)) {
       setBodiceMeasurements(loadedMeasurements);
+    } else if (isPantsMeasurements(loadedMeasurements)) {
+      setPantsMeasurements(loadedMeasurements);
     } else {
       setSkirtMeasurements(loadedMeasurements as SkirtMeasurements);
     }
@@ -234,6 +245,12 @@ const Index = () => {
                     onChange={setBodiceMeasurements}
                     category={category}
                   />
+                ) : patternType === 'pants' ? (
+                  <PantsMeasurementForm
+                    measurements={pantsMeasurements}
+                    onChange={setPantsMeasurements}
+                    category={category}
+                  />
                 ) : (
                   <SkirtMeasurementForm
                     measurements={skirtMeasurements}
@@ -349,9 +366,11 @@ const Index = () => {
                     <div className="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">
                       Scale: {patternType === 'skirt' 
                         ? ((skirtMeasurements.hip / 4 + 1) / 10).toFixed(1)
-                        : isBodiceDartless
-                          ? ((dartlessBodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)
-                          : ((bodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)}:10
+                        : patternType === 'pants'
+                          ? ((pantsMeasurements.hip / 4 + 1) / 10).toFixed(1)
+                          : isBodiceDartless
+                            ? ((dartlessBodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)
+                            : ((bodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)}:10
                     </div>
                   </div>
                 </div>
@@ -367,6 +386,8 @@ const Index = () => {
                       measurements={bodiceMeasurements} 
                       panel={bodicePanel}
                     />
+                  ) : patternType === 'pants' ? (
+                    <PantsPatternPreview measurements={pantsMeasurements} />
                   ) : (
                     <SkirtPatternPreview measurements={skirtMeasurements} />
                   )}
@@ -398,11 +419,11 @@ const Index = () => {
               </div>
               <div className="p-6 bg-card rounded-lg border border-border">
                 <h3 className="font-serif text-lg font-semibold mb-2 text-foreground">
-                  Coming Soon
+                  Pants Pattern
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Dress, pants, and sleeve patterns are in development. Each pattern
-                  will include detailed construction guides and seam allowance options.
+                  The pants pattern includes front and back panels with waist dart for shaping.
+                  Full measurement control from waist to ankle for a perfect fit.
                 </p>
               </div>
             </div>
