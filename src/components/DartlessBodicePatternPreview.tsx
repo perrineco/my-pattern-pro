@@ -75,7 +75,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
     const points: string[] = [];
 
     // Start at neck center (with front/back neck depth difference)
-    points.push(`M ${offsetX} ${offsetY + neckDepth}`);
+    points.push(`M ${offsetX} ${offsetY + neckHalfHeight}`);
 
     // Neck curve to shoulder
     const cp1x = offsetX + neckHalfWidth * 0.65;
@@ -208,7 +208,7 @@ export function DartlessBodicePatternPreview({ measurements, panel = "front" }: 
       </text>
       <text x={bustQuarterScaled + 5} y={backLengthScaled} fontSize="14" fill="red">
         neckHalfHeight: {Math.round(neckHalfHeight)}, {Math.round(neckHalfWidth)}
-        épaule: {Math.round(shoulderWidthX)}, {Math.round(shoulderSlopeY)}
+        épaule: {Math.round(shoulderWidthX)}, {Math.round(shoulderLengthScaled)}
       </text>
       <text
         x={offsetX + bustQuarterScaled / 2}
