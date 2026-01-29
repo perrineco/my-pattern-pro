@@ -6,10 +6,7 @@ interface DartlessBodicePatternPreviewProps {
   panel?: "front" | "back";
 }
 
-export function DartlessBodicePatternPreview({
-  measurements,
-  panel = "front",
-}: DartlessBodicePatternPreviewProps) {
+export function DartlessBodicePatternPreview({ measurements, panel = "front" }: DartlessBodicePatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 400, height: 500 });
 
@@ -209,8 +206,9 @@ export function DartlessBodicePatternPreview({
       >
         {isFront ? "FRONT" : "BACK"}
       </text>
-      <text x={bustQuarterScaled + 5} y={backLengthScaled} fontSize="10" fill="red">
+      <text x={bustQuarterScaled + 5} y={backLengthScaled} fontSize="14" fill="red">
         neckHalfHeight: {Math.round(neckHalfHeight)}, {Math.round(neckHalfWidth)}
+        épaule: {Math.round(shoulderWidthX)}, {Math.round(shoulderLengthScaled)}
       </text>
       <text
         x={offsetX + bustQuarterScaled / 2}
