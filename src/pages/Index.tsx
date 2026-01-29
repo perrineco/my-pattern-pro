@@ -10,9 +10,11 @@ import { SkirtMeasurementForm, defaultMeasurements as defaultSkirtMeasurements }
 import { BodiceMeasurementForm, defaultBodiceMeasurements } from '@/components/BodiceMeasurementForm';
 import { DartlessBodiceMeasurementForm, defaultDartlessBodiceMeasurements } from '@/components/DartlessBodiceMeasurementForm';
 import { PantsMeasurementForm, defaultPantsMeasurements } from '@/components/PantsMeasurementForm';
+import { KnitBodiceMeasurementForm, defaultKnitBodiceMeasurements } from '@/components/KnitBodiceMeasurementForm';
 import { SkirtPatternPreview } from '@/components/SkirtPatternPreview';
 import { BodicePatternPreview } from '@/components/BodicePatternPreview';
 import { DartlessBodicePatternPreview } from '@/components/DartlessBodicePatternPreview';
+import { KnitBodicePatternPreview } from '@/components/KnitBodicePatternPreview';
 import { PantsPatternPreview } from '@/components/PantsPatternPreview';
 import { ProfileManager } from '@/components/ProfileManager';
 import { ProfileManagerSimple } from '@/components/ProfileManagerSimple';
@@ -42,6 +44,9 @@ const Index = () => {
   const [dartlessBodiceMeasurements, setDartlessBodiceMeasurements] = useState<BodiceMeasurements>(
     defaultDartlessBodiceMeasurements.women
   );
+  const [knitBodiceMeasurements, setKnitBodiceMeasurements] = useState<BodiceMeasurements>(
+    defaultKnitBodiceMeasurements.women
+  );
   const [pantsMeasurements, setPantsMeasurements] = useState<PantsMeasurements>(
     defaultPantsMeasurements.women
   );
@@ -58,6 +63,7 @@ const Index = () => {
     setSkirtMeasurements(defaultSkirtMeasurements[newCategory]);
     setBodiceMeasurements(defaultBodiceMeasurements[newCategory]);
     setDartlessBodiceMeasurements(defaultDartlessBodiceMeasurements[newCategory]);
+    setKnitBodiceMeasurements(defaultKnitBodiceMeasurements[newCategory]);
     setPantsMeasurements(defaultPantsMeasurements[newCategory]);
     setUnifiedMeasurements(defaultUnifiedMeasurements[newCategory]);
     setSelectedProfileId(null);
@@ -70,11 +76,15 @@ const Index = () => {
   // Helper to check if current pattern is a bodice variant
   const isBodiceVariant = patternType.startsWith('bodice');
   const isBodiceDartless = patternType === 'bodice-dartless';
+  const isBodiceKnit = patternType === 'bodice-knit';
 
   // Get current measurements based on pattern type
   const getCurrentMeasurements = (): Measurements => {
     if (isBodiceDartless) {
       return dartlessBodiceMeasurements;
+    }
+    if (isBodiceKnit) {
+      return knitBodiceMeasurements;
     }
     if (patternType === 'bodice') {
       return bodiceMeasurements;
@@ -239,6 +249,12 @@ const Index = () => {
                     onChange={setDartlessBodiceMeasurements}
                     category={category}
                   />
+                ) : isBodiceKnit ? (
+                  <KnitBodiceMeasurementForm
+                    measurements={knitBodiceMeasurements}
+                    onChange={setKnitBodiceMeasurements}
+                    category={category}
+                  />
                 ) : patternType === 'bodice' ? (
                   <BodiceMeasurementForm
                     measurements={bodiceMeasurements}
@@ -367,10 +383,12 @@ const Index = () => {
                       Scale: {patternType === 'skirt' 
                         ? ((skirtMeasurements.hip / 4 + 1) / 10).toFixed(1)
                         : patternType === 'pants'
-                          ? ((pantsMeasurements.hip / 4 + 1) / 10).toFixed(1)
+                        ? ((pantsMeasurements.hip / 4 + 1) / 10).toFixed(1)
                           : isBodiceDartless
                             ? ((dartlessBodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)
-                            : ((bodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)}:10
+                            : isBodiceKnit
+                              ? ((knitBodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)
+                              : ((bodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)}:10
                     </div>
                   </div>
                 </div>
@@ -380,6 +398,10 @@ const Index = () => {
                   ) : isBodiceDartless ? (
                     <DartlessBodicePatternPreview 
                       measurements={dartlessBodiceMeasurements} 
+                    />
+                  ) : isBodiceKnit ? (
+                    <KnitBodicePatternPreview 
+                      measurements={knitBodiceMeasurements} 
                     />
                   ) : patternType === 'bodice' ? (
                     <BodicePatternPreview 
