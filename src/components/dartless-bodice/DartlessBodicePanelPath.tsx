@@ -29,7 +29,7 @@ export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, p
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backLengthScaled =
     panel === "front" ? s(backLength) + neckCircumference / 12 - (neckCircumference / 6 + 2) * scale : s(backLength);
-  const armholeDepthScaled = backLengthScaled + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
+  const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
 
   const buildPath = () => {
     const points: string[] = [];
