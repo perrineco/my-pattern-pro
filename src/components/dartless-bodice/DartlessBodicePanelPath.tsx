@@ -83,9 +83,9 @@ export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, p
     points.push(`L ${offsetX + bustQuarterScaled} ${offsetY + backLengthScaled}`);
 
     // Waist line back to center
-    const backLengthScaled =
+    const backLengthScaled2 =
       panel === "front" ? s(backLength) + neckCircumference / 12 - (neckCircumference / 6 + 2) * scale : s(backLength);
-    points.push(`L ${offsetX} ${offsetY + backLengthScaled}`);
+    points.push(`L ${offsetX} ${offsetY + backLengthScaled2}`);
 
     points.push(`Z`);
 
