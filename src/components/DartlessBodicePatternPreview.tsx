@@ -1,13 +1,14 @@
 import { useRef, useState, useEffect } from "react";
-import { BodiceMeasurements } from "@/types/sloper";
+import { BodiceMeasurements, Category } from "@/types/sloper";
 import { DartlessBodicePanel } from "./dartless-bodice/DartlessBodicePanel";
 import { DartlessBodiceLegend } from "./dartless-bodice/DartlessBodiceLegend";
 
 interface DartlessBodicePatternPreviewProps {
   measurements: BodiceMeasurements;
+  category: Category;
 }
 
-export function DartlessBodicePatternPreview({ measurements }: DartlessBodicePatternPreviewProps) {
+export function DartlessBodicePatternPreview({ measurements, category }: DartlessBodicePatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
 
@@ -80,6 +81,7 @@ export function DartlessBodicePatternPreview({ measurements }: DartlessBodicePat
           offsetY={offsetY}
           scale={scale}
           panel="front"
+          category={category}
         />
 
         {/* Back Panel */}
@@ -89,6 +91,7 @@ export function DartlessBodicePatternPreview({ measurements }: DartlessBodicePat
           offsetY={offsetY}
           scale={scale}
           panel="back"
+          category={category}
         />
       </svg>
 

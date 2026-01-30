@@ -1,4 +1,4 @@
-import { BodiceMeasurements } from "@/types/sloper";
+import { BodiceMeasurements, Category } from "@/types/sloper";
 
 interface DartlessBodicePanelPathProps {
   measurements: BodiceMeasurements;
@@ -6,29 +6,71 @@ interface DartlessBodicePanelPathProps {
   offsetY: number;
   scale: number;
   panel: "front" | "back";
+  category: Category;
 }
 
-export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, panel }: DartlessBodicePanelPathProps) {
-  const { bust, neckCircumference, shoulderLength, backWidth, backLength } = measurements;
+// Category-specific constants
+const categoryConfig = {
+  women: {
+    ease: 2,
+    neckWidthDivisor: 6,
+    neckWidthAdd: 1.6,
+    frontNeckDepthDivisor: 6,
+    frontNeckDepthAdd: 2,
+    backNeckDepthDivisor: 16,
+    backNeckDepthAdd: 0,
+    shoulderAngle: 25,
+    armholeDepthRatio: 0.5,
+  },
+  men: {
+    ease: 3,
+    neckWidthDivisor: 6,
+    neckWidthAdd: 2,
+    frontNeckDepthDivisor: 8,
+    frontNeckDepthAdd: 1.5,
+    backNeckDepthDivisor: 20,
+    backNeckDepthAdd: 0,
+    shoulderAngle: 20,
+    armholeDepthRatio: 0.48,
+  },
+  kids: {
+    ease: 2.5,
+    neckWidthDivisor: 5.5,
+    neckWidthAdd: 1.2,
+    frontNeckDepthDivisor: 7,
+    frontNeckDepthAdd: 1.5,
+    backNeckDepthDivisor: 18,
+    backNeckDepthAdd: 0,
+    shoulderAngle: 22,
+    armholeDepthRatio: 0.52,
+  },
+};
 
-  const ease = 2;
-  const armholeDepth = backLength * 0.5;
+export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, panel, category }: DartlessBodicePanelPathProps) {
+  const { bust, neckCircumference, shoulderLength, backWidth, backLength } = measurements;
+  const config = categoryConfig[category];
+
+  const ease = config.ease;
+  const armholeDepth = backLength * config.armholeDepthRatio;
   const bustQuarter = bust / 4;
 
   const s = (v: number) => v * scale;
 
-  const neckHalfWidth = (neckCircumference / 6 + 1.6) * scale;
-  // Back neckline is shallower than front
-  const neckHalfHeight = panel === "front" ? (neckCircumference / 6 + 2) * scale : (neckCircumference / 16) * scale;
+  const neckHalfWidth = (neckCircumference / config.neckWidthDivisor + config.neckWidthAdd) * scale;
+  // Back neckline is shallower than front, with category-specific depths
+  const neckHalfHeight = panel === "front" 
+    ? (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale 
+    : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
+  
   const shoulderLengthScaled = shoulderLength * scale;
-  const angleRad = (25 * Math.PI) / 180;
+  const angleRad = (config.shoulderAngle * Math.PI) / 180;
   const shoulderSlopeY = panel === "front" ? Math.sin(angleRad) * shoulderLengthScaled : neckHalfHeight + 2.5;
   const shoulderWidthX = Math.sqrt(
     (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
   );
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backLengthScaled =
-    panel === "front" ? s(backLength) + neckCircumference / 12 - (neckCircumference / 6 + 2) * scale : s(backLength);
+    panel === "front" ? s(backLength) + neckCircumference / 12 - (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale : s(backLength);
   const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
 
   const buildPath = () => {
