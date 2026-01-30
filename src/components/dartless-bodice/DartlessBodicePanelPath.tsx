@@ -27,8 +27,9 @@ export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, p
     (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
   );
   const bustQuarterScaled = (bustQuarter + ease) * scale;
-  const armholeDepthScaled = s(armholeDepth);
-  const backLengthScaled = s(backLength);
+  const backLengthScaled =
+    panel === "front" ? s(backLength) + neckCircumference / 12 - (neckCircumference / 6 + 2) * scale : s(backLength);
+  const armholeDepthScaled = backLengthScaled + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
 
   const buildPath = () => {
     const points: string[] = [];
@@ -83,9 +84,7 @@ export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, p
     points.push(`L ${offsetX + bustQuarterScaled} ${offsetY + backLengthScaled}`);
 
     // Waist line back to center
-    const backLengthScaled2 =
-      panel === "front" ? s(backLength) + neckCircumference / 12 - (neckCircumference / 6 + 2) * scale : s(backLength);
-    points.push(`L ${offsetX} ${offsetY + backLengthScaled2}`);
+    points.push(`L ${offsetX} ${offsetY + backLengthScaled}`);
 
     points.push(`Z`);
 
