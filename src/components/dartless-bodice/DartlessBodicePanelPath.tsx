@@ -32,7 +32,7 @@ export function useDartlessBodicePath({
   const angleRad = (25 * Math.PI) / 180;
   const shoulderSlopeY = panel === "front" 
     ? Math.sin(angleRad) * shoulderLengthScaled; 
-    : neckHalfHeight * 25;
+    : neckHalfHeight + 2.5;
   const shoulderWidthX = Math.sqrt(
     (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
   );
@@ -64,8 +64,10 @@ export function useDartlessBodicePath({
     points.push(`L ${shoulderEndX} ${shoulderEndY}`);
 
     // Armhole curve
-    const armholeRetreatX = s(bust / 4 + ease * 2 - backWidth / 2);
-    const midPointX = offsetX + bustQuarterScaled - armholeRetreatX;
+    const armholeRetreatX = s(bust / 4 + ease - backWidth / 2);
+    const midPointX = panel === "front" 
+    ? offsetX + bustQuarterScaled - armholeRetreatX+1.3;
+    : offsetX + bustQuarterScaled - armholeRetreatX;
     const armholeRiseY = s(backLength / 6);
     const midPointY = offsetY + armholeDepthScaled - armholeRiseY;
 
