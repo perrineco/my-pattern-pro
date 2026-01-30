@@ -16,6 +16,7 @@ export interface BodiceMeasurements {
   shoulderLength: number;    // Longueur d'épaule
   backWidth: number;         // Carrure dos
   backLength: number;        // Longueur taille-dos
+  ease?: number;             // Custom ease (optional, defaults to category-specific)
 }
 
 export interface PantsMeasurements {
