@@ -27,10 +27,12 @@ export function useDartlessBodicePath({
   // Back neckline is shallower than front
   const neckHalfHeight = panel === "front" 
     ? (neckCircumference / 6 + 2) * scale 
-    : (neckCircumference / 12 + 1) * scale;
+    : (neckCircumference / 16) * scale;
   const shoulderLengthScaled = shoulderLength * scale;
   const angleRad = (25 * Math.PI) / 180;
-  const shoulderSlopeY = Math.sin(angleRad) * shoulderLengthScaled;
+  const shoulderSlopeY = panel === "front" 
+    ? Math.sin(angleRad) * shoulderLengthScaled; 
+    : neckHalfHeight * 25;
   const shoulderWidthX = Math.sqrt(
     (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
   );
