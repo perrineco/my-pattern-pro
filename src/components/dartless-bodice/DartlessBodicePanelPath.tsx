@@ -61,7 +61,7 @@ export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, p
         ? offsetX + bustQuarterScaled - armholeRetreatX + 1.3
         : offsetX + bustQuarterScaled - armholeRetreatX;
     const armholeRiseY = s(backLength / 6);
-    const midPointY = offsetY + armholeDepthScaled - armholeRiseY;
+    const midPointY = offsetY + neckEndY + shoulderSlopeY + armholeDepthScaled - armholeRiseY;
 
     const cp1_1x = shoulderEndX;
     const cp1_1y = shoulderEndY;
