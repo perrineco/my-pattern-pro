@@ -397,7 +397,8 @@ const Index = () => {
                     <SkirtPatternPreview measurements={skirtMeasurements} />
                   ) : isBodiceDartless ? (
                     <DartlessBodicePatternPreview 
-                      measurements={dartlessBodiceMeasurements} 
+                      measurements={dartlessBodiceMeasurements}
+                      category={category}
                     />
                   ) : isBodiceKnit ? (
                     <KnitBodicePatternPreview 

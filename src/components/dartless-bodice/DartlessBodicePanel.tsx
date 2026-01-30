@@ -1,4 +1,4 @@
-import { BodiceMeasurements } from "@/types/sloper";
+import { BodiceMeasurements, Category } from "@/types/sloper";
 import { useDartlessBodicePath } from "./DartlessBodicePanelPath";
 
 interface DartlessBodicePanelProps {
@@ -7,6 +7,7 @@ interface DartlessBodicePanelProps {
   offsetY: number;
   scale: number;
   panel: "front" | "back";
+  category: Category;
 }
 
 export function DartlessBodicePanel({
@@ -15,16 +16,17 @@ export function DartlessBodicePanel({
   offsetY,
   scale,
   panel,
+  category,
 }: DartlessBodicePanelProps) {
   const { bust, backWidth, backLength } = measurements;
-  const ease = 2;
 
-  const { path, bustQuarterScaled, armholeDepthScaled, backLengthScaled } = useDartlessBodicePath({
+  const { path, bustQuarterScaled, armholeDepthScaled, backLengthScaled, ease } = useDartlessBodicePath({
     measurements,
     offsetX,
     offsetY,
     scale,
     panel,
+    category,
   });
 
   const isFront = panel === "front";
