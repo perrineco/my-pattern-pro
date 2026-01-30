@@ -47,10 +47,11 @@ const categoryConfig = {
 };
 
 export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, panel, category }: DartlessBodicePanelPathProps) {
-  const { bust, neckCircumference, shoulderLength, backWidth, backLength } = measurements;
+  const { bust, neckCircumference, shoulderLength, backWidth, backLength, ease: customEase } = measurements;
   const config = categoryConfig[category];
 
-  const ease = config.ease;
+  // Use custom ease if provided, otherwise fall back to category default
+  const ease = customEase ?? config.ease;
   const armholeDepth = backLength * config.armholeDepthRatio;
   const bustQuarter = bust / 4;
 

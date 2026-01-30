@@ -16,6 +16,7 @@ const defaultMeasurements: Record<Category, BodiceMeasurements> = {
     shoulderLength: 13,
     backWidth: 36,
     backLength: 41,
+    ease: 0,
   },
   men: { 
     bust: 100, 
@@ -23,6 +24,7 @@ const defaultMeasurements: Record<Category, BodiceMeasurements> = {
     shoulderLength: 15,
     backWidth: 42,
     backLength: 45,
+    ease: 1,
   },
   kids: { 
     bust: 65, 
@@ -30,6 +32,7 @@ const defaultMeasurements: Record<Category, BodiceMeasurements> = {
     shoulderLength: 10,
     backWidth: 28,
     backLength: 28,
+    ease: 0.5,
   },
 };
 
@@ -109,6 +112,18 @@ export function KnitBodiceMeasurementForm({
           min={30}
           max={55}
         />
+
+        <div className="pt-4 border-t border-border">
+          <MeasurementInput
+            label="Ease"
+            value={measurements.ease ?? 0}
+            onChange={handleChange('ease')}
+            hint="Knit ease (0 = body-hugging, negative = compression)"
+            min={-4}
+            max={6}
+            step={0.5}
+          />
+        </div>
       </div>
 
       <div className="pt-4 border-t border-border">

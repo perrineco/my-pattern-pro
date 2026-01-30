@@ -18,6 +18,7 @@ export const defaultDartlessBodiceMeasurements: Record<Category, BodiceMeasureme
     shoulderLength: 13,
     backWidth: 36,
     backLength: 42,
+    ease: 2,
   },
   men: {
     bust: 102,
@@ -25,6 +26,7 @@ export const defaultDartlessBodiceMeasurements: Record<Category, BodiceMeasureme
     shoulderLength: 15,
     backWidth: 42,
     backLength: 46,
+    ease: 3,
   },
   kids: {
     bust: 68,
@@ -32,6 +34,7 @@ export const defaultDartlessBodiceMeasurements: Record<Category, BodiceMeasureme
     shoulderLength: 10,
     backWidth: 28,
     backLength: 30,
+    ease: 2.5,
   },
 };
 
@@ -119,6 +122,24 @@ export function DartlessBodiceMeasurementForm({
               value={measurements.backLength}
               onChange={handleChange('backLength')}
               hint="Longueur taille-dos"
+            />
+          </div>
+        </div>
+
+        {/* Ease */}
+        <div className="space-y-1">
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Ease
+          </span>
+          <div className="grid gap-3">
+            <MeasurementInput
+              label="Ease"
+              value={measurements.ease ?? 2}
+              onChange={handleChange('ease')}
+              hint="Added wearing room (cm)"
+              min={0}
+              max={10}
+              step={0.5}
             />
           </div>
         </div>
