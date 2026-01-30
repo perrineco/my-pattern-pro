@@ -1,4 +1,4 @@
-import { BodiceMeasurements } from "@/types/sloper";
+import { BodiceMeasurements, Category } from "@/types/sloper";
 import { useKnitBodicePath } from "./KnitBodicePanelPath";
 
 interface KnitBodicePanelProps {
@@ -7,6 +7,7 @@ interface KnitBodicePanelProps {
   offsetY: number;
   scale: number;
   panel: "front" | "back";
+  category: Category;
 }
 
 export function KnitBodicePanel({
@@ -15,15 +16,17 @@ export function KnitBodicePanel({
   offsetY,
   scale,
   panel,
+  category,
 }: KnitBodicePanelProps) {
   const { bust, backWidth, backLength } = measurements;
-  const ease = 2;
 
-  const { path, bustQuarterScaled, armholeDepthScaled, backLengthScaled } = useKnitBodicePath({
+  const { path, bustQuarterScaled, armholeDepthScaled, backLengthScaled, ease } = useKnitBodicePath({
     measurements,
     offsetX,
     offsetY,
     scale,
+    panel,
+    category,
   });
 
   const isFront = panel === "front";
