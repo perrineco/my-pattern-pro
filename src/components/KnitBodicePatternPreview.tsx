@@ -1,13 +1,14 @@
 import { useRef, useState, useEffect } from "react";
-import { BodiceMeasurements } from "@/types/sloper";
+import { BodiceMeasurements, Category } from "@/types/sloper";
 import { KnitBodicePanel } from "./knit-bodice/KnitBodicePanel";
 import { KnitBodiceLegend } from "./knit-bodice/KnitBodiceLegend";
 
 interface KnitBodicePatternPreviewProps {
   measurements: BodiceMeasurements;
+  category: Category;
 }
 
-export function KnitBodicePatternPreview({ measurements }: KnitBodicePatternPreviewProps) {
+export function KnitBodicePatternPreview({ measurements, category }: KnitBodicePatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
 
@@ -26,7 +27,7 @@ export function KnitBodicePatternPreview({ measurements }: KnitBodicePatternPrev
 
   const { bust, backWidth, backLength } = measurements;
 
-  const ease = 2;
+  const ease = 0; // Knit has zero or negative ease
   const bustQuarter = bust / 4;
   const backWidthHalf = backWidth / 2;
 
@@ -80,6 +81,7 @@ export function KnitBodicePatternPreview({ measurements }: KnitBodicePatternPrev
           offsetY={offsetY}
           scale={scale}
           panel="front"
+          category={category}
         />
 
         {/* Back Panel */}
@@ -89,6 +91,7 @@ export function KnitBodicePatternPreview({ measurements }: KnitBodicePatternPrev
           offsetY={offsetY}
           scale={scale}
           panel="back"
+          category={category}
         />
       </svg>
 

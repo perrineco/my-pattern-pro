@@ -402,7 +402,8 @@ const Index = () => {
                     />
                   ) : isBodiceKnit ? (
                     <KnitBodicePatternPreview 
-                      measurements={knitBodiceMeasurements} 
+                      measurements={knitBodiceMeasurements}
+                      category={category}
                     />
                   ) : patternType === 'bodice' ? (
                     <BodicePatternPreview 

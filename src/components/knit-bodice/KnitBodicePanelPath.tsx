@@ -1,37 +1,84 @@
-import { BodiceMeasurements } from "@/types/sloper";
+import { BodiceMeasurements, Category } from "@/types/sloper";
 
 interface KnitBodicePanelPathProps {
   measurements: BodiceMeasurements;
   offsetX: number;
   offsetY: number;
   scale: number;
+  panel: "front" | "back";
+  category: Category;
 }
+
+// Category-specific constants for knit bodice
+const categoryConfig = {
+  women: {
+    ease: 0, // Knit has zero or negative ease
+    neckWidthDivisor: 6,
+    neckWidthAdd: 1.6,
+    frontNeckDepthDivisor: 6,
+    frontNeckDepthAdd: 2,
+    backNeckDepthDivisor: 16,
+    backNeckDepthAdd: 0,
+    shoulderAngle: 25,
+    armholeDepthRatio: 0.5,
+  },
+  men: {
+    ease: 1, // Slightly more ease for men's knit
+    neckWidthDivisor: 6,
+    neckWidthAdd: 2,
+    frontNeckDepthDivisor: 8,
+    frontNeckDepthAdd: 1.5,
+    backNeckDepthDivisor: 20,
+    backNeckDepthAdd: 0,
+    shoulderAngle: 20,
+    armholeDepthRatio: 0.48,
+  },
+  kids: {
+    ease: 0.5, // Small ease for kids knit
+    neckWidthDivisor: 5.5,
+    neckWidthAdd: 1.2,
+    frontNeckDepthDivisor: 7,
+    frontNeckDepthAdd: 1.5,
+    backNeckDepthDivisor: 18,
+    backNeckDepthAdd: 0,
+    shoulderAngle: 22,
+    armholeDepthRatio: 0.52,
+  },
+};
 
 export function useKnitBodicePath({
   measurements,
   offsetX,
   offsetY,
   scale,
+  panel,
+  category,
 }: KnitBodicePanelPathProps) {
   const { bust, neckCircumference, shoulderLength, backWidth, backLength } = measurements;
+  const config = categoryConfig[category];
 
-  const ease = 2;
-  const armholeDepth = backLength * 0.5;
+  const ease = config.ease;
+  const armholeDepth = backLength * config.armholeDepthRatio;
   const bustQuarter = bust / 4;
 
   const s = (v: number) => v * scale;
 
-  const neckHalfWidth = (neckCircumference / 6 + 1.6) * scale;
-  const neckHalfHeight = (neckCircumference / 6 + 2) * scale;
+  const neckHalfWidth = (neckCircumference / config.neckWidthDivisor + config.neckWidthAdd) * scale;
+  // Back neckline is shallower than front, with category-specific depths
+  const neckHalfHeight = panel === "front" 
+    ? (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale 
+    : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
+
   const shoulderLengthScaled = shoulderLength * scale;
-  const angleRad = (25 * Math.PI) / 180;
-  const shoulderSlopeY = Math.sin(angleRad) * shoulderLengthScaled;
+  const angleRad = (config.shoulderAngle * Math.PI) / 180;
+  const shoulderSlopeY = panel === "front" ? Math.sin(angleRad) * shoulderLengthScaled : neckHalfHeight + 2.5;
   const shoulderWidthX = Math.sqrt(
     (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
   );
   const bustQuarterScaled = (bustQuarter + ease) * scale;
-  const armholeDepthScaled = s(armholeDepth);
-  const backLengthScaled = s(backLength);
+  const backLengthScaled =
+    panel === "front" ? s(backLength) + neckCircumference / 12 - (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale : s(backLength);
+  const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
 
   const buildPath = () => {
     const points: string[] = [];
@@ -57,10 +104,13 @@ export function useKnitBodicePath({
     points.push(`L ${shoulderEndX} ${shoulderEndY}`);
 
     // Armhole curve
-    const armholeRetreatX = s(bust / 4 + ease * 2 - backWidth / 2);
-    const midPointX = offsetX + bustQuarterScaled - armholeRetreatX;
+    const armholeRetreatX = s(bust / 4 + ease - backWidth / 2);
+    const midPointX =
+      panel === "front"
+        ? offsetX + bustQuarterScaled - armholeRetreatX + 1.3
+        : offsetX + bustQuarterScaled - armholeRetreatX;
     const armholeRiseY = s(backLength / 6);
-    const midPointY = offsetY + armholeDepthScaled - armholeRiseY;
+    const midPointY = neckEndY + shoulderSlopeY + armholeDepthScaled - armholeRiseY;
 
     const cp1_1x = shoulderEndX;
     const cp1_1y = shoulderEndY;
