@@ -8,13 +8,7 @@ interface DartlessBodicePanelPathProps {
   panel: "front" | "back";
 }
 
-export function useDartlessBodicePath({
-  measurements,
-  offsetX,
-  offsetY,
-  scale,
-  panel,
-}: DartlessBodicePanelPathProps) {
+export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, panel }: DartlessBodicePanelPathProps) {
   const { bust, neckCircumference, shoulderLength, backWidth, backLength } = measurements;
 
   const ease = 2;
@@ -25,14 +19,10 @@ export function useDartlessBodicePath({
 
   const neckHalfWidth = (neckCircumference / 6 + 1.6) * scale;
   // Back neckline is shallower than front
-  const neckHalfHeight = panel === "front" 
-    ? (neckCircumference / 6 + 2) * scale 
-    : (neckCircumference / 16) * scale;
+  const neckHalfHeight = panel === "front" ? (neckCircumference / 6 + 2) * scale : (neckCircumference / 16) * scale;
   const shoulderLengthScaled = shoulderLength * scale;
   const angleRad = (25 * Math.PI) / 180;
-  const shoulderSlopeY = panel === "front" 
-    ? Math.sin(angleRad) * shoulderLengthScaled; 
-    : neckHalfHeight + 2.5;
+  const shoulderSlopeY = panel === "front" ? Math.sin(angleRad) * shoulderLengthScaled : neckHalfHeight + 2.5;
   const shoulderWidthX = Math.sqrt(
     (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
   );
@@ -65,9 +55,10 @@ export function useDartlessBodicePath({
 
     // Armhole curve
     const armholeRetreatX = s(bust / 4 + ease - backWidth / 2);
-    const midPointX = panel === "front" 
-    ? offsetX + bustQuarterScaled - armholeRetreatX+1.3;
-    : offsetX + bustQuarterScaled - armholeRetreatX;
+    const midPointX =
+      panel === "front"
+        ? offsetX + bustQuarterScaled - armholeRetreatX + 1.3
+        : offsetX + bustQuarterScaled - armholeRetreatX;
     const armholeRiseY = s(backLength / 6);
     const midPointY = offsetY + armholeDepthScaled - armholeRiseY;
 
