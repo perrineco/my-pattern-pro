@@ -5,6 +5,7 @@ interface DartlessBodicePanelPathProps {
   offsetX: number;
   offsetY: number;
   scale: number;
+  panel: "front" | "back";
 }
 
 export function useDartlessBodicePath({
@@ -12,6 +13,7 @@ export function useDartlessBodicePath({
   offsetX,
   offsetY,
   scale,
+  panel,
 }: DartlessBodicePanelPathProps) {
   const { bust, neckCircumference, shoulderLength, backWidth, backLength } = measurements;
 
@@ -22,7 +24,10 @@ export function useDartlessBodicePath({
   const s = (v: number) => v * scale;
 
   const neckHalfWidth = (neckCircumference / 6 + 1.6) * scale;
-  const neckHalfHeight = (neckCircumference / 6 + 2) * scale;
+  // Back neckline is shallower than front
+  const neckHalfHeight = panel === "front" 
+    ? (neckCircumference / 6 + 2) * scale 
+    : (neckCircumference / 12 + 1) * scale;
   const shoulderLengthScaled = shoulderLength * scale;
   const angleRad = (25 * Math.PI) / 180;
   const shoulderSlopeY = Math.sin(angleRad) * shoulderLengthScaled;
