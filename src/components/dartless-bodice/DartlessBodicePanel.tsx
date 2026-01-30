@@ -24,6 +24,7 @@ export function DartlessBodicePanel({
     offsetX,
     offsetY,
     scale,
+    panel,
   });
 
   const isFront = panel === "front";
