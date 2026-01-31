@@ -8,10 +8,7 @@ interface BodiceWithDartsPatternPreviewProps {
   category: Category;
 }
 
-export function BodiceWithDartsPatternPreview({
-  measurements,
-  category,
-}: BodiceWithDartsPatternPreviewProps) {
+export function BodiceWithDartsPatternPreview({ measurements, category }: BodiceWithDartsPatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
 
@@ -55,25 +52,11 @@ export function BodiceWithDartsPatternPreview({
   const backOffsetX = startX + scaledWidth + gap;
 
   return (
-    <svg
-      ref={svgRef}
-      viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
-      className="w-full h-full min-h-[400px]"
-    >
+    <svg ref={svgRef} viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full min-h-[400px]">
       {/* Grid background */}
       <defs>
-        <pattern
-          id="bodiceDartsGrid"
-          width={scale}
-          height={scale}
-          patternUnits="userSpaceOnUse"
-        >
-          <path
-            d={`M ${scale} 0 L 0 0 0 ${scale}`}
-            fill="none"
-            stroke="hsl(var(--pattern-grid))"
-            strokeWidth="0.5"
-          />
+        <pattern id="bodiceDartsGrid" width={scale} height={scale} patternUnits="userSpaceOnUse">
+          <path d={`M ${scale} 0 L 0 0 0 ${scale}`} fill="none" stroke="hsl(var(--pattern-grid))" strokeWidth="0.5" />
         </pattern>
       </defs>
 
@@ -120,14 +103,10 @@ export function BodiceWithDartsPatternPreview({
       {/* Measurement annotations */}
       <g className="text-[10px]">
         {/* Bust measurement */}
-        <text
-          x={frontOffsetX + scaledWidth + 15}
-          y={offsetY + scaledHeight * 0.5}
-          className="fill-primary"
-        >
+        <text x={frontOffsetX + scaledWidth + 15} y={offsetY + scaledHeight * 0.5} className="fill-primary">
           Bust/4: {(bust / 4).toFixed(1)}cm
         </text>
-        
+
         {/* Back length */}
         <text
           x={frontOffsetX - 5}

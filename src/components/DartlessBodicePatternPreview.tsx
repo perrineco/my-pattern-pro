@@ -32,19 +32,22 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
   const backWidthHalf = backWidth / 2;
 
   // Calculate front panel extra height (matches DartlessBodicePanelPath logic)
-  const frontNeckDepthDivisor = category === 'men' ? 8 : category === 'kids' ? 7 : 6;
-  const frontNeckDepthAdd = category === 'men' ? 1.5 : category === 'kids' ? 1.5 : 2;
+  const frontNeckDepthDivisor = category === "men" ? 8 : category === "kids" ? 7 : 6;
+  const frontNeckDepthAdd = category === "men" ? 1.5 : category === "kids" ? 1.5 : 2;
   const frontExtraHeight = neckCircumference / 12 - (neckCircumference / frontNeckDepthDivisor + frontNeckDepthAdd);
+  const neckHeightFront = neckCircumference / frontNeckDepthDivisor + frontNeckDepthAdd;
+  const neckHeightBack = neckCircumference / 16;
+  const maxNeckHeight = Math.max(neckHeightFront, neckHeightBack);
 
   // Pattern dimensions for single panel
   const singlePatternWidth = Math.max(bustQuarter + ease, backWidthHalf) + 5;
   const frontPatternHeight = backLength + frontExtraHeight + 5;
-  const backPatternHeight = backLength + 5;
+  const backPatternHeight = backLength + (neckCircumference / backNeckDepthDivisor + backNeckDepthAdd) + 5;
   const maxPatternHeight = Math.max(frontPatternHeight, backPatternHeight);
 
   // Calculate scale to fit both panels side by side
   const padding = 40;
-  const availableWidth = (dimensions.width / 2) - padding * 2;
+  const availableWidth = dimensions.width / 2 - padding * 2;
   const availableHeight = dimensions.height - padding * 2;
   const scale = Math.min(availableWidth / singlePatternWidth, availableHeight / maxPatternHeight, 8);
 
