@@ -45,7 +45,7 @@ export function BodicePatternPreview({ measurements, panel = "front" }: BodicePa
   const scaledWidth = patternWidth * scale;
   const scaledHeight = patternHeight * scale;
   const offsetX = (dimensions.width - scaledWidth) / 2;
-  const offsetY = (dimensions.height - scaledHeight) / 2;
+  const offsetY = (dimensions.height - scaledHeight) / 2 + neckHalfHeightCm * scale;
 
   // Scaled measurements
   const s = (v: number) => v * scale;
