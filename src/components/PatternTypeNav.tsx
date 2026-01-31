@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { PatternType, BodiceVariant } from '@/types/sloper';
+import { PatternType, BodiceVariant, Category } from '@/types/sloper';
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 
 interface PatternTypeNavProps {
   selected: PatternType;
   onSelect: (type: PatternType) => void;
+  category: Category;
 }
 
 interface PatternTypeConfig {
@@ -34,9 +35,16 @@ const patternTypes: PatternTypeConfig[] = [
   { value: 'sleeve', label: 'Sleeve', available: false },
 ];
 
-export function PatternTypeNav({ selected, onSelect }: PatternTypeNavProps) {
+export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavProps) {
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const submenuRef = useRef<HTMLDivElement>(null);
+
+  // Filter pattern types based on category
+  const filteredPatternTypes = patternTypes.filter(type => {
+    // Hide skirt for men
+    if (type.value === 'skirt' && category === 'men') return false;
+    return true;
+  });
 
   // Check if current selection is a bodice variant
   const isBodiceVariant = selected.startsWith('bodice');
@@ -80,7 +88,7 @@ export function PatternTypeNav({ selected, onSelect }: PatternTypeNavProps) {
 
   return (
     <nav className="flex gap-1 p-1 bg-secondary/50 rounded-lg" ref={submenuRef}>
-      {patternTypes.map((type) => (
+      {filteredPatternTypes.map((type) => (
         <div key={type.value} className="relative">
           <button
             onClick={() => handleMainClick(type)}

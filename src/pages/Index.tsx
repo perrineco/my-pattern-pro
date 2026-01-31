@@ -227,7 +227,7 @@ const Index = () => {
                 </div>
               </div>
 
-              <PatternTypeNav selected={patternType} onSelect={handlePatternTypeChange} />
+              <PatternTypeNav selected={patternType} onSelect={handlePatternTypeChange} category={category} />
             </div>
 
             {/* Main content */}
