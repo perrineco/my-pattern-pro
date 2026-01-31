@@ -42,7 +42,7 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
   // Pattern dimensions for single panel
   const singlePatternWidth = Math.max(bustQuarter + ease, backWidthHalf) + 5;
   const frontPatternHeight = backLength + frontExtraHeight + 5;
-  const backPatternHeight = backLength + (neckCircumference / backNeckDepthDivisor + backNeckDepthAdd) + 5;
+  const backPatternHeight = backLength + 5;
   const maxPatternHeight = Math.max(frontPatternHeight, backPatternHeight);
 
   // Calculate scale to fit both panels side by side
