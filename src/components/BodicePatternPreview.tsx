@@ -29,11 +29,12 @@ export function BodicePatternPreview({ measurements, panel = "front" }: BodicePa
   const bustQuarter = bust / 4;
   const backWidthHalf = backWidth / 2;
   const neckWidthCalc = neckCircumference / 6; // Approximate neck width from circumference
+  const neckHalfHeightCm = panel === "front" ? neckCircumference / 6 + 2 : neckCircumference / 16;
   const ease = 1;
 
   // Pattern dimensions
   const patternWidth = Math.max(bustQuarter, backWidthHalf) + ease + 5;
-  const patternHeight = backLength + 25;
+  const patternHeight = backLength + neckHalfHeightCm + 5;
 
   // Calculate scale to fit in view
   const padding = 60;
