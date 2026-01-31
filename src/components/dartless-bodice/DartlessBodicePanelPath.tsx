@@ -46,7 +46,14 @@ const categoryConfig = {
   },
 };
 
-export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, panel, category }: DartlessBodicePanelPathProps) {
+export function useDartlessBodicePath({
+  measurements,
+  offsetX,
+  offsetY,
+  scale,
+  panel,
+  category,
+}: DartlessBodicePanelPathProps) {
   const { bust, neckCircumference, shoulderLength, backWidth, backLength, ease: customEase } = measurements;
   const config = categoryConfig[category];
 
@@ -59,10 +66,12 @@ export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, p
 
   const neckHalfWidth = (neckCircumference / config.neckWidthDivisor + config.neckWidthAdd) * scale;
   // Back neckline is shallower than front, with category-specific depths
-  const neckHalfHeight = panel === "front" 
-    ? (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale 
-    : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
-  
+  const neckHalfHeight =
+    panel === "front"
+      ? (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale
+      : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
+
+  const offsetY = offsetY + neckHalfHeight;
   const shoulderLengthScaled = shoulderLength * scale;
   const angleRad = (config.shoulderAngle * Math.PI) / 180;
   const shoulderSlopeY = panel === "front" ? Math.sin(angleRad) * shoulderLengthScaled : neckHalfHeight + 2.5;
@@ -71,7 +80,11 @@ export function useDartlessBodicePath({ measurements, offsetX, offsetY, scale, p
   );
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backLengthScaled =
-    panel === "front" ? s(backLength) + neckCircumference / 12 - (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale : s(backLength);
+    panel === "front"
+      ? s(backLength) +
+        neckCircumference / 12 -
+        (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale
+      : s(backLength);
   const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
 
   const buildPath = () => {
