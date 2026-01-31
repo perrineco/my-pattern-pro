@@ -25,28 +25,37 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  const { bust, backWidth, backLength } = measurements;
+  const { bust, backWidth, backLength, neckCircumference } = measurements;
 
-  const ease = 2;
+  const ease = measurements.ease ?? 2;
   const bustQuarter = bust / 4;
   const backWidthHalf = backWidth / 2;
 
+  // Calculate front panel extra height (matches DartlessBodicePanelPath logic)
+  const frontNeckDepthDivisor = category === 'men' ? 8 : category === 'kids' ? 7 : 6;
+  const frontNeckDepthAdd = category === 'men' ? 1.5 : category === 'kids' ? 1.5 : 2;
+  const frontExtraHeight = neckCircumference / 12 - (neckCircumference / frontNeckDepthDivisor + frontNeckDepthAdd);
+
   // Pattern dimensions for single panel
   const singlePatternWidth = Math.max(bustQuarter + ease, backWidthHalf) + 5;
-  const patternHeight = backLength + 5;
+  const frontPatternHeight = backLength + frontExtraHeight + 5;
+  const backPatternHeight = backLength + 5;
+  const maxPatternHeight = Math.max(frontPatternHeight, backPatternHeight);
 
   // Calculate scale to fit both panels side by side
   const padding = 40;
   const availableWidth = (dimensions.width / 2) - padding * 2;
   const availableHeight = dimensions.height - padding * 2;
-  const scale = Math.min(availableWidth / singlePatternWidth, availableHeight / patternHeight, 8);
+  const scale = Math.min(availableWidth / singlePatternWidth, availableHeight / maxPatternHeight, 8);
 
   // Front panel offset (left side)
   const frontOffsetX = padding;
-  const offsetY = padding;
+  const frontOffsetY = padding;
 
-  // Back panel offset (right side)
+  // Back panel offset (right side) - aligned at bottom with front
   const backOffsetX = dimensions.width / 2 + padding / 2;
+  const heightDifference = (frontPatternHeight - backPatternHeight) * scale;
+  const backOffsetY = padding + heightDifference;
 
   return (
     <div className="w-full h-full min-h-[500px] bg-pattern-grid/30 rounded-lg relative overflow-hidden">
@@ -78,7 +87,7 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
         <DartlessBodicePanel
           measurements={measurements}
           offsetX={frontOffsetX}
-          offsetY={offsetY}
+          offsetY={frontOffsetY}
           scale={scale}
           panel="front"
           category={category}
@@ -88,7 +97,7 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
         <DartlessBodicePanel
           measurements={measurements}
           offsetX={backOffsetX}
-          offsetY={offsetY}
+          offsetY={backOffsetY}
           scale={scale}
           panel="back"
           category={category}
