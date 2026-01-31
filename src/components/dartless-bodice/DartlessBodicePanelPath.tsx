@@ -71,7 +71,6 @@ export function useDartlessBodicePath({
       ? (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale
       : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
 
-  const offsetY = offsetY + neckHalfHeight;
   const shoulderLengthScaled = shoulderLength * scale;
   const angleRad = (config.shoulderAngle * Math.PI) / 180;
   const shoulderSlopeY = panel === "front" ? Math.sin(angleRad) * shoulderLengthScaled : neckHalfHeight + 2.5;
