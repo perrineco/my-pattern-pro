@@ -19,7 +19,7 @@ interface SkirtBackPanelProps {
   offsetX: number;
   offsetY: number;
   category: Category;
-  dartPositionRatio: number;
+  centerToDartScaled: number;
 }
 
 export function SkirtBackPanel({
@@ -37,10 +37,9 @@ export function SkirtBackPanel({
   waistToHipScaled,
   offsetX,
   offsetY,
-  dartPositionRatio,
+  centerToDartScaled,
 }: SkirtBackPanelProps) {
   // Back panel dart values are now passed in directly (already calculated differently from front)
-  const centerToDartScaled = patternWidth * dartPositionRatio;
 
   // Create the path for the back panel (using direct dart values)
   const panelPath = `

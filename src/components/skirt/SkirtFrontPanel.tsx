@@ -47,11 +47,11 @@ export function SkirtFrontPanel({
     L ${offsetX + centerToDartScaled + dartWidthScaled / 2} ${offsetY + dartLengthScaled}
     L ${offsetX + centerToDartScaled + dartWidthScaled} ${offsetY}
     C ${offsetX + centerToDartScaled + dartWidthScaled + (waistWidthScaled - (centerToDartScaled + dartWidthScaled)) / 2} ${offsetY},
-      ${offsetX + waistWidthScaled} ${offsetY - 1.25 * scale},
-      ${offsetX + waistWidthScaled} ${offsetY - 1.25 * scale}
-    C ${offsetX + waistWidthScaled} ${offsetY - 1.25 * scale},
+      ${offsetX + waistWidthScaled} ${offsetY - frontwaistRise * scale},
+      ${offsetX + waistWidthScaled} ${offsetY - frontwaistRise * scale}
+    C ${offsetX + waistWidthScaled} ${offsetY - frontwaistRise * scale},
       ${offsetX + patternWidth} ${offsetY + waistToHipScaled / 4},
-      ${offsetX + patternWidth} ${offsetY + waistToHipScaled + 1.25 * scale}
+      ${offsetX + patternWidth} ${offsetY + waistToHipScaled + frontwaistRise * scale}
     L ${offsetX + patternWidth} ${offsetY + patternHeight}
     L ${offsetX} ${offsetY + patternHeight}
     Z

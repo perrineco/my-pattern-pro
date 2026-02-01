@@ -132,8 +132,7 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
     waistToHipScaled,
     offsetY,
     category,
-    dartPositionRatio: backDartPositionRatio,
-    centerToDartScaled: frontcenterToDartScaled,
+    centerToDartScaled: backcenterToDartScaled,
   };
 
   return (
