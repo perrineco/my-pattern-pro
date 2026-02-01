@@ -14,17 +14,17 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
 
   // Calculate pattern pieces
-  const { waist, hip, waistToHip, skirtLength } = measurements;
+  const { waist, hip, waistToHip, skirtLength, ease: customEase } = measurements;
 
   // Category-specific calculations
-  // Kids: smaller ease, narrower darts, shorter dart length
-  // Women: standard ease, standard darts
+  // Kids: smaller default ease, narrower darts, shorter dart length
+  // Women: standard default ease, standard darts
   const isKids = category === 'kids';
   
   // Pattern calculations (shared between front and back)
   const waistQuarter = waist / 4;
   const hipQuarter = hip / 4;
-  const ease = isKids ? 0.5 : 1; // Less ease for kids
+  const ease = customEase ?? (isKids ? 0.5 : 1); // Use custom ease or category default
   const dartWidth = isKids 
     ? ((hip - waist) * 20) / 240  // Narrower darts for kids
     : ((hip - waist) * 25) / 240;

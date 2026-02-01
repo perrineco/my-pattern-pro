@@ -7,6 +7,7 @@ export interface SkirtMeasurements {
   hip: number;
   waistToHip: number;
   skirtLength: number;
+  ease?: number; // Custom ease (optional, defaults to category-specific)
 }
 
 export interface BodiceMeasurements {
