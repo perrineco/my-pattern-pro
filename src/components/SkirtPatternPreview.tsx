@@ -87,9 +87,11 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   const frontDartPositionRatio = isKids ? 0.42 : 0.4;
   const backDartPositionRatio = isKids ? 0.38 : 0.35;
   const frontcenterToDartScaled = isKids
+    ? hip / 10 - frontDartWidthScaled / 2
+    : (frontWaistWidthScaled - frontDartWidthScaled) / 2;
+  const backcenterToDartScaled = isKids
     ? (hip * scale) / 10 - frontDartWidthScaled / 2
     : (frontWaistWidthScaled - frontDartWidthScaled) / 2;
-  const backcenterToDartScaled = isKids ? 4 : (frontWaistWidthScaled - frontDartWidthScaled) / 2;
   const frontwaistRise = isKids ? 1 : 1.25;
 
   const frontProps = {
