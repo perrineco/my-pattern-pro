@@ -36,7 +36,7 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
   const frontNeckDepthAdd = category === "men" ? 1.5 : category === "kids" ? 1.5 : 2;
   const frontExtraHeight = neckCircumference / 12 - (neckCircumference / frontNeckDepthDivisor + frontNeckDepthAdd);
   const neckHeightFront = neckCircumference / frontNeckDepthDivisor + frontNeckDepthAdd;
-  const neckHeightBack = neckCircumference / 16;
+  const neckHeightBack = category === "men" ? 2 : category === "kids" ? 1.4 : neckCircumference / 16;
   const maxNeckHeight = Math.max(neckHeightFront, neckHeightBack);
 
   // Pattern dimensions for single panel
