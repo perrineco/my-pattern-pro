@@ -40,7 +40,7 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
     : ((hip - waist) * 35) / 240; // Women: 1.2x front
   const backDartLength = isKids
     ? frontDartLength + 1 // Kids: 1.05x front
-    : 13; // Women: 1.1x front
+    : frontDartLength + 2; // Women: 1.1x front
 
   // Scale factor to fit both panels
   const scale = Math.min(
@@ -71,7 +71,7 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
 
   // Back panel offset (right side) - 3 grid squares (60px) gap from front panel
   const gap = 60; // 3 squares × 20px
-  const backOffsetX = frontOffsetX + patternWidth + gap;
+  const backOffsetX = frontOffsetX + patternWidthFront + gap;
 
   useEffect(() => {
     const updateDimensions = () => {
