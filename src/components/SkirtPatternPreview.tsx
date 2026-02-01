@@ -28,7 +28,7 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
 
   // Front dart calculations
   const frontDartWidth = isKids
-    ? ((hip - waist) * 20) / 240 // Narrower darts for kids
+    ? ((hip - waist) * 25) / 240 // Narrower darts for kids
     : ((hip - waist) * 25) / 240;
   const frontDartLength = isKids
     ? waistToHip * 0.4 // Shorter darts for kids
@@ -86,7 +86,10 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   // Category-specific dart positions
   const frontDartPositionRatio = isKids ? 0.42 : 0.4;
   const backDartPositionRatio = isKids ? 0.38 : 0.35;
-  const frontcenterToDartScaled = isKids ? 4 : (frontWaistWidthScaled - frontDartWidthScaled) / 2;
+  const frontcenterToDartScaled = isKids
+    ? hip / 10 - frontDartWidthScaled / 2
+    : (frontWaistWidthScaled - frontDartWidthScaled) / 2;
+  const backcenterToDartScaled = isKids ? 4 : (frontWaistWidthScaled - frontDartWidthScaled) / 2;
 
   const frontProps = {
     waist,
