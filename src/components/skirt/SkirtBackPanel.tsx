@@ -1,3 +1,5 @@
+import { Category } from "@/types/sloper";
+
 interface SkirtBackPanelProps {
   waist: number;
   waistQuarter: number;
@@ -16,6 +18,10 @@ interface SkirtBackPanelProps {
   waistToHipScaled: number;
   offsetX: number;
   offsetY: number;
+  category: Category;
+  backDartWidthMultiplier: number;
+  backDartLengthMultiplier: number;
+  backDartPositionRatio: number;
 }
 
 export function SkirtBackPanel({
@@ -33,11 +39,15 @@ export function SkirtBackPanel({
   waistToHipScaled,
   offsetX,
   offsetY,
+  category,
+  backDartWidthMultiplier,
+  backDartLengthMultiplier,
+  backDartPositionRatio,
 }: SkirtBackPanelProps) {
-  // Back panel has larger dart, positioned differently
-  const backDartWidthScaled = dartWidthScaled * 1.2; // Slightly larger dart for back
-  const backDartLengthScaled = dartLengthScaled * 1.1; // Slightly longer dart
-  const centerToDartScaled = patternWidth * 0.35; // Dart closer to center back
+  // Back panel has larger dart, positioned differently (category-specific)
+  const backDartWidthScaled = dartWidthScaled * backDartWidthMultiplier;
+  const backDartLengthScaled = dartLengthScaled * backDartLengthMultiplier;
+  const centerToDartScaled = patternWidth * backDartPositionRatio;
 
   // Create the path for the back panel
   const panelPath = `
@@ -112,7 +122,7 @@ export function SkirtBackPanel({
           textAnchor="middle"
           className="fill-primary text-xs font-sans"
         >
-          ¼ waist = {(waistQuarter + dartWidth * 1.2 + ease).toFixed(1)}cm
+          ¼ waist = {(waistQuarter + dartWidth * backDartWidthMultiplier + ease).toFixed(1)}cm
         </text>
       </g>
 

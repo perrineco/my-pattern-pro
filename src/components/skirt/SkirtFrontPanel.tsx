@@ -1,3 +1,5 @@
+import { Category } from "@/types/sloper";
+
 interface SkirtFrontPanelProps {
   waist: number;
   waistQuarter: number;
@@ -16,6 +18,7 @@ interface SkirtFrontPanelProps {
   waistToHipScaled: number;
   offsetX: number;
   offsetY: number;
+  category: Category;
 }
 
 export function SkirtFrontPanel({
@@ -32,8 +35,11 @@ export function SkirtFrontPanel({
   waistToHipScaled,
   offsetX,
   offsetY,
+  category,
 }: SkirtFrontPanelProps) {
-  const centerToDartScaled = patternWidth * 0.4;
+  // Kids: dart positioned slightly closer to center
+  const dartPositionRatio = category === 'kids' ? 0.42 : 0.4;
+  const centerToDartScaled = patternWidth * dartPositionRatio;
 
   // Create the path for the front panel
   const panelPath = `
