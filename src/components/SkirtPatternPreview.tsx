@@ -86,6 +86,7 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   // Category-specific dart positions
   const frontDartPositionRatio = isKids ? 0.42 : 0.4;
   const backDartPositionRatio = isKids ? 0.38 : 0.35;
+  const frontcenterToDartScaled = isKids ? 4 : (frontWaistWidthScaled-frontDartWidthScaled)/2-;
 
   const frontProps = {
     waist,
@@ -106,6 +107,7 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
     offsetY,
     category,
     dartPositionRatio: frontDartPositionRatio,
+    centerToDartScaled:frontcenterToDartScaled
   };
 
   const backProps = {
