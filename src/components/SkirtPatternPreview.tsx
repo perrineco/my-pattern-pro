@@ -1,4 +1,4 @@
-import { SkirtMeasurements } from "@/types/sloper";
+import { SkirtMeasurements, Category } from "@/types/sloper";
 import { useEffect, useRef, useState } from "react";
 import { SkirtFrontPanel } from "./skirt/SkirtFrontPanel";
 import { SkirtBackPanel } from "./skirt/SkirtBackPanel";
@@ -6,21 +6,31 @@ import { SkirtLegend } from "./skirt/SkirtLegend";
 
 interface SkirtPatternPreviewProps {
   measurements: SkirtMeasurements;
+  category: Category;
 }
 
-export function SkirtPatternPreview({ measurements }: SkirtPatternPreviewProps) {
+export function SkirtPatternPreview({ measurements, category }: SkirtPatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
 
   // Calculate pattern pieces
   const { waist, hip, waistToHip, skirtLength } = measurements;
 
+  // Category-specific calculations
+  // Kids: smaller ease, narrower darts, shorter dart length
+  // Women: standard ease, standard darts
+  const isKids = category === 'kids';
+  
   // Pattern calculations (shared between front and back)
   const waistQuarter = waist / 4;
   const hipQuarter = hip / 4;
-  const ease = 1;
-  const dartWidth = ((hip - waist) * 25) / 240;
-  const dartLength = waistToHip * 0.5;
+  const ease = isKids ? 0.5 : 1; // Less ease for kids
+  const dartWidth = isKids 
+    ? ((hip - waist) * 20) / 240  // Narrower darts for kids
+    : ((hip - waist) * 25) / 240;
+  const dartLength = isKids 
+    ? waistToHip * 0.4  // Shorter darts for kids
+    : waistToHip * 0.5;
 
   // Scale factor to fit both panels
   const scale = Math.min(
@@ -55,6 +65,11 @@ export function SkirtPatternPreview({ measurements }: SkirtPatternPreviewProps) 
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
+  // Category-specific back dart multipliers
+  const backDartWidthMultiplier = isKids ? 1.1 : 1.2;
+  const backDartLengthMultiplier = isKids ? 1.05 : 1.1;
+  const backDartPositionRatio = isKids ? 0.38 : 0.35;
+
   const sharedProps = {
     waist,
     waistQuarter,
@@ -72,6 +87,10 @@ export function SkirtPatternPreview({ measurements }: SkirtPatternPreviewProps) 
     dartLengthScaled,
     waistToHipScaled,
     offsetY,
+    category,
+    backDartWidthMultiplier,
+    backDartLengthMultiplier,
+    backDartPositionRatio,
   };
 
   return (

@@ -412,7 +412,7 @@ const Index = () => {
                 </div>
                 <div className="p-4">
                   {patternType === 'skirt' ? (
-                    <SkirtPatternPreview measurements={skirtMeasurements} />
+                    <SkirtPatternPreview measurements={skirtMeasurements} category={category} />
                   ) : isBodiceDartless ? (
                     <DartlessBodicePatternPreview 
                       measurements={dartlessBodiceMeasurements}
@@ -436,7 +436,7 @@ const Index = () => {
                   ) : patternType === 'pants' ? (
                     <PantsPatternPreview measurements={pantsMeasurements} />
                   ) : (
-                    <SkirtPatternPreview measurements={skirtMeasurements} />
+                    <SkirtPatternPreview measurements={skirtMeasurements} category={category} />
                   )}
                 </div>
               </div>
