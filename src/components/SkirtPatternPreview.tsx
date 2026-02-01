@@ -19,28 +19,28 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   // Category-specific calculations
   // Kids: smaller default ease, narrower darts, shorter dart length
   // Women: standard default ease, standard darts
-  const isKids = category === 'kids';
-  
+  const isKids = category === "kids";
+
   // Pattern calculations (shared between front and back)
   const waistQuarter = waist / 4;
   const hipQuarter = hip / 4;
   const ease = customEase ?? (isKids ? 0.5 : 1); // Use custom ease or category default
-  
+
   // Front dart calculations
-  const frontDartWidth = isKids 
-    ? ((hip - waist) * 20) / 240  // Narrower darts for kids
+  const frontDartWidth = isKids
+    ? ((hip - waist) * 20) / 240 // Narrower darts for kids
     : ((hip - waist) * 25) / 240;
-  const frontDartLength = isKids 
-    ? waistToHip * 0.4  // Shorter darts for kids
+  const frontDartLength = isKids
+    ? waistToHip * 0.4 // Shorter darts for kids
     : waistToHip * 0.5;
 
   // Back dart calculations (larger than front)
-  const backDartWidth = isKids 
-    ? ((hip - waist) * 22) / 240  // Kids: 1.1x front
-    : ((hip - waist) * 30) / 240; // Women: 1.2x front
-  const backDartLength = isKids 
-    ? waistToHip * 0.42  // Kids: 1.05x front
-    : waistToHip * 0.55; // Women: 1.1x front
+  const backDartWidth = isKids
+    ? ((hip - waist) * 22) / 240 // Kids: 1.1x front
+    : ((hip - waist) * 35) / 240; // Women: 1.2x front
+  const backDartLength = isKids
+    ? frontDartLength + 1 // Kids: 1.05x front
+    : 13; // Women: 1.1x front
 
   // Scale factor to fit both panels
   const scale = Math.min(
@@ -52,12 +52,12 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   const patternWidth = (hipQuarter + ease) * scale;
   const patternHeight = skirtLength * scale;
   const waistToHipScaled = waistToHip * scale;
-  
+
   // Front panel scaled values
   const frontWaistWidthScaled = (waistQuarter + ease + frontDartWidth) * scale;
   const frontDartWidthScaled = frontDartWidth * scale;
   const frontDartLengthScaled = frontDartLength * scale;
-  
+
   // Back panel scaled values
   const backWaistWidthScaled = (waistQuarter + ease + backDartWidth) * scale;
   const backDartWidthScaled = backDartWidth * scale;
