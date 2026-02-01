@@ -50,8 +50,9 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   const frontOffsetX = 40;
   const offsetY = 40;
 
-  // Back panel offset (right side)
-  const backOffsetX = dimensions.width / 2 + 20;
+  // Back panel offset (right side) - 3 grid squares (60px) gap from front panel
+  const gap = 60; // 3 squares × 20px
+  const backOffsetX = frontOffsetX + patternWidth + gap;
 
   useEffect(() => {
     const updateDimensions = () => {
