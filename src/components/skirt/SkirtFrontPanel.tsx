@@ -19,6 +19,7 @@ interface SkirtFrontPanelProps {
   offsetX: number;
   offsetY: number;
   category: Category;
+  dartPositionRatio: number;
 }
 
 export function SkirtFrontPanel({
@@ -35,10 +36,8 @@ export function SkirtFrontPanel({
   waistToHipScaled,
   offsetX,
   offsetY,
-  category,
+  dartPositionRatio,
 }: SkirtFrontPanelProps) {
-  // Kids: dart positioned slightly closer to center
-  const dartPositionRatio = category === 'kids' ? 0.42 : 0.4;
   const centerToDartScaled = patternWidth * dartPositionRatio;
 
   // Create the path for the front panel

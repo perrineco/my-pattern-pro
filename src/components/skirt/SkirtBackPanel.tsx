@@ -19,9 +19,7 @@ interface SkirtBackPanelProps {
   offsetX: number;
   offsetY: number;
   category: Category;
-  backDartWidthMultiplier: number;
-  backDartLengthMultiplier: number;
-  backDartPositionRatio: number;
+  dartPositionRatio: number;
 }
 
 export function SkirtBackPanel({
@@ -39,23 +37,18 @@ export function SkirtBackPanel({
   waistToHipScaled,
   offsetX,
   offsetY,
-  category,
-  backDartWidthMultiplier,
-  backDartLengthMultiplier,
-  backDartPositionRatio,
+  dartPositionRatio,
 }: SkirtBackPanelProps) {
-  // Back panel has larger dart, positioned differently (category-specific)
-  const backDartWidthScaled = dartWidthScaled * backDartWidthMultiplier;
-  const backDartLengthScaled = dartLengthScaled * backDartLengthMultiplier;
-  const centerToDartScaled = patternWidth * backDartPositionRatio;
+  // Back panel dart values are now passed in directly (already calculated differently from front)
+  const centerToDartScaled = patternWidth * dartPositionRatio;
 
-  // Create the path for the back panel
+  // Create the path for the back panel (using direct dart values)
   const panelPath = `
     M ${offsetX} ${offsetY}
     L ${offsetX + centerToDartScaled} ${offsetY}
-    L ${offsetX + centerToDartScaled + backDartWidthScaled / 2} ${offsetY + backDartLengthScaled}
-    L ${offsetX + centerToDartScaled + backDartWidthScaled} ${offsetY}
-    C ${offsetX + centerToDartScaled + backDartWidthScaled + (waistWidthScaled - (centerToDartScaled + backDartWidthScaled)) / 2} ${offsetY},
+    L ${offsetX + centerToDartScaled + dartWidthScaled / 2} ${offsetY + dartLengthScaled}
+    L ${offsetX + centerToDartScaled + dartWidthScaled} ${offsetY}
+    C ${offsetX + centerToDartScaled + dartWidthScaled + (waistWidthScaled - (centerToDartScaled + dartWidthScaled)) / 2} ${offsetY},
       ${offsetX + waistWidthScaled} ${offsetY - 1.25 * scale},
       ${offsetX + waistWidthScaled} ${offsetY - 1.25 * scale}
     C ${offsetX + waistWidthScaled} ${offsetY - 1.25 * scale},
@@ -122,7 +115,7 @@ export function SkirtBackPanel({
           textAnchor="middle"
           className="fill-primary text-xs font-sans"
         >
-          ¼ waist = {(waistQuarter + dartWidth * backDartWidthMultiplier + ease).toFixed(1)}cm
+          ¼ waist = {(waistQuarter + dartWidth + ease).toFixed(1)}cm
         </text>
       </g>
 

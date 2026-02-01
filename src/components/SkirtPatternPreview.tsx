@@ -25,12 +25,22 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   const waistQuarter = waist / 4;
   const hipQuarter = hip / 4;
   const ease = customEase ?? (isKids ? 0.5 : 1); // Use custom ease or category default
-  const dartWidth = isKids 
+  
+  // Front dart calculations
+  const frontDartWidth = isKids 
     ? ((hip - waist) * 20) / 240  // Narrower darts for kids
     : ((hip - waist) * 25) / 240;
-  const dartLength = isKids 
+  const frontDartLength = isKids 
     ? waistToHip * 0.4  // Shorter darts for kids
     : waistToHip * 0.5;
+
+  // Back dart calculations (larger than front)
+  const backDartWidth = isKids 
+    ? ((hip - waist) * 22) / 240  // Kids: 1.1x front
+    : ((hip - waist) * 30) / 240; // Women: 1.2x front
+  const backDartLength = isKids 
+    ? waistToHip * 0.42  // Kids: 1.05x front
+    : waistToHip * 0.55; // Women: 1.1x front
 
   // Scale factor to fit both panels
   const scale = Math.min(
@@ -41,10 +51,17 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   // Pattern coordinates (scaled)
   const patternWidth = (hipQuarter + ease) * scale;
   const patternHeight = skirtLength * scale;
-  const waistWidthScaled = (waistQuarter + ease + dartWidth) * scale;
-  const dartWidthScaled = dartWidth * scale;
-  const dartLengthScaled = dartLength * scale;
   const waistToHipScaled = waistToHip * scale;
+  
+  // Front panel scaled values
+  const frontWaistWidthScaled = (waistQuarter + ease + frontDartWidth) * scale;
+  const frontDartWidthScaled = frontDartWidth * scale;
+  const frontDartLengthScaled = frontDartLength * scale;
+  
+  // Back panel scaled values
+  const backWaistWidthScaled = (waistQuarter + ease + backDartWidth) * scale;
+  const backDartWidthScaled = backDartWidth * scale;
+  const backDartLengthScaled = backDartLength * scale;
 
   // Front panel offset (left side)
   const frontOffsetX = 40;
@@ -66,32 +83,50 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  // Category-specific back dart multipliers
-  const backDartWidthMultiplier = isKids ? 1.1 : 1.2;
-  const backDartLengthMultiplier = isKids ? 1.05 : 1.1;
+  // Category-specific dart positions
+  const frontDartPositionRatio = isKids ? 0.42 : 0.4;
   const backDartPositionRatio = isKids ? 0.38 : 0.35;
 
-  const sharedProps = {
+  const frontProps = {
     waist,
     waistQuarter,
     hipQuarter,
     ease,
-    dartWidth,
-    dartLength,
+    dartWidth: frontDartWidth,
+    dartLength: frontDartLength,
     skirtLength,
     waistToHip,
     scale,
     patternWidth,
     patternHeight,
-    waistWidthScaled,
-    dartWidthScaled,
-    dartLengthScaled,
+    waistWidthScaled: frontWaistWidthScaled,
+    dartWidthScaled: frontDartWidthScaled,
+    dartLengthScaled: frontDartLengthScaled,
     waistToHipScaled,
     offsetY,
     category,
-    backDartWidthMultiplier,
-    backDartLengthMultiplier,
-    backDartPositionRatio,
+    dartPositionRatio: frontDartPositionRatio,
+  };
+
+  const backProps = {
+    waist,
+    waistQuarter,
+    hipQuarter,
+    ease,
+    dartWidth: backDartWidth,
+    dartLength: backDartLength,
+    skirtLength,
+    waistToHip,
+    scale,
+    patternWidth,
+    patternHeight,
+    waistWidthScaled: backWaistWidthScaled,
+    dartWidthScaled: backDartWidthScaled,
+    dartLengthScaled: backDartLengthScaled,
+    waistToHipScaled,
+    offsetY,
+    category,
+    dartPositionRatio: backDartPositionRatio,
   };
 
   return (
@@ -122,10 +157,10 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
         </defs>
 
         {/* Front Panel */}
-        <SkirtFrontPanel {...sharedProps} offsetX={frontOffsetX} />
+        <SkirtFrontPanel {...frontProps} offsetX={frontOffsetX} />
 
         {/* Back Panel */}
-        <SkirtBackPanel {...sharedProps} offsetX={backOffsetX} />
+        <SkirtBackPanel {...backProps} offsetX={backOffsetX} />
       </svg>
 
       {/* Legend */}
