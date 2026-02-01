@@ -38,6 +38,7 @@ export function SkirtFrontPanel({
   offsetX,
   offsetY,
   dartPositionRatio,
+  centerToDartScaled,
 }: SkirtFrontPanelProps) {
   // Create the path for the front panel
   const panelPath = `
