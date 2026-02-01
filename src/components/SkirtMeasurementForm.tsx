@@ -10,9 +10,9 @@ interface SkirtMeasurementFormProps {
 }
 
 const defaultMeasurements: Record<Category, SkirtMeasurements> = {
-  women: { waist: 70, hip: 98, waistToHip: 20, skirtLength: 60 },
-  men: { waist: 84, hip: 100, waistToHip: 22, skirtLength: 55 },
-  kids: { waist: 54, hip: 68, waistToHip: 14, skirtLength: 35 },
+  women: { waist: 70, hip: 98, waistToHip: 20, skirtLength: 60, ease: 1 },
+  men: { waist: 84, hip: 100, waistToHip: 22, skirtLength: 55, ease: 1 },
+  kids: { waist: 54, hip: 68, waistToHip: 14, skirtLength: 35, ease: 0.5 },
 };
 
 export function SkirtMeasurementForm({
@@ -79,6 +79,18 @@ export function SkirtMeasurementForm({
           min={20}
           max={150}
         />
+
+        <div className="pt-4 border-t border-border">
+          <MeasurementInput
+            label="Ease"
+            value={measurements.ease ?? (category === 'kids' ? 0.5 : 1)}
+            onChange={handleChange('ease')}
+            hint="Wearing ease allowance"
+            min={0}
+            max={4}
+            step={0.5}
+          />
+        </div>
       </div>
 
       <div className="pt-4 border-t border-border">
