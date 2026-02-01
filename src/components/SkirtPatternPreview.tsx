@@ -90,6 +90,7 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
     ? hip / 10 - frontDartWidthScaled / 2
     : (frontWaistWidthScaled - frontDartWidthScaled) / 2;
   const backcenterToDartScaled = isKids ? 4 : (frontWaistWidthScaled - frontDartWidthScaled) / 2;
+  const frontwaistRise = isKids ? 1 : 1.25;
 
   const frontProps = {
     waist,
@@ -109,8 +110,8 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
     waistToHipScaled,
     offsetY,
     category,
-    dartPositionRatio: frontDartPositionRatio,
     centerToDartScaled: frontcenterToDartScaled,
+    frontwaistRise,
   };
 
   const backProps = {
@@ -132,6 +133,7 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
     offsetY,
     category,
     dartPositionRatio: backDartPositionRatio,
+    centerToDartScaled: frontcenterToDartScaled,
   };
 
   return (
