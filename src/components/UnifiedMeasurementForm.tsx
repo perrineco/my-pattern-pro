@@ -2,11 +2,13 @@ import { Card } from '@/components/ui/card';
 import { MeasurementInput } from '@/components/MeasurementInput';
 import { Category, UnifiedMeasurements } from '@/types/sloper';
 import { Ruler, Shirt } from 'lucide-react';
+import { MeasurementUnit } from './UnitToggle';
 
 interface UnifiedMeasurementFormProps {
   measurements: UnifiedMeasurements;
   onChange: (measurements: UnifiedMeasurements) => void;
   category: Category;
+  unit?: MeasurementUnit;
 }
 
 export const defaultUnifiedMeasurements: Record<Category, UnifiedMeasurements> = {
@@ -55,6 +57,7 @@ export function UnifiedMeasurementForm({
   measurements,
   onChange,
   category,
+  unit = 'cm',
 }: UnifiedMeasurementFormProps) {
   const handleChange = (key: keyof UnifiedMeasurements, value: number) => {
     onChange({ ...measurements, [key]: value });
@@ -76,6 +79,7 @@ export function UnifiedMeasurementForm({
             min={40}
             max={130}
             hint="Tour de taille"
+            unit={unit}
           />
           <MeasurementInput
             label="Hip"
@@ -84,6 +88,7 @@ export function UnifiedMeasurementForm({
             min={60}
             max={150}
             hint="Tour de hanches"
+            unit={unit}
           />
           <MeasurementInput
             label="Waist to Hip"
@@ -92,6 +97,7 @@ export function UnifiedMeasurementForm({
             min={15}
             max={30}
             hint="Hauteur taille-hanches"
+            unit={unit}
           />
           <MeasurementInput
             label="Skirt Length"
@@ -100,6 +106,7 @@ export function UnifiedMeasurementForm({
             min={30}
             max={120}
             hint="Longueur jupe"
+            unit={unit}
           />
         </div>
       </div>
@@ -118,6 +125,7 @@ export function UnifiedMeasurementForm({
             min={50}
             max={150}
             hint="Tour de poitrine"
+            unit={unit}
           />
           <MeasurementInput
             label="Neckline Circumference"
@@ -126,6 +134,7 @@ export function UnifiedMeasurementForm({
             min={28}
             max={50}
             hint="Tour de cou"
+            unit={unit}
           />
           <MeasurementInput
             label="Shoulder Length"
@@ -134,6 +143,7 @@ export function UnifiedMeasurementForm({
             min={8}
             max={20}
             hint="Longueur d'épaule"
+            unit={unit}
           />
           <MeasurementInput
             label="Back Width"
@@ -142,6 +152,7 @@ export function UnifiedMeasurementForm({
             min={25}
             max={55}
             hint="Carrure dos"
+            unit={unit}
           />
           <MeasurementInput
             label="Back Length"
@@ -150,6 +161,7 @@ export function UnifiedMeasurementForm({
             min={30}
             max={60}
             hint="Longueur taille-dos"
+            unit={unit}
           />
         </div>
       </div>

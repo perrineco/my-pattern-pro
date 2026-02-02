@@ -2,11 +2,13 @@ import { SkirtMeasurements, Category } from '@/types/sloper';
 import { MeasurementInput } from './MeasurementInput';
 import { MeasurementGuide } from './MeasurementGuide';
 import { Card } from '@/components/ui/card';
+import { MeasurementUnit } from './UnitToggle';
 
 interface SkirtMeasurementFormProps {
   measurements: SkirtMeasurements;
   onChange: (measurements: SkirtMeasurements) => void;
   category: Category;
+  unit?: MeasurementUnit;
 }
 
 const defaultMeasurements: Record<Category, SkirtMeasurements> = {
@@ -19,6 +21,7 @@ export function SkirtMeasurementForm({
   measurements,
   onChange,
   category,
+  unit = 'cm',
 }: SkirtMeasurementFormProps) {
   const handleChange = (key: keyof SkirtMeasurements) => (value: number) => {
     onChange({ ...measurements, [key]: value });
@@ -51,6 +54,7 @@ export function SkirtMeasurementForm({
           hint="Measure at natural waist"
           min={40}
           max={150}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -60,6 +64,7 @@ export function SkirtMeasurementForm({
           hint="Measure at fullest part"
           min={50}
           max={180}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -69,6 +74,7 @@ export function SkirtMeasurementForm({
           hint="Distance between waist and hip"
           min={10}
           max={35}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -78,6 +84,7 @@ export function SkirtMeasurementForm({
           hint="From waist to hem"
           min={20}
           max={150}
+          unit={unit}
         />
 
         <div className="pt-4 border-t border-border">
@@ -89,13 +96,14 @@ export function SkirtMeasurementForm({
             min={0}
             max={4}
             step={0.5}
+            unit={unit}
           />
         </div>
       </div>
 
       <div className="pt-4 border-t border-border">
         <p className="text-xs text-muted-foreground">
-          All measurements in centimeters. The pattern includes standard ease allowances.
+          All measurements in {unit === 'inches' ? 'inches' : 'centimeters'}. The pattern includes standard ease allowances.
         </p>
       </div>
     </Card>

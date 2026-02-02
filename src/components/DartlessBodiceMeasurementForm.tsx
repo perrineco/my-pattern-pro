@@ -4,11 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MeasurementInput } from '@/components/MeasurementInput';
 import { BodiceMeasurementGuide } from '@/components/BodiceMeasurementGuide';
 import { Category, BodiceMeasurements } from '@/types/sloper';
+import { MeasurementUnit } from './UnitToggle';
 
 interface DartlessBodiceMeasurementFormProps {
   measurements: BodiceMeasurements;
   onChange: (measurements: BodiceMeasurements) => void;
   category: Category;
+  unit?: MeasurementUnit;
 }
 
 export const defaultDartlessBodiceMeasurements: Record<Category, BodiceMeasurements> = {
@@ -42,6 +44,7 @@ export function DartlessBodiceMeasurementForm({
   measurements,
   onChange,
   category,
+  unit = 'cm',
 }: DartlessBodiceMeasurementFormProps) {
   const handleChange = (key: keyof BodiceMeasurements) => (value: number) => {
     onChange({ ...measurements, [key]: value });
@@ -89,12 +92,14 @@ export function DartlessBodiceMeasurementForm({
               value={measurements.bust}
               onChange={handleChange('bust')}
               hint="Tour de poitrine"
+              unit={unit}
             />
             <MeasurementInput
               label="Neckline Circumference"
               value={measurements.neckCircumference}
               onChange={handleChange('neckCircumference')}
               hint="Tour de cou"
+              unit={unit}
             />
           </div>
         </div>
@@ -110,18 +115,21 @@ export function DartlessBodiceMeasurementForm({
               value={measurements.shoulderLength}
               onChange={handleChange('shoulderLength')}
               hint="Longueur d'épaule"
+              unit={unit}
             />
             <MeasurementInput
               label="Back Width"
               value={measurements.backWidth}
               onChange={handleChange('backWidth')}
               hint="Carrure dos"
+              unit={unit}
             />
             <MeasurementInput
               label="Back Length"
               value={measurements.backLength}
               onChange={handleChange('backLength')}
               hint="Longueur taille-dos"
+              unit={unit}
             />
           </div>
         </div>
@@ -136,10 +144,11 @@ export function DartlessBodiceMeasurementForm({
               label="Ease"
               value={measurements.ease ?? 2}
               onChange={handleChange('ease')}
-              hint="Added wearing room (cm)"
+              hint="Added wearing room"
               min={0}
               max={10}
               step={0.5}
+              unit={unit}
             />
           </div>
         </div>

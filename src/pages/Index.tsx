@@ -21,6 +21,7 @@ import { PantsPatternPreview } from '@/components/PantsPatternPreview';
 import { ProfileManager } from '@/components/ProfileManager';
 import { ProfileManagerSimple } from '@/components/ProfileManagerSimple';
 import { UnifiedMeasurementForm, defaultUnifiedMeasurements } from '@/components/UnifiedMeasurementForm';
+import { UnitToggle, MeasurementUnit } from '@/components/UnitToggle';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -56,6 +57,9 @@ const Index = () => {
     defaultPantsMeasurements.women
   );
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
+  
+  // Unit toggle state
+  const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('cm');
   
   // Profile mode state
   const [unifiedMeasurements, setUnifiedMeasurements] = useState<UnifiedMeasurements>(
@@ -187,11 +191,19 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground block">
-                Category
-              </label>
-              <CategorySelector selected={category} onSelect={handleCategoryChange} />
+            <div className="flex items-center justify-center gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground block">
+                  Category
+                </label>
+                <CategorySelector selected={category} onSelect={handleCategoryChange} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground block">
+                  Units
+                </label>
+                <UnitToggle unit={measurementUnit} onChange={setMeasurementUnit} />
+              </div>
             </div>
 
             {/* Profile Manager - displayed first */}
@@ -211,6 +223,7 @@ const Index = () => {
               measurements={unifiedMeasurements}
               onChange={setUnifiedMeasurements}
               category={category}
+              unit={measurementUnit}
             />
           </div>
         ) : (
@@ -218,12 +231,18 @@ const Index = () => {
           <>
             {/* Top controls */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
-              <div className="space-y-4">
+              <div className="flex items-center gap-6">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground mb-2 block">
                     Category
                   </label>
                   <CategorySelector selected={category} onSelect={handleCategoryChange} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                    Units
+                  </label>
+                  <UnitToggle unit={measurementUnit} onChange={setMeasurementUnit} />
                 </div>
               </div>
 
@@ -252,42 +271,49 @@ const Index = () => {
                     measurements={skirtMeasurements}
                     onChange={setSkirtMeasurements}
                     category={category}
+                    unit={measurementUnit}
                   />
                 ) : isBodiceDartless ? (
                   <DartlessBodiceMeasurementForm
                     measurements={dartlessBodiceMeasurements}
                     onChange={setDartlessBodiceMeasurements}
                     category={category}
+                    unit={measurementUnit}
                   />
                 ) : isBodiceWithDarts ? (
                   <BodiceDartsMeasurementForm
                     measurements={bodiceDartsMeasurements}
                     onChange={setBodiceDartsMeasurements}
                     category={category}
+                    unit={measurementUnit}
                   />
                 ) : isBodiceKnit ? (
                   <KnitBodiceMeasurementForm
                     measurements={knitBodiceMeasurements}
                     onChange={setKnitBodiceMeasurements}
                     category={category}
+                    unit={measurementUnit}
                   />
                 ) : patternType === 'bodice' ? (
                   <BodiceMeasurementForm
                     measurements={bodiceMeasurements}
                     onChange={setBodiceMeasurements}
                     category={category}
+                    unit={measurementUnit}
                   />
                 ) : patternType === 'pants' ? (
                   <PantsMeasurementForm
                     measurements={pantsMeasurements}
                     onChange={setPantsMeasurements}
                     category={category}
+                    unit={measurementUnit}
                   />
                 ) : (
                   <SkirtMeasurementForm
                     measurements={skirtMeasurements}
                     onChange={setSkirtMeasurements}
                     category={category}
+                    unit={measurementUnit}
                   />
                 )}
                 {/* Action buttons */}
