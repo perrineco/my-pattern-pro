@@ -19,6 +19,7 @@ const defaultMeasurements: Record<Category, PantsMeasurements> = {
     crotchDepth: 26,
     outseamLength: 105,
     inseamLength: 80,
+    ease: 2,
   },
   men: { 
     waist: 84, 
@@ -29,6 +30,7 @@ const defaultMeasurements: Record<Category, PantsMeasurements> = {
     crotchDepth: 28,
     outseamLength: 110,
     inseamLength: 82,
+    ease: 3,
   },
   kids: { 
     waist: 54, 
@@ -39,6 +41,7 @@ const defaultMeasurements: Record<Category, PantsMeasurements> = {
     crotchDepth: 18,
     outseamLength: 65,
     inseamLength: 48,
+    ease: 1.5,
   },
 };
 
@@ -149,6 +152,20 @@ export function PantsMeasurementForm({
           hint="Crotch to floor along inside leg"
           min={40}
           max={100}
+        />
+
+        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide pt-4">
+          Ease
+        </div>
+
+        <MeasurementInput
+          label="Ease"
+          value={measurements.ease ?? 2}
+          onChange={handleChange('ease')}
+          hint="Added wearing room (cm)"
+          min={0}
+          max={8}
+          step={0.5}
         />
       </div>
 

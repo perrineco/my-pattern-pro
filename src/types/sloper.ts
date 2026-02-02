@@ -29,6 +29,7 @@ export interface PantsMeasurements {
   crotchDepth: number;       // Hauteur d'entrejambe (rise)
   outseamLength: number;     // Longueur extérieure
   inseamLength: number;      // Longueur intérieure
+  ease?: number;             // Custom ease (optional)
 }
 
 // Unified profile measurements (all measurements in one)
