@@ -28,8 +28,8 @@ export function PantsBackPanel({
   const dartWidth = (hip - waist) / 6; // Back takes more dart
   const dartLength = crotchDepth * 0.5;
 
-  // Ease
-  const ease = 1;
+  // Ease from measurements (default to 2 if not provided)
+  const ease = measurements.ease ?? 2;
 
   // Key positions (scaled) - back takes slightly more width
   const waistWidth = s(waistQuarter + dartWidth + ease);
