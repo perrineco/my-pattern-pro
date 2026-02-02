@@ -1,11 +1,12 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { MeasurementUnit, cmToInches, inchesToCm } from './UnitToggle';
 
 interface MeasurementInputProps {
   label: string;
-  value: number;
-  onChange: (value: number) => void;
-  unit?: string;
+  value: number; // Always stored in cm
+  onChange: (value: number) => void; // Always receives cm
+  unit?: MeasurementUnit;
   min?: number;
   max?: number;
   step?: number;
@@ -22,6 +23,19 @@ export function MeasurementInput({
   step = 0.5,
   hint,
 }: MeasurementInputProps) {
+  // Convert display value based on unit
+  const displayValue = unit === 'inches' ? cmToInches(value) : value;
+  const displayUnit = unit === 'inches' ? 'in' : 'cm';
+  const displayStep = unit === 'inches' ? 0.25 : step;
+  const displayMin = unit === 'inches' ? cmToInches(min) : min;
+  const displayMax = unit === 'inches' ? cmToInches(max) : max;
+
+  const handleChange = (inputValue: number) => {
+    // Convert back to cm before calling onChange
+    const cmValue = unit === 'inches' ? inchesToCm(inputValue) : inputValue;
+    onChange(cmValue);
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between">
@@ -31,16 +45,16 @@ export function MeasurementInput({
       <div className="relative">
         <Input
           type="number"
-          value={value || ''}
-          onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-          min={min}
-          max={max}
-          step={step}
+          value={displayValue || ''}
+          onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
+          min={displayMin}
+          max={displayMax}
+          step={displayStep}
           className="pr-10 font-sans tabular-nums"
           placeholder="0"
         />
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-          {unit}
+          {displayUnit}
         </span>
       </div>
     </div>

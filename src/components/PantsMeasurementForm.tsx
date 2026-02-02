@@ -2,11 +2,13 @@ import { PantsMeasurements, Category } from '@/types/sloper';
 import { MeasurementInput } from './MeasurementInput';
 import { MeasurementGuide } from './MeasurementGuide';
 import { Card } from '@/components/ui/card';
+import { MeasurementUnit } from './UnitToggle';
 
 interface PantsMeasurementFormProps {
   measurements: PantsMeasurements;
   onChange: (measurements: PantsMeasurements) => void;
   category: Category;
+  unit?: MeasurementUnit;
 }
 
 const defaultMeasurements: Record<Category, PantsMeasurements> = {
@@ -49,6 +51,7 @@ export function PantsMeasurementForm({
   measurements,
   onChange,
   category,
+  unit = 'cm',
 }: PantsMeasurementFormProps) {
   const handleChange = (key: keyof PantsMeasurements) => (value: number) => {
     onChange({ ...measurements, [key]: value });
@@ -85,6 +88,7 @@ export function PantsMeasurementForm({
           hint="Measure at natural waist"
           min={40}
           max={150}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -94,6 +98,7 @@ export function PantsMeasurementForm({
           hint="Measure at fullest part"
           min={50}
           max={180}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -103,6 +108,7 @@ export function PantsMeasurementForm({
           hint="Measure at fullest part of thigh"
           min={30}
           max={100}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -112,6 +118,7 @@ export function PantsMeasurementForm({
           hint="Measure around the knee"
           min={25}
           max={60}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -121,6 +128,7 @@ export function PantsMeasurementForm({
           hint="Measure around the ankle"
           min={18}
           max={40}
+          unit={unit}
         />
 
         <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide pt-4">
@@ -134,6 +142,7 @@ export function PantsMeasurementForm({
           hint="Waist to seat while sitting"
           min={18}
           max={40}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -143,6 +152,7 @@ export function PantsMeasurementForm({
           hint="Waist to floor along outside leg"
           min={50}
           max={130}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -152,6 +162,7 @@ export function PantsMeasurementForm({
           hint="Crotch to floor along inside leg"
           min={40}
           max={100}
+          unit={unit}
         />
 
         <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide pt-4">
@@ -162,16 +173,17 @@ export function PantsMeasurementForm({
           label="Ease"
           value={measurements.ease ?? 2}
           onChange={handleChange('ease')}
-          hint="Added wearing room (cm)"
+          hint="Added wearing room"
           min={0}
           max={8}
           step={0.5}
+          unit={unit}
         />
       </div>
 
       <div className="pt-4 border-t border-border">
         <p className="text-xs text-muted-foreground">
-          All measurements in centimeters. The pattern includes standard ease allowances.
+          All measurements in {unit === 'inches' ? 'inches' : 'centimeters'}. The pattern includes standard ease allowances.
         </p>
       </div>
     </Card>

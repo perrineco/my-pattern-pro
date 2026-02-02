@@ -2,11 +2,13 @@ import { BodiceMeasurements, Category } from '@/types/sloper';
 import { MeasurementInput } from './MeasurementInput';
 import { BodiceMeasurementGuide } from './BodiceMeasurementGuide';
 import { Card } from '@/components/ui/card';
+import { MeasurementUnit } from './UnitToggle';
 
 interface KnitBodiceMeasurementFormProps {
   measurements: BodiceMeasurements;
   onChange: (measurements: BodiceMeasurements) => void;
   category: Category;
+  unit?: MeasurementUnit;
 }
 
 const defaultMeasurements: Record<Category, BodiceMeasurements> = {
@@ -40,6 +42,7 @@ export function KnitBodiceMeasurementForm({
   measurements,
   onChange,
   category,
+  unit = 'cm',
 }: KnitBodiceMeasurementFormProps) {
   const handleChange = (key: keyof BodiceMeasurements) => (value: number) => {
     onChange({ ...measurements, [key]: value });
@@ -75,6 +78,7 @@ export function KnitBodiceMeasurementForm({
           hint="Measure at fullest part"
           min={50}
           max={150}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -84,6 +88,7 @@ export function KnitBodiceMeasurementForm({
           hint="Measure around base of neck"
           min={25}
           max={55}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -93,6 +98,7 @@ export function KnitBodiceMeasurementForm({
           hint="From neck point to shoulder tip"
           min={8}
           max={20}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -102,6 +108,7 @@ export function KnitBodiceMeasurementForm({
           hint="Across back between armholes"
           min={25}
           max={55}
+          unit={unit}
         />
 
         <MeasurementInput
@@ -111,6 +118,7 @@ export function KnitBodiceMeasurementForm({
           hint="From neck base to waist"
           min={30}
           max={55}
+          unit={unit}
         />
 
         <div className="pt-4 border-t border-border">
@@ -122,13 +130,14 @@ export function KnitBodiceMeasurementForm({
             min={-4}
             max={6}
             step={0.5}
+            unit={unit}
           />
         </div>
       </div>
 
       <div className="pt-4 border-t border-border">
         <p className="text-xs text-muted-foreground">
-          All measurements in centimeters. Optimized for stretch knit fabrics.
+          All measurements in {unit === 'inches' ? 'inches' : 'centimeters'}. Optimized for stretch knit fabrics.
         </p>
       </div>
     </Card>
