@@ -28,8 +28,8 @@ export function PantsFrontPanel({
   const dartWidth = (hip - waist) / 8; // Front takes less dart than back
   const dartLength = crotchDepth * 0.4;
 
-  // Ease
-  const ease = 1;
+  // Ease from measurements (default to 2 if not provided)
+  const ease = measurements.ease ?? 2;
 
   // Key positions (scaled)
   const waistWidth = s(waistQuarter + dartWidth + ease);
