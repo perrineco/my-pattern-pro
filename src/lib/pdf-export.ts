@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { SkirtMeasurements, BodiceMeasurements, isBodiceMeasurements } from '@/types/sloper';
+import { SkirtMeasurements, BodiceMeasurements, SleeveMeasurements, isBodiceMeasurements, isSleeveMeasurements } from '@/types/sloper';
 import { MeasurementUnit, cmToInches } from '@/components/UnitToggle';
 
 // Helper to format measurement with unit
@@ -55,6 +55,16 @@ function calculateBodiceDimensions(measurements: BodiceMeasurements): PatternDim
   
   const widthCm = Math.max(bustQuarter, backWidthHalf) + ease + 5;
   const heightCm = backLength + 5;
+  
+  return { widthCm, heightCm };
+}
+
+function calculateSleeveDimensions(measurements: SleeveMeasurements): PatternDimensions {
+  const { upperArm, sleeveLength, armholeDepth, ease = 2 } = measurements;
+  const upperArmWithEase = upperArm / 2 + ease;
+  
+  const widthCm = upperArmWithEase + 4;
+  const heightCm = sleeveLength + armholeDepth + 4;
   
   return { widthCm, heightCm };
 }
@@ -289,6 +299,121 @@ function drawBodicePatternPiece(
   doc.text(`Back length = ${formatMeasurement(backLength, unit)}`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
 }
 
+function drawSleevePatternPiece(
+  doc: jsPDF,
+  measurements: SleeveMeasurements,
+  offsetX: number,
+  offsetY: number,
+  unit: MeasurementUnit = 'cm'
+) {
+  const { upperArm, wrist, sleeveLength, elbowLength, armholeDepth, ease = 2 } = measurements;
+  
+  // Calculate dimensions with ease (convert to mm)
+  const upperArmWithEase = (upperArm / 2 + ease) * 10;
+  const wristWithEase = (wrist / 2 + ease * 0.5) * 10;
+  const capHeightMm = armholeDepth * 10;
+  const totalLengthMm = sleeveLength * 10;
+  const elbowPositionMm = elbowLength * 10;
+  
+  // Calculate center and widths
+  const halfUpperWidth = upperArmWithEase / 2;
+  const halfWristWidth = wristWithEase / 2;
+  
+  // Pattern center
+  const centerX = offsetX + halfUpperWidth;
+  const capTop = offsetY;
+  const underarmY = offsetY + capHeightMm;
+  const elbowY = offsetY + capHeightMm + elbowPositionMm;
+  const wristY = offsetY + capHeightMm + totalLengthMm;
+  
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+  
+  // Draw sleeve cap curve (simplified as bezier-like segments)
+  // Left side of cap
+  const capControlHeight = capHeightMm * 0.6;
+  
+  // Start from left underarm
+  const leftUnderarm = [centerX - halfUpperWidth, underarmY];
+  const rightUnderarm = [centerX + halfUpperWidth, underarmY];
+  const capPeak = [centerX, capTop];
+  
+  // Left cap curve (draw as line segments for jsPDF)
+  doc.line(leftUnderarm[0], leftUnderarm[1], centerX - halfUpperWidth * 0.7, capTop + capHeightMm * 0.3);
+  doc.line(centerX - halfUpperWidth * 0.7, capTop + capHeightMm * 0.3, centerX - halfUpperWidth * 0.3, capTop + capHeightMm * 0.1);
+  doc.line(centerX - halfUpperWidth * 0.3, capTop + capHeightMm * 0.1, capPeak[0], capPeak[1]);
+  
+  // Right cap curve
+  doc.line(capPeak[0], capPeak[1], centerX + halfUpperWidth * 0.3, capTop + capHeightMm * 0.1);
+  doc.line(centerX + halfUpperWidth * 0.3, capTop + capHeightMm * 0.1, centerX + halfUpperWidth * 0.7, capTop + capHeightMm * 0.3);
+  doc.line(centerX + halfUpperWidth * 0.7, capTop + capHeightMm * 0.3, rightUnderarm[0], rightUnderarm[1]);
+  
+  // Calculate elbow width (interpolate between upper arm and wrist)
+  const elbowRatio = elbowPositionMm / totalLengthMm;
+  const halfElbowWidth = halfUpperWidth - (halfUpperWidth - halfWristWidth) * elbowRatio;
+  
+  // Left side seam (with slight elbow curve)
+  doc.line(leftUnderarm[0], leftUnderarm[1], centerX - halfElbowWidth - 2, elbowY);
+  doc.line(centerX - halfElbowWidth - 2, elbowY, centerX - halfWristWidth, wristY);
+  
+  // Right side seam
+  doc.line(rightUnderarm[0], rightUnderarm[1], centerX + halfElbowWidth, elbowY);
+  doc.line(centerX + halfElbowWidth, elbowY, centerX + halfWristWidth, wristY);
+  
+  // Wrist line
+  doc.line(centerX - halfWristWidth, wristY, centerX + halfWristWidth, wristY);
+  
+  // Draw elbow dart on back seam (left side)
+  const dartWidth = 8; // 8mm dart
+  const dartLength = 25; // 25mm dart
+  doc.setLineDashPattern([2, 1], 0);
+  doc.line(centerX - halfElbowWidth - 2, elbowY, centerX - halfElbowWidth - 2 + dartLength, elbowY - dartWidth / 2);
+  doc.line(centerX - halfElbowWidth - 2, elbowY, centerX - halfElbowWidth - 2 + dartLength, elbowY + dartWidth / 2);
+  doc.setLineDashPattern([], 0);
+  
+  // Grain line
+  const grainTop = underarmY + 20;
+  const grainBottom = wristY - 20;
+  
+  doc.setLineDashPattern([3, 2], 0);
+  doc.line(centerX, grainTop, centerX, grainBottom);
+  doc.setLineDashPattern([], 0);
+  
+  // Grain line arrows
+  const arrowSize = 4;
+  doc.line(centerX - arrowSize, grainTop + arrowSize, centerX, grainTop);
+  doc.line(centerX + arrowSize, grainTop + arrowSize, centerX, grainTop);
+  doc.line(centerX - arrowSize, grainBottom - arrowSize, centerX, grainBottom);
+  doc.line(centerX + arrowSize, grainBottom - arrowSize, centerX, grainBottom);
+  
+  // Notches - single for front (right), double for back (left)
+  const notchY = underarmY + 15;
+  const notchSize = 5;
+  
+  // Front notch (single) - right side
+  doc.line(rightUnderarm[0], notchY, rightUnderarm[0] + notchSize, notchY);
+  
+  // Back notches (double) - left side
+  doc.line(leftUnderarm[0], notchY - 3, leftUnderarm[0] - notchSize, notchY - 3);
+  doc.line(leftUnderarm[0], notchY + 3, leftUnderarm[0] - notchSize, notchY + 3);
+  
+  // Labels
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text('SLEEVE', centerX, underarmY + totalLengthMm / 2 - 5, { align: 'center' });
+  
+  doc.setFontSize(8);
+  doc.text('Cut 2', centerX, underarmY + totalLengthMm / 2 + 5, { align: 'center' });
+  
+  // Measurement annotations
+  doc.setFontSize(7);
+  doc.setTextColor(80, 80, 80);
+  doc.text(`½ upper arm = ${formatMeasurement(upperArm / 2 + ease, unit)}`, centerX, underarmY - 5, { align: 'center' });
+  doc.text(`½ wrist = ${formatMeasurement(wrist / 2 + ease * 0.5, unit)}`, centerX, wristY + 8, { align: 'center' });
+  doc.text(`Length = ${formatMeasurement(sleeveLength, unit)}`, offsetX - 8, underarmY + totalLengthMm / 2, { angle: 90 });
+  doc.text(`Cap height = ${formatMeasurement(armholeDepth, unit)}`, centerX + halfUpperWidth + 8, capTop + capHeightMm / 2, { angle: 270 });
+}
+
 function draw1cmTestSquare(doc: jsPDF, unit: MeasurementUnit) {
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.3);
@@ -300,15 +425,18 @@ function draw1cmTestSquare(doc: jsPDF, unit: MeasurementUnit) {
 }
 
 export function generatePatternPDF(
-  measurements: SkirtMeasurements | BodiceMeasurements,
+  measurements: SkirtMeasurements | BodiceMeasurements | SleeveMeasurements,
   patternType: string = 'skirt',
   unit: MeasurementUnit = 'cm'
 ): void {
   const isBodice = isBodiceMeasurements(measurements);
+  const isSleeve = isSleeveMeasurements(measurements);
   
-  const dimensions = isBodice
-    ? calculateBodiceDimensions(measurements)
-    : calculateSkirtDimensions(measurements as SkirtMeasurements);
+  const dimensions = isSleeve
+    ? calculateSleeveDimensions(measurements)
+    : isBodice
+      ? calculateBodiceDimensions(measurements)
+      : calculateSkirtDimensions(measurements as SkirtMeasurements);
   
   const tiles = calculateTiles(dimensions);
   
@@ -321,8 +449,8 @@ export function generatePatternPDF(
   const patternMarginMm = 20;
   let pageNum = 0;
   
-  // Both skirt and bodice now have front and back panels
-  const panels: ('front' | 'back')[] = ['front', 'back'];
+  // Sleeve is a single panel, skirt and bodice have front and back
+  const panels: ('front' | 'back')[] = isSleeve ? ['front'] : ['front', 'back'];
   
   for (const panel of panels) {
     for (let row = 0; row < tiles.rows; row++) {
@@ -348,7 +476,9 @@ export function generatePatternPDF(
         const patternX = patternMarginMm - viewOffsetX + MARGIN;
         const patternY = patternMarginMm - viewOffsetY + MARGIN;
         
-        if (isBodice) {
+        if (isSleeve) {
+          drawSleevePatternPiece(doc, measurements, patternX, patternY, unit);
+        } else if (isBodice) {
           drawBodicePatternPiece(doc, measurements, patternX, patternY, panel, unit);
         } else {
           drawSkirtPatternPiece(doc, measurements as SkirtMeasurements, patternX, patternY, panel, unit);
@@ -366,6 +496,7 @@ export function generatePatternPDF(
   doc.text('Assembly Instructions', A4_WIDTH / 2, 30, { align: 'center' });
   
   doc.setFontSize(10);
+  const panelDescription = isSleeve ? 'Single Panel (Cut 2)' : 'Front & Back Panels';
   const baseInstructions = [
     '1. Print all pages at 100% scale (no scaling/fit to page).',
     '2. Verify the 1cm test square on the first page measures exactly 1cm x 1cm.',
@@ -374,26 +505,34 @@ export function generatePatternPDF(
     '5. Tape or glue pages together, starting from the top-left corner.',
     '6. Once assembled, cut out the pattern piece along the solid black line.',
     '',
-    `Pattern: ${patternType.charAt(0).toUpperCase() + patternType.slice(1)} Sloper - Front & Back Panels`,
+    `Pattern: ${patternType.charAt(0).toUpperCase() + patternType.slice(1)} Sloper - ${panelDescription}`,
     `Total pages: ${tiles.totalPages * panels.length}`,
     '',
     'Measurements used:',
   ];
   
-  const measurementLines = isBodice
+  const measurementLines = isSleeve
     ? [
-        `  • Bust: ${formatMeasurement((measurements as BodiceMeasurements).bust, unit)}`,
-        `  • Neckline: ${formatMeasurement((measurements as BodiceMeasurements).neckCircumference, unit)}`,
-        `  • Shoulder Length: ${formatMeasurement((measurements as BodiceMeasurements).shoulderLength, unit)}`,
-        `  • Back Width: ${formatMeasurement((measurements as BodiceMeasurements).backWidth, unit)}`,
-        `  • Back Length: ${formatMeasurement((measurements as BodiceMeasurements).backLength, unit)}`,
+        `  • Upper Arm: ${formatMeasurement((measurements as SleeveMeasurements).upperArm, unit)}`,
+        `  • Wrist: ${formatMeasurement((measurements as SleeveMeasurements).wrist, unit)}`,
+        `  • Sleeve Length: ${formatMeasurement((measurements as SleeveMeasurements).sleeveLength, unit)}`,
+        `  • Elbow Length: ${formatMeasurement((measurements as SleeveMeasurements).elbowLength, unit)}`,
+        `  • Armhole Depth: ${formatMeasurement((measurements as SleeveMeasurements).armholeDepth, unit)}`,
       ]
-    : [
-        `  • Waist: ${formatMeasurement((measurements as SkirtMeasurements).waist, unit)}`,
-        `  • Hip: ${formatMeasurement((measurements as SkirtMeasurements).hip, unit)}`,
-        `  • Waist to Hip: ${formatMeasurement((measurements as SkirtMeasurements).waistToHip, unit)}`,
-        `  • Skirt Length: ${formatMeasurement((measurements as SkirtMeasurements).skirtLength, unit)}`,
-      ];
+    : isBodice
+      ? [
+          `  • Bust: ${formatMeasurement((measurements as BodiceMeasurements).bust, unit)}`,
+          `  • Neckline: ${formatMeasurement((measurements as BodiceMeasurements).neckCircumference, unit)}`,
+          `  • Shoulder Length: ${formatMeasurement((measurements as BodiceMeasurements).shoulderLength, unit)}`,
+          `  • Back Width: ${formatMeasurement((measurements as BodiceMeasurements).backWidth, unit)}`,
+          `  • Back Length: ${formatMeasurement((measurements as BodiceMeasurements).backLength, unit)}`,
+        ]
+      : [
+          `  • Waist: ${formatMeasurement((measurements as SkirtMeasurements).waist, unit)}`,
+          `  • Hip: ${formatMeasurement((measurements as SkirtMeasurements).hip, unit)}`,
+          `  • Waist to Hip: ${formatMeasurement((measurements as SkirtMeasurements).waistToHip, unit)}`,
+          `  • Skirt Length: ${formatMeasurement((measurements as SkirtMeasurements).skirtLength, unit)}`,
+        ];
   
   const instructions = [...baseInstructions, ...measurementLines];
   
