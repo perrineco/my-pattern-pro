@@ -32,6 +32,15 @@ export interface PantsMeasurements {
   ease?: number;             // Custom ease (optional)
 }
 
+export interface SleeveMeasurements {
+  upperArm: number;          // Tour de bras (bicep circumference)
+  wrist: number;             // Tour de poignet
+  sleeveLength: number;      // Longueur de manche (shoulder to wrist)
+  elbowLength: number;       // Longueur coude (shoulder to elbow)
+  armholeDepth: number;      // Profondeur d'emmanchure (sleeve cap height)
+  ease?: number;             // Custom ease (optional)
+}
+
 // Unified profile measurements (all measurements in one)
 export interface UnifiedMeasurements {
   // Skirt measurements
@@ -54,7 +63,8 @@ export interface PatternDimensions {
 }
 
 // Union type for all measurement types
-export type Measurements = SkirtMeasurements | BodiceMeasurements | PantsMeasurements;
+// Union type for all measurement types
+export type Measurements = SkirtMeasurements | BodiceMeasurements | PantsMeasurements | SleeveMeasurements;
 
 // Type guards
 export function isSkirtMeasurements(m: Measurements): m is SkirtMeasurements {
@@ -67,6 +77,10 @@ export function isBodiceMeasurements(m: Measurements): m is BodiceMeasurements {
 
 export function isPantsMeasurements(m: Measurements): m is PantsMeasurements {
   return 'crotchDepth' in m && 'inseamLength' in m;
+}
+
+export function isSleeveMeasurements(m: Measurements): m is SleeveMeasurements {
+  return 'upperArm' in m && 'sleeveLength' in m && 'armholeDepth' in m;
 }
 
 // Convert unified measurements to specific pattern measurements
