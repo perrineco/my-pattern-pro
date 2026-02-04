@@ -32,7 +32,7 @@ const patternTypes: PatternTypeConfig[] = [
   },
   { value: 'dress', label: 'Dress', available: false },
   { value: 'pants', label: 'Pants', available: true },
-  { value: 'sleeve', label: 'Sleeve', available: false },
+  { value: 'sleeve', label: 'Sleeve', available: true },
 ];
 
 export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavProps) {

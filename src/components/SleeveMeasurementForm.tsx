@@ -1,0 +1,113 @@
+import { SleeveMeasurements, Category } from '@/types/sloper';
+import { MeasurementInput } from '@/components/MeasurementInput';
+import { MeasurementUnit } from '@/components/UnitToggle';
+import { Card } from '@/components/ui/card';
+
+interface SleeveMeasurementFormProps {
+  measurements: SleeveMeasurements;
+  onChange: (measurements: SleeveMeasurements) => void;
+  category: Category;
+  unit?: MeasurementUnit;
+}
+
+export const defaultSleeveMeasurements: Record<Category, SleeveMeasurements> = {
+  women: {
+    upperArm: 28,
+    wrist: 16,
+    sleeveLength: 58,
+    elbowLength: 33,
+    armholeDepth: 14,
+    ease: 2,
+  },
+  men: {
+    upperArm: 32,
+    wrist: 18,
+    sleeveLength: 64,
+    elbowLength: 36,
+    armholeDepth: 16,
+    ease: 3,
+  },
+  kids: {
+    upperArm: 20,
+    wrist: 13,
+    sleeveLength: 42,
+    elbowLength: 24,
+    armholeDepth: 10,
+    ease: 1.5,
+  },
+};
+
+export function SleeveMeasurementForm({
+  measurements,
+  onChange,
+  category,
+  unit = 'cm',
+}: SleeveMeasurementFormProps) {
+  const handleChange = (key: keyof SleeveMeasurements, value: number) => {
+    onChange({ ...measurements, [key]: value });
+  };
+
+  return (
+    <Card className="p-5 bg-card">
+      <h3 className="font-serif text-lg font-semibold mb-4 text-foreground">
+        Sleeve Measurements
+      </h3>
+      <div className="space-y-4">
+        <MeasurementInput
+          label="Upper Arm"
+          value={measurements.upperArm}
+          onChange={(v) => handleChange('upperArm', v)}
+          min={15}
+          max={50}
+          step={0.5}
+          unit={unit}
+        />
+        <MeasurementInput
+          label="Wrist"
+          value={measurements.wrist}
+          onChange={(v) => handleChange('wrist', v)}
+          min={10}
+          max={30}
+          step={0.5}
+          unit={unit}
+        />
+        <MeasurementInput
+          label="Sleeve Length"
+          value={measurements.sleeveLength}
+          onChange={(v) => handleChange('sleeveLength', v)}
+          min={30}
+          max={80}
+          step={0.5}
+          unit={unit}
+        />
+        <MeasurementInput
+          label="Elbow Length"
+          value={measurements.elbowLength}
+          onChange={(v) => handleChange('elbowLength', v)}
+          min={20}
+          max={50}
+          step={0.5}
+          unit={unit}
+        />
+        <MeasurementInput
+          label="Armhole Depth"
+          value={measurements.armholeDepth}
+          onChange={(v) => handleChange('armholeDepth', v)}
+          min={8}
+          max={25}
+          step={0.5}
+          unit={unit}
+        />
+        <MeasurementInput
+          label="Ease"
+          value={measurements.ease ?? 2}
+          onChange={(v) => handleChange('ease', v)}
+          min={0}
+          max={8}
+          step={0.5}
+          unit={unit}
+        />
+      </div>
+    </Card>
+  );
+}
