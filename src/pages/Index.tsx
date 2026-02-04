@@ -58,8 +58,17 @@ const Index = () => {
   );
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
   
-  // Unit toggle state
-  const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>('cm');
+  // Unit toggle state - persist to localStorage
+  const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>(() => {
+    const saved = localStorage.getItem('measurementUnit');
+    return (saved === 'cm' || saved === 'inches') ? saved : 'cm';
+  });
+
+  // Persist unit preference when it changes
+  const handleUnitChange = (unit: MeasurementUnit) => {
+    setMeasurementUnit(unit);
+    localStorage.setItem('measurementUnit', unit);
+  };
   
   // Profile mode state
   const [unifiedMeasurements, setUnifiedMeasurements] = useState<UnifiedMeasurements>(
@@ -202,7 +211,7 @@ const Index = () => {
                 <label className="text-sm font-medium text-muted-foreground block">
                   Units
                 </label>
-                <UnitToggle unit={measurementUnit} onChange={setMeasurementUnit} />
+                <UnitToggle unit={measurementUnit} onChange={handleUnitChange} />
               </div>
             </div>
 
@@ -242,7 +251,7 @@ const Index = () => {
                   <label className="text-sm font-medium text-muted-foreground mb-2 block">
                     Units
                   </label>
-                  <UnitToggle unit={measurementUnit} onChange={setMeasurementUnit} />
+                  <UnitToggle unit={measurementUnit} onChange={handleUnitChange} />
                 </div>
               </div>
 
