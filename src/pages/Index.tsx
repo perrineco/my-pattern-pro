@@ -167,7 +167,7 @@ const Index = () => {
   const handleExportPDF = () => {
     const measurements = getCurrentMeasurements();
     // Both dartless and regular bodice now use the same BodiceMeasurements type
-    generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType);
+    generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, measurementUnit);
     toast.success('PDF downloaded!');
   };
 

@@ -1,5 +1,14 @@
 import jsPDF from 'jspdf';
 import { SkirtMeasurements, BodiceMeasurements, isBodiceMeasurements } from '@/types/sloper';
+import { MeasurementUnit, cmToInches } from '@/components/UnitToggle';
+
+// Helper to format measurement with unit
+function formatMeasurement(valueCm: number, unit: MeasurementUnit): string {
+  if (unit === 'inches') {
+    return `${cmToInches(valueCm).toFixed(2)}″`;
+  }
+  return `${valueCm.toFixed(1)}cm`;
+}
 
 // A4 dimensions in mm
 const A4_WIDTH = 210;
@@ -116,7 +125,8 @@ function drawSkirtPatternPiece(
   measurements: SkirtMeasurements,
   offsetX: number,
   offsetY: number,
-  panel: 'front' | 'back' = 'front'
+  panel: 'front' | 'back' = 'front',
+  unit: MeasurementUnit = 'cm'
 ) {
   const { waist, hip, waistToHip, skirtLength } = measurements;
   const waistQuarter = (waist / 4) * 10;
@@ -180,9 +190,9 @@ function drawSkirtPatternPiece(
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
   const dartWidthCm = isFront ? dartWidthBase : dartWidthBase * 1.2;
-  doc.text(`¼ waist + dart = ${(waist / 4 + dartWidthCm + 1).toFixed(1)}cm`, offsetX + waistWidth / 2, offsetY - 5, { align: 'center' });
-  doc.text(`Length = ${skirtLength}cm`, offsetX - 8, offsetY + lengthMm / 2, { angle: 90 });
-  doc.text(`¼ hip = ${(hip / 4 + 1).toFixed(1)}cm`, offsetX + patternWidth + 8, offsetY + waistToHipMm + (lengthMm - waistToHipMm) / 2, { angle: 270 });
+  doc.text(`¼ waist + dart = ${formatMeasurement(waist / 4 + dartWidthCm + 1, unit)}`, offsetX + waistWidth / 2, offsetY - 5, { align: 'center' });
+  doc.text(`Length = ${formatMeasurement(skirtLength, unit)}`, offsetX - 8, offsetY + lengthMm / 2, { angle: 90 });
+  doc.text(`¼ hip = ${formatMeasurement(hip / 4 + 1, unit)}`, offsetX + patternWidth + 8, offsetY + waistToHipMm + (lengthMm - waistToHipMm) / 2, { angle: 270 });
 }
 
 function drawBodicePatternPiece(
@@ -190,7 +200,8 @@ function drawBodicePatternPiece(
   measurements: BodiceMeasurements,
   offsetX: number,
   offsetY: number,
-  panel: 'front' | 'back' = 'front'
+  panel: 'front' | 'back' = 'front',
+  unit: MeasurementUnit = 'cm'
 ) {
   const {
     bust,
@@ -274,22 +285,24 @@ function drawBodicePatternPiece(
   // Measurement annotations
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
-  doc.text(`¼ bust = ${(bust / 4 + 1).toFixed(1)}cm`, offsetX + bustQuarterMm / 2, offsetY + armholeDepthMm + 5);
-  doc.text(`Back length = ${backLength}cm`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
+  doc.text(`¼ bust = ${formatMeasurement(bust / 4 + 1, unit)}`, offsetX + bustQuarterMm / 2, offsetY + armholeDepthMm + 5);
+  doc.text(`Back length = ${formatMeasurement(backLength, unit)}`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
 }
 
-function draw1cmTestSquare(doc: jsPDF) {
+function draw1cmTestSquare(doc: jsPDF, unit: MeasurementUnit) {
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.3);
   doc.rect(MARGIN + 5, MARGIN + 5, 10, 10);
   doc.setFontSize(6);
   doc.setTextColor(0, 0, 0);
-  doc.text('1cm test', MARGIN + 10, MARGIN + 20, { align: 'center' });
+  const label = unit === 'inches' ? '1cm / 0.39″' : '1cm test';
+  doc.text(label, MARGIN + 10, MARGIN + 20, { align: 'center' });
 }
 
 export function generatePatternPDF(
   measurements: SkirtMeasurements | BodiceMeasurements,
-  patternType: string = 'skirt'
+  patternType: string = 'skirt',
+  unit: MeasurementUnit = 'cm'
 ): void {
   const isBodice = isBodiceMeasurements(measurements);
   
@@ -326,7 +339,7 @@ export function generatePatternPDF(
         drawPageInfo(doc, pageNum, tiles.totalPages * panels.length, col, row);
         
         if (pageNum === 1) {
-          draw1cmTestSquare(doc);
+          draw1cmTestSquare(doc, unit);
         }
         
         doc.saveGraphicsState();
@@ -336,9 +349,9 @@ export function generatePatternPDF(
         const patternY = patternMarginMm - viewOffsetY + MARGIN;
         
         if (isBodice) {
-          drawBodicePatternPiece(doc, measurements, patternX, patternY, panel);
+          drawBodicePatternPiece(doc, measurements, patternX, patternY, panel, unit);
         } else {
-          drawSkirtPatternPiece(doc, measurements as SkirtMeasurements, patternX, patternY, panel);
+          drawSkirtPatternPiece(doc, measurements as SkirtMeasurements, patternX, patternY, panel, unit);
         }
         
         doc.restoreGraphicsState();
@@ -369,17 +382,17 @@ export function generatePatternPDF(
   
   const measurementLines = isBodice
     ? [
-        `  • Bust: ${(measurements as BodiceMeasurements).bust}cm`,
-        `  • Neckline: ${(measurements as BodiceMeasurements).neckCircumference}cm`,
-        `  • Shoulder Length: ${(measurements as BodiceMeasurements).shoulderLength}cm`,
-        `  • Back Width: ${(measurements as BodiceMeasurements).backWidth}cm`,
-        `  • Back Length: ${(measurements as BodiceMeasurements).backLength}cm`,
+        `  • Bust: ${formatMeasurement((measurements as BodiceMeasurements).bust, unit)}`,
+        `  • Neckline: ${formatMeasurement((measurements as BodiceMeasurements).neckCircumference, unit)}`,
+        `  • Shoulder Length: ${formatMeasurement((measurements as BodiceMeasurements).shoulderLength, unit)}`,
+        `  • Back Width: ${formatMeasurement((measurements as BodiceMeasurements).backWidth, unit)}`,
+        `  • Back Length: ${formatMeasurement((measurements as BodiceMeasurements).backLength, unit)}`,
       ]
     : [
-        `  • Waist: ${(measurements as SkirtMeasurements).waist}cm`,
-        `  • Hip: ${(measurements as SkirtMeasurements).hip}cm`,
-        `  • Waist to Hip: ${(measurements as SkirtMeasurements).waistToHip}cm`,
-        `  • Skirt Length: ${(measurements as SkirtMeasurements).skirtLength}cm`,
+        `  • Waist: ${formatMeasurement((measurements as SkirtMeasurements).waist, unit)}`,
+        `  • Hip: ${formatMeasurement((measurements as SkirtMeasurements).hip, unit)}`,
+        `  • Waist to Hip: ${formatMeasurement((measurements as SkirtMeasurements).waistToHip, unit)}`,
+        `  • Skirt Length: ${formatMeasurement((measurements as SkirtMeasurements).skirtLength, unit)}`,
       ];
   
   const instructions = [...baseInstructions, ...measurementLines];
