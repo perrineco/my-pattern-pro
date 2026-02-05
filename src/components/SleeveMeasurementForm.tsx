@@ -2,6 +2,7 @@ import { SleeveMeasurements, Category } from '@/types/sloper';
 import { MeasurementInput } from '@/components/MeasurementInput';
 import { MeasurementUnit } from '@/components/UnitToggle';
 import { Card } from '@/components/ui/card';
+ import { SleeveMeasurementGuide } from '@/components/SleeveMeasurementGuide';
 
 interface SleeveMeasurementFormProps {
   measurements: SleeveMeasurements;
@@ -49,9 +50,12 @@ export function SleeveMeasurementForm({
 
   return (
     <Card className="p-5 bg-card">
-      <h3 className="font-serif text-lg font-semibold mb-4 text-foreground">
-        Sleeve Measurements
-      </h3>
+       <div className="flex items-center justify-between mb-4">
+         <h3 className="font-serif text-lg font-semibold text-foreground">
+           Sleeve Measurements
+         </h3>
+         <SleeveMeasurementGuide category={category} />
+       </div>
       <div className="space-y-4">
         <MeasurementInput
           label="Upper Arm"
