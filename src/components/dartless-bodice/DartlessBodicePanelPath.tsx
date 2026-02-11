@@ -114,7 +114,7 @@ export function useDartlessBodicePath({
     points.push(`L ${shoulderEndX} ${shoulderEndY}`);
 
     // Armhole curve
-    const armholeRetreatX = s(bust / 4 + ease - backWidth / 2 - midpointFrontAdd);
+    const armholeRetreatX = s(bust / 4 + ease - backWidth / 2 - config.midpointFrontAdd);
     const midPointX =
       panel === "front" ? offsetX + bustQuarterScaled - armholeRetreatX : offsetX + bustQuarterScaled - armholeRetreatX;
     const armholeRiseY = s(backLength / 6);
