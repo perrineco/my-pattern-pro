@@ -32,8 +32,8 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
   const backWidthHalf = backWidth / 2;
 
   // Calculate front panel extra height (matches DartlessBodicePanelPath logic)
-  const frontNeckDepthDivisor = category === "men" ? 8 : category === "kids" ? 7 : 6;
-  const frontNeckDepthAdd = category === "men" ? 1.5 : category === "kids" ? 1.5 : 2;
+  const frontNeckDepthDivisor = category === "men" ? 5 : category === "kids" ? 6 : 6;
+  const frontNeckDepthAdd = category === "men" ? 0 : category === "kids" ? 0.2 : 2;
   const frontExtraHeight = neckCircumference / 12 - (neckCircumference / frontNeckDepthDivisor + frontNeckDepthAdd);
   const neckHeightFront = neckCircumference / frontNeckDepthDivisor + frontNeckDepthAdd;
   const neckHeightBack = category === "men" ? 2 : category === "kids" ? 1.4 : neckCircumference / 16;
