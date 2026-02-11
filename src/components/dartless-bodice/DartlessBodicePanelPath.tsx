@@ -91,7 +91,7 @@ export function useDartlessBodicePath({
       : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
 
   const shoulderLengthScaled = shoulderLength * scale;
-  const angleRadBack = Math.atan2(config.riseBack, config.backWidth / 2 + config.midpointBackAdd - neckHalfHeight);
+  const angleRadBack = Math.atan2(config.riseBack, backWidth / 2 + config.midpointBackAdd - neckHalfHeight);
   // const shoulderSlopeY = panel === "front" ? Math.sin(angleRad) * shoulderLengthScaled : neckHalfHeight + 2.5;
   //  const shoulderWidthX = Math.sqrt(
   //  (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
