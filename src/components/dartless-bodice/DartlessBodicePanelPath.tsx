@@ -23,8 +23,8 @@ const categoryConfig = {
     armholeDepthRatio: 0.5,
     midpointFrontAdd: -1.3,
     midpointBackAdd: 0,
-    riseBack: 2,
-    extraDropFront: 1.5,
+    riseBack: 4,
+    extraDropFront: 5,
     frontShoulderAdd: 0,
     backShoulderAdd: 0,
   },
@@ -40,8 +40,8 @@ const categoryConfig = {
     armholeDepthRatio: 0.48,
     midpointFrontAdd: 0.25,
     midpointBackAdd: 0,
-    riseBack: 4,
-    extraDropFront: 1.5,
+    riseBack: 5,
+    extraDropFront: 6,
     frontShoulderAdd: 0,
     backShoulderAdd: 0,
   },
@@ -57,8 +57,8 @@ const categoryConfig = {
     armholeDepthRatio: 0.52,
     midpointFrontAdd: 0,
     midpointBackAdd: 0,
-    riseBack: 2,
-    extraDropFront: 1.5,
+    riseBack: 3.2,
+    extraDropFront: 2.5,
     frontShoulderAdd: 0,
     backShoulderAdd: 0,
   },
@@ -91,8 +91,8 @@ export function useDartlessBodicePath({
       : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
 
   const shoulderLengthScaled = shoulderLength * scale;
-  const angleRadBack = Math.atan2(config.riseBack, backWidth / 2 + config.midpointBackAdd - neckHalfHeight);
-  const angleRadFront = Math.atan2(config.extraDropFront, backWidth / 2 + config.midpointFrontAdd - neckHalfHeight);
+  const angleRadBack = Math.atan2(config.riseBack, backWidth / 2 + config.midpointBackAdd - neckHalfWidth);
+  const angleRadFront = Math.atan2(config.extraDropFront, backWidth / 2 + config.midpointFrontAdd - neckHalfWidth);
   // const shoulderSlopeY = panel === "front" ? Math.sin(angleRad) * shoulderLengthScaled : neckHalfHeight + 2.5;
   //  const shoulderWidthX = Math.sqrt(
   //  (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
