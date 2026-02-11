@@ -21,6 +21,7 @@ const categoryConfig = {
     backNeckDepthAdd: 0,
     shoulderAngle: 25,
     armholeDepthRatio: 0.5,
+    midpointFrontAdd: -1.3,
   },
   men: {
     ease: 3,
@@ -32,6 +33,7 @@ const categoryConfig = {
     backNeckDepthAdd: 0,
     shoulderAngle: 20,
     armholeDepthRatio: 0.48,
+    midpointFrontAdd: 0.25,
   },
   kids: {
     ease: 2.5,
@@ -44,6 +46,7 @@ const categoryConfig = {
     backNeckDepthAdd: 0,
     shoulderAngle: 22,
     armholeDepthRatio: 0.52,
+    midpointFrontAdd: 0,
   },
 };
 
@@ -111,11 +114,9 @@ export function useDartlessBodicePath({
     points.push(`L ${shoulderEndX} ${shoulderEndY}`);
 
     // Armhole curve
-    const armholeRetreatX = s(bust / 4 + ease - backWidth / 2);
+    const armholeRetreatX = s(bust / 4 + ease - backWidth / 2 - midpointFrontAdd);
     const midPointX =
-      panel === "front"
-        ? offsetX + bustQuarterScaled - armholeRetreatX + 1.3
-        : offsetX + bustQuarterScaled - armholeRetreatX;
+      panel === "front" ? offsetX + bustQuarterScaled - armholeRetreatX : offsetX + bustQuarterScaled - armholeRetreatX;
     const armholeRiseY = s(backLength / 6);
     const midPointY = neckEndY + shoulderSlopeY + armholeDepthScaled - armholeRiseY;
 
