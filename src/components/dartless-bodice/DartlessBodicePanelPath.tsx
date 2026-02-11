@@ -113,22 +113,22 @@ export function useDartlessBodicePath({
     const points: string[] = [];
 
     // Start at neck center
-    const NewoffsetY = panel === "front" ? offsetY + neckHalfHeight : offsetY + neckHalfHeight;
-    points.push(`M ${offsetX} ${NewoffsetY}`);
+    const newoffsetY = offsetY + neckHalfHeight;
+    points.push(`M ${offsetX} ${newoffsetY}`);
 
     // Neck curve to shoulder
     const cp1x = offsetX + neckHalfWidth * 0.65;
-    const cp1y = offsetY;
+    const cp1y = newoffsetY;
     const cp2x = offsetX + neckHalfWidth * 0.85;
-    const cp2y = offsetY - neckHalfHeight * 0.5;
+    const cp2y = newoffsetY - neckHalfHeight * 0.5;
     const endX = offsetX + neckHalfWidth;
-    const endY = offsetY - neckHalfHeight;
+    const endY = newoffsetY - neckHalfHeight;
 
     points.push(`C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`);
 
     // Shoulder line
     const neckEndX = offsetX + neckHalfWidth;
-    const neckEndY = offsetY - neckHalfHeight;
+    const neckEndY = newoffsetY - neckHalfHeight;
     const shoulderEndX = neckEndX + shoulderWidthX;
     const shoulderEndY = neckEndY + shoulderSlopeY;
     points.push(`L ${shoulderEndX} ${shoulderEndY}`);
@@ -148,7 +148,7 @@ export function useDartlessBodicePath({
     points.push(`C ${cp1_1x} ${cp1_1y}, ${cp1_2x} ${cp1_2y}, ${midPointX} ${midPointY}`);
 
     const ArmholeDendX = offsetX + bustQuarterScaled;
-    const ArmholeDendY = offsetY + armholeDepthScaled;
+    const ArmholeDendY = newoffsetY + armholeDepthScaled;
 
     const cp2_1x = midPointX;
     const cp2_1y = midPointY + (ArmholeDendY - midPointY) * 0.8;
@@ -158,10 +158,10 @@ export function useDartlessBodicePath({
     points.push(`C ${cp2_1x} ${cp2_1y}, ${cp2_2x} ${cp2_2y}, ${ArmholeDendX} ${ArmholeDendY}`);
 
     // Side seam to waist
-    points.push(`L ${offsetX + bustQuarterScaled} ${offsetY + backLengthScaled}`);
+    points.push(`L ${offsetX + bustQuarterScaled} ${newoffsetY + backLengthScaled}`);
 
     // Waist line back to center
-    points.push(`L ${offsetX} ${offsetY + backLengthScaled}`);
+    points.push(`L ${offsetX} ${newoffsetY + backLengthScaled}`);
 
     points.push(`Z`);
 
