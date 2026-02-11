@@ -22,6 +22,8 @@ const categoryConfig = {
     shoulderAngle: 25,
     armholeDepthRatio: 0.5,
     midpointFrontAdd: -1.3,
+    riseBack: 2,
+    extraDropFront: 1.5,
   },
   men: {
     ease: 3,
@@ -34,6 +36,8 @@ const categoryConfig = {
     shoulderAngle: 20,
     armholeDepthRatio: 0.48,
     midpointFrontAdd: 0.25,
+    riseBack: 4,
+    extraDropFront: 1.5,
   },
   kids: {
     ease: 2.5,
@@ -47,6 +51,8 @@ const categoryConfig = {
     shoulderAngle: 22,
     armholeDepthRatio: 0.52,
     midpointFrontAdd: 0,
+    riseBack: 2,
+    extraDropFront: 1.5,
   },
 };
 
@@ -88,6 +94,23 @@ export function useDartlessBodicePath({
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backLengthScaled =
     panel === "front" ? s(backLength) + neckCircumference / 12 - frontNeckDepthBase * scale : s(backLength);
+  const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
+
+  if (panel === "back") {
+    shoulderSlopeY = s(riseBack);
+    shoulderWidthX = Math.sqrt(Math.pow(s(L_back), 2) - Math.pow(shoulderSlopeY, 2));
+  } else {
+    // Le devant est plus tombant
+    shoulderSlopeY = s(riseBack + extraDropFront);
+    shoulderWidthX = Math.sqrt(Math.pow(s(L_front), 2) - Math.pow(shoulderSlopeY, 2));
+  }
+
+  // --- 4. Calculs de structure restants ---
+  const bustQuarterScaled = (bustQuarter + ease) * scale;
+  const backLengthScaled =
+    panel === "front" ? s(backLength) + neckCircumference / 12 - frontNeckDepthBase * scale : s(backLength);
+
+  // L'armholeDepth s'adapte maintenant à la chute réelle
   const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
 
   const buildPath = () => {
