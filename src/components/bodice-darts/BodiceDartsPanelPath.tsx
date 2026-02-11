@@ -30,8 +30,8 @@ const categoryConfig = {
     ease: 3,
     neckWidthDivisor: 6,
     neckWidthAdd: 2,
-    frontNeckDepthDivisor: 8,
-    frontNeckDepthAdd: 1.5,
+    frontNeckDepthDivisor: 5,
+    frontNeckDepthAdd: 0,
     backNeckDepthDivisor: 20,
     backNeckDepthAdd: 0,
     shoulderAngle: 20,
@@ -45,8 +45,9 @@ const categoryConfig = {
     ease: 2.5,
     neckWidthDivisor: 5.5,
     neckWidthAdd: 1.2,
-    frontNeckDepthDivisor: 7,
-    frontNeckDepthAdd: 1.5,
+    frontNeckDepthDivisor: 6,
+    frontNeckDepthAdd: 0.5,
+    kidsFrontNeckUsesBackWidth: true,
     backNeckDepthDivisor: 18,
     backNeckDepthAdd: 0,
     shoulderAngle: 22,
@@ -69,8 +70,11 @@ export function useBodiceDartsPath({ measurements, offsetX, offsetY, scale, pane
   const s = (v: number) => v * scale;
 
   const neckHalfWidth = (neckCircumference / config.neckWidthDivisor + config.neckWidthAdd) * scale;
+  const frontNeckDepthBase = 'kidsFrontNeckUsesBackWidth' in config && (config as any).kidsFrontNeckUsesBackWidth
+    ? backWidth / config.frontNeckDepthDivisor + config.frontNeckDepthAdd
+    : neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd;
   const neckHalfHeight = panel === "front" 
-    ? (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale 
+    ? frontNeckDepthBase * scale 
     : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
   
   const shoulderLengthScaled = shoulderLength * scale;
@@ -81,7 +85,7 @@ export function useBodiceDartsPath({ measurements, offsetX, offsetY, scale, pane
   );
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backLengthScaled =
-    panel === "front" ? s(backLength) + neckCircumference / 12 - (neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd) * scale : s(backLength);
+    panel === "front" ? s(backLength) + neckCircumference / 12 - frontNeckDepthBase * scale : s(backLength);
   const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
 
   // Dart calculations
