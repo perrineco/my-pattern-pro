@@ -85,10 +85,8 @@ export function useDartlessBodicePath({
   const neckHalfWidth = (neckCircumference / config.neckWidthDivisor + config.neckWidthAdd) * scale;
   // Back neckline is shallower than front, with category-specific depths
   const frontNeckDepthBase = neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd;
-  const neckHalfHeight =
-    panel === "front"
-      ? frontNeckDepthBase * scale
-      : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
+  const backNeckDepthBase = neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd;
+  const neckHalfHeight = panel === "front" ? frontNeckDepthBase * scale : backNeckDepthBase * scale;
 
   const shoulderLengthScaled = shoulderLength * scale;
   const angleRadBack = Math.atan2(config.riseBack, backWidth / 2 + config.midpointBackAdd - neckHalfWidth);
@@ -113,7 +111,7 @@ export function useDartlessBodicePath({
     const points: string[] = [];
 
     // Start at neck center
-    const newoffsetY = offsetY + neckHalfHeight;
+    const newoffsetY = offsetY + frontNeckDepthBase - backNeckDepthBase;
     points.push(`M ${offsetX} ${newoffsetY}`);
 
     // Neck curve to shoulder
