@@ -24,8 +24,8 @@ const categoryConfig = {
   },
   men: {
     ease: 3,
-    neckWidthDivisor: 6,
-    neckWidthAdd: 2,
+    neckWidthDivisor: 5,
+    neckWidthAdd: -1,
     frontNeckDepthDivisor: 5,
     frontNeckDepthAdd: 0,
     backNeckDepthDivisor: 20,
@@ -35,10 +35,10 @@ const categoryConfig = {
   },
   kids: {
     ease: 2.5,
-    neckWidthDivisor: 5.5,
-    neckWidthAdd: 1.2,
+    neckWidthDivisor: 6,
+    neckWidthAdd: 0.2,
     frontNeckDepthDivisor: 6, // uses backWidth instead of neckCircumference for kids
-    frontNeckDepthAdd: 0.5,
+    frontNeckDepthAdd: 0.2,
     kidsFrontNeckUsesBackWidth: true,
     backNeckDepthDivisor: 18,
     backNeckDepthAdd: 0,
@@ -67,9 +67,10 @@ export function useDartlessBodicePath({
 
   const neckHalfWidth = (neckCircumference / config.neckWidthDivisor + config.neckWidthAdd) * scale;
   // Back neckline is shallower than front, with category-specific depths
-  const frontNeckDepthBase = 'kidsFrontNeckUsesBackWidth' in config && (config as any).kidsFrontNeckUsesBackWidth
-    ? backWidth / config.frontNeckDepthDivisor + config.frontNeckDepthAdd
-    : neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd;
+  const frontNeckDepthBase =
+    "kidsFrontNeckUsesBackWidth" in config && (config as any).kidsFrontNeckUsesBackWidth
+      ? neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd
+      : neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd;
   const neckHalfHeight =
     panel === "front"
       ? frontNeckDepthBase * scale
@@ -83,11 +84,7 @@ export function useDartlessBodicePath({
   );
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backLengthScaled =
-    panel === "front"
-      ? s(backLength) +
-        neckCircumference / 12 -
-        frontNeckDepthBase * scale
-      : s(backLength);
+    panel === "front" ? s(backLength) + neckCircumference / 12 - frontNeckDepthBase * scale : s(backLength);
   const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
 
   const buildPath = () => {
