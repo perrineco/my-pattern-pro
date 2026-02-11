@@ -22,8 +22,11 @@ const categoryConfig = {
     shoulderAngle: 25,
     armholeDepthRatio: 0.5,
     midpointFrontAdd: -1.3,
+    midpointBackAdd: 0,
     riseBack: 2,
     extraDropFront: 1.5,
+    frontShoulderAdd: 0,
+    backShoulderAdd: 0,
   },
   men: {
     ease: 3,
@@ -36,8 +39,11 @@ const categoryConfig = {
     shoulderAngle: 20,
     armholeDepthRatio: 0.48,
     midpointFrontAdd: 0.25,
+    midpointBackAdd: 0,
     riseBack: 4,
     extraDropFront: 1.5,
+    frontShoulderAdd: 0,
+    backShoulderAdd: 0,
   },
   kids: {
     ease: 2.5,
@@ -45,14 +51,16 @@ const categoryConfig = {
     neckWidthAdd: 0.2,
     frontNeckDepthDivisor: 6,
     frontNeckDepthAdd: 0.2,
-    kidsFrontNeckUsesBackWidth: true,
     backNeckDepthDivisor: 18,
     backNeckDepthAdd: 0,
     shoulderAngle: 22,
     armholeDepthRatio: 0.52,
     midpointFrontAdd: 0,
+    midpointBackAdd: 0,
     riseBack: 2,
     extraDropFront: 1.5,
+    frontShoulderAdd: 0,
+    backShoulderAdd: 0,
   },
 };
 
@@ -76,24 +84,21 @@ export function useDartlessBodicePath({
 
   const neckHalfWidth = (neckCircumference / config.neckWidthDivisor + config.neckWidthAdd) * scale;
   // Back neckline is shallower than front, with category-specific depths
-  const frontNeckDepthBase =
-    "kidsFrontNeckUsesBackWidth" in config && (config as any).kidsFrontNeckUsesBackWidth
-      ? neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd
-      : neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd;
+  const frontNeckDepthBase = neckCircumference / config.frontNeckDepthDivisor + config.frontNeckDepthAdd;
   const neckHalfHeight =
     panel === "front"
       ? frontNeckDepthBase * scale
       : (neckCircumference / config.backNeckDepthDivisor + config.backNeckDepthAdd) * scale;
 
   const shoulderLengthScaled = shoulderLength * scale;
-  const angleRad = (config.shoulderAngle * Math.PI) / 180;
+  const angleRadBack = Math.atan2(config.riseBack, config.backWidth / 2 + config.midpointBackAdd - neckHalfHeight);
   // const shoulderSlopeY = panel === "front" ? Math.sin(angleRad) * shoulderLengthScaled : neckHalfHeight + 2.5;
   //  const shoulderWidthX = Math.sqrt(
   //  (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
   // );
 
-  const L_back = shoulderLength + 0.5;
-  const L_front = L_back + 0.5;
+  const L_back = shoulderLength + config.backShoulderAdd;
+  const L_front = L_back + config.frontShoulderAdd;
 
   const shoulderSlopeY = panel === "back" ? s(config.riseBack) : s(config.riseBack + config.extraDropFront);
   const shoulderWidthX =
