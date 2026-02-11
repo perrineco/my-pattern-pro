@@ -95,14 +95,13 @@ export function useDartlessBodicePath({
   const L_back = shoulderLength + 0.5;
   const L_front = L_back + 0.5;
 
-  if (panel === "back") {
-    const shoulderSlopeY = s(config.riseBack);
-    const shoulderWidthX = Math.sqrt(Math.pow(s(L_back), 2) - Math.pow(shoulderSlopeY, 2));
-  } else {
-    // Le devant est plus tombant
-    const shoulderSlopeY = s(config.riseBack + config.extraDropFront);
-    const shoulderWidthX = Math.sqrt(Math.pow(s(L_front), 2) - Math.pow(shoulderSlopeY, 2));
-  }
+  const shoulderSlopeY;
+  panel === "back" ? s(config.riseBack) : s(config.riseBack + config.extraDropFront);
+  const shoulderWidthX;
+  panel === "back"
+    ? Math.sqrt(Math.pow(s(L_back), 2) - Math.pow(shoulderSlopeY, 2))
+    : Math.sqrt(Math.pow(s(L_front), 2) - Math.pow(shoulderSlopeY, 2));
+
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backLengthScaled =
     panel === "front" ? s(backLength) + neckCircumference / 12 - frontNeckDepthBase * scale : s(backLength);
