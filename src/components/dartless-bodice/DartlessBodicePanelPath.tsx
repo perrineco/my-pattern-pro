@@ -113,7 +113,8 @@ export function useDartlessBodicePath({
     const points: string[] = [];
 
     // Start at neck center
-    points.push(`M ${offsetX} ${offsetY}`);
+    const NewoffsetY = panel === "front" ? offsetY + neckHalfHeight : offsetY + neckHalfHeight;
+    points.push(`M ${offsetX} ${NewoffsetY}`);
 
     // Neck curve to shoulder
     const cp1x = offsetX + neckHalfWidth * 0.65;
