@@ -26,9 +26,9 @@ const categoryConfig = {
   men: {
     ease: 3,
     neckWidthDivisor: 5,
-    neckWidthAdd: -1,
+    neckWidthAdd: 0,
     frontNeckDepthDivisor: 5,
-    frontNeckDepthAdd: 0,
+    frontNeckDepthAdd: 0.5,
     backNeckDepthDivisor: 20,
     backNeckDepthAdd: 0,
     shoulderAngle: 20,
@@ -39,7 +39,7 @@ const categoryConfig = {
     ease: 2.5,
     neckWidthDivisor: 6,
     neckWidthAdd: 0.2,
-    frontNeckDepthDivisor: 6, // uses backWidth instead of neckCircumference for kids
+    frontNeckDepthDivisor: 6,
     frontNeckDepthAdd: 0.2,
     kidsFrontNeckUsesBackWidth: true,
     backNeckDepthDivisor: 18,
