@@ -100,11 +100,11 @@ export function useDartlessBodicePath({
   const L_front = L_back + 0.5;
 
   if (panel === "back") {
-    shoulderSlopeY = s(riseBack);
+    shoulderSlopeY = s(config.riseBack);
     shoulderWidthX = Math.sqrt(Math.pow(s(L_back), 2) - Math.pow(shoulderSlopeY, 2));
   } else {
     // Le devant est plus tombant
-    shoulderSlopeY = s(riseBack + extraDropFront);
+    shoulderSlopeY = s(config.riseBack + config.extraDropFront);
     shoulderWidthX = Math.sqrt(Math.pow(s(L_front), 2) - Math.pow(shoulderSlopeY, 2));
   }
 
