@@ -102,7 +102,7 @@ export function useDartlessBodicePath({
   const L_front = L_back + config.frontShoulderAdd;
 
   const shoulderSlopeY = panel === "back" ? s(Math.sin(angleRadBack) * L_back) : s(Math.sin(angleRadFront) * L_front);
-  const shoulderWidthX = panel === "back" ? s(Math.cos(angleRadBack) * L_back) : s(Math.cos(angleRadFront) * L_front);
+  const shoulderWidthX = panel === "back" ? -s(Math.cos(angleRadBack) * L_back) : -s(Math.cos(angleRadFront) * L_front);
 
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backLengthScaled =
