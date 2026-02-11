@@ -92,6 +92,7 @@ export function useDartlessBodicePath({
 
   const shoulderLengthScaled = shoulderLength * scale;
   const angleRadBack = Math.atan2(config.riseBack, backWidth / 2 + config.midpointBackAdd - neckHalfHeight);
+  const angleRadFront = Math.atan2(config.extraDropFront, backWidth / 2 + config.midpointFrontAdd - neckHalfHeight);
   // const shoulderSlopeY = panel === "front" ? Math.sin(angleRad) * shoulderLengthScaled : neckHalfHeight + 2.5;
   //  const shoulderWidthX = Math.sqrt(
   //  (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
@@ -100,11 +101,8 @@ export function useDartlessBodicePath({
   const L_back = shoulderLength + config.backShoulderAdd;
   const L_front = L_back + config.frontShoulderAdd;
 
-  const shoulderSlopeY = panel === "back" ? s(config.riseBack) : s(config.riseBack + config.extraDropFront);
-  const shoulderWidthX =
-    panel === "back"
-      ? Math.sqrt(Math.pow(s(L_back), 2) - Math.pow(shoulderSlopeY, 2))
-      : Math.sqrt(Math.pow(s(L_front), 2) - Math.pow(shoulderSlopeY, 2));
+  const shoulderSlopeY = panel === "back" ? s(Math.sin(angleRadBack) * L_back) : s(Math.sin(angleRadFront) * L_front);
+  const shoulderWidthX = panel === "back" ? s(Math.cos(angleRadBack) * L_back) : s(Math.cos(angleRadFront) * L_front);
 
   const bustQuarterScaled = (bustQuarter + ease) * scale;
   const backLengthScaled =
