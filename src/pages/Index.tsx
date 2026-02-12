@@ -430,12 +430,16 @@ const Index = () => {
                 
                 <div className="p-4 border-b border-border flex items-center justify-between">
                   <div>
-                    <h2 className="font-serif text-lg font-semibold text-foreground">
-                      Pattern Preview
+                    <h2 className="font-serif text-2xl font-bold text-foreground">
+                      {patternType === 'skirt' ? 'Basic Skirt' 
+                        : patternType === 'bodice' ? 'Basic Bodice'
+                        : patternType === 'bodice-dartless' ? 'Dartless Bodice'
+                        : patternType === 'bodice-with-darts' ? 'Bodice with Darts'
+                        : patternType === 'bodice-knit' ? 'Knit Bodice'
+                        : patternType === 'pants' ? 'Basic Pants'
+                        : patternType === 'sleeve' ? 'Basic Sleeve'
+                        : 'Pattern Preview'}
                     </h2>
-                    <p className="text-sm text-muted-foreground">
-                      {isBodiceDartless ? 'Dartless' : 'Basic'} {patternType.replace('bodice-dartless', 'bodice')} • {isBodiceVariant ? `${bodicePanel} panel` : 'Front panel'}
-                    </p>
                   </div>
                   <div className="flex items-center gap-3">
                     {isBodiceVariant && (

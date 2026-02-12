@@ -62,23 +62,6 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
 
       <rect width="100%" height="100%" fill="url(#bodiceDartsGrid)" />
 
-      {/* Panel labels */}
-      <text
-        x={frontOffsetX + scaledWidth / 2}
-        y={offsetY - scaledHeight * 0.15}
-        textAnchor="middle"
-        className="fill-muted-foreground text-xs font-medium uppercase tracking-wider"
-      >
-        Front Panel
-      </text>
-      <text
-        x={backOffsetX + scaledWidth / 2}
-        y={offsetY - scaledHeight * 0.15}
-        textAnchor="middle"
-        className="fill-muted-foreground text-xs font-medium uppercase tracking-wider"
-      >
-        Back Panel
-      </text>
 
       {/* Front panel */}
       <BodiceDartsPanel
