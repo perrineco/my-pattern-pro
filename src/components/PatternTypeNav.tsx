@@ -18,21 +18,21 @@ interface PatternTypeConfig {
 }
 
 const patternTypes: PatternTypeConfig[] = [
-  { value: 'skirt', label: 'Skirt', available: true },
+  { value: 'skirt', label: 'Skirt / Jupe', available: true },
   { 
     value: 'bodice', 
-    label: 'Bodice', 
+    label: 'Bodice / Corsage', 
     available: true,
     hasSubmenu: true,
     submenu: [
-      { value: 'bodice-dartless', label: 'Dartless', available: true },
-      { value: 'bodice-with-darts', label: 'With Darts', available: false },
-      { value: 'bodice-knit', label: 'For Knit', available: false },
+      { value: 'bodice-dartless', label: 'Dartless / Sans pinces', available: true },
+      { value: 'bodice-with-darts', label: 'With Darts / Avec pinces', available: false },
+      { value: 'bodice-knit', label: 'For Knit / Pour maille', available: false },
     ]
   },
-  { value: 'dress', label: 'Dress', available: false },
-  { value: 'pants', label: 'Pants', available: true },
-  { value: 'sleeve', label: 'Sleeve', available: false },
+  { value: 'dress', label: 'Dress / Robe', available: false },
+  { value: 'pants', label: 'Pants / Pantalon', available: true },
+  { value: 'sleeve', label: 'Sleeve / Manche', available: false },
 ];
 
 export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavProps) {
