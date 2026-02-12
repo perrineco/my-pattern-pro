@@ -13,6 +13,13 @@ const translations: Record<string, Record<Language, string>> = {
   'label.category': { en: 'Category', fr: 'Catégorie' },
   'label.units': { en: 'Units', fr: 'Unités' },
   'label.garmentType': { en: 'Garment Type', fr: 'Type de vêtement' },
+  'label.measurements': { en: 'Measurements', fr: 'Mesures' },
+  'label.profile': { en: 'Profile', fr: 'Profil' },
+
+  // Categories
+  'category.women': { en: 'Women', fr: 'Femmes' },
+  'category.men': { en: 'Men', fr: 'Hommes' },
+  'category.kids': { en: 'Kids', fr: 'Enfants' },
 
   // Pattern types (nav buttons)
   'pattern.skirt': { en: 'Skirt', fr: 'Jupe' },
@@ -34,6 +41,84 @@ const translations: Record<string, Record<Language, string>> = {
   'title.basicSleeve': { en: 'Basic Sleeve', fr: 'Manche de base' },
   'title.patternPreview': { en: 'Pattern Preview', fr: 'Aperçu du patron' },
 
+  // Measurement labels - Skirt
+  'meas.waistCircumference': { en: 'Waist Circumference', fr: 'Tour de taille' },
+  'meas.hipCircumference': { en: 'Hip Circumference', fr: 'Tour de hanches' },
+  'meas.waistToHip': { en: 'Waist to Hip', fr: 'Taille aux hanches' },
+  'meas.skirtLength': { en: 'Skirt Length', fr: 'Longueur de jupe' },
+
+  // Measurement labels - Bodice
+  'meas.bust': { en: 'Bust', fr: 'Poitrine' },
+  'meas.bustCircumference': { en: 'Bust Circumference', fr: 'Tour de poitrine' },
+  'meas.necklineCircumference': { en: 'Neckline Circumference', fr: 'Tour de cou' },
+  'meas.neckCircumference': { en: 'Neck Circumference', fr: 'Tour de cou' },
+  'meas.shoulderLength': { en: 'Shoulder Length', fr: 'Longueur d\'épaule' },
+  'meas.backWidth': { en: 'Back Width', fr: 'Carrure dos' },
+  'meas.backWidthCarrure': { en: 'Back Width (Carrure dos)', fr: 'Carrure dos' },
+  'meas.backLength': { en: 'Back Length', fr: 'Longueur taille-dos' },
+  'meas.backLengthLongueur': { en: 'Back Length (Longueur taille-dos)', fr: 'Longueur taille-dos' },
+
+  // Measurement labels - Pants
+  'meas.waist': { en: 'Waist', fr: 'Taille' },
+  'meas.hip': { en: 'Hip', fr: 'Hanches' },
+  'meas.thigh': { en: 'Thigh', fr: 'Cuisse' },
+  'meas.knee': { en: 'Knee', fr: 'Genou' },
+  'meas.ankle': { en: 'Ankle', fr: 'Cheville' },
+  'meas.crotchDepth': { en: 'Crotch Depth (Rise)', fr: 'Hauteur d\'entrejambe (montant)' },
+  'meas.outseamLength': { en: 'Outseam Length', fr: 'Longueur extérieure' },
+  'meas.inseamLength': { en: 'Inseam Length', fr: 'Longueur intérieure (entrejambe)' },
+
+  // Measurement labels - Sleeve
+  'meas.upperArm': { en: 'Upper Arm', fr: 'Tour de bras' },
+  'meas.wrist': { en: 'Wrist', fr: 'Tour de poignet' },
+  'meas.sleeveLength': { en: 'Sleeve Length', fr: 'Longueur de manche' },
+  'meas.elbowLength': { en: 'Elbow Length', fr: 'Longueur coude' },
+  'meas.armholeDepth': { en: 'Armhole Depth', fr: 'Profondeur d\'emmanchure' },
+
+  // Measurement labels - Common
+  'meas.ease': { en: 'Ease', fr: 'Aisance' },
+
+  // Measurement hints - Skirt
+  'hint.measureAtNaturalWaist': { en: 'Measure at natural waist', fr: 'Mesurer à la taille naturelle' },
+  'hint.measureAtFullestPart': { en: 'Measure at fullest part', fr: 'Mesurer à l\'endroit le plus large' },
+  'hint.distanceBetweenWaistAndHip': { en: 'Distance between waist and hip', fr: 'Distance entre la taille et les hanches' },
+  'hint.fromWaistToHem': { en: 'From waist to hem', fr: 'De la taille à l\'ourlet' },
+  'hint.wearingEaseAllowance': { en: 'Wearing ease allowance', fr: 'Tolérance d\'aisance' },
+
+  // Measurement hints - Bodice
+  'hint.tourDePoitrine': { en: 'Full bust circumference', fr: 'Tour de poitrine' },
+  'hint.tourDeCou': { en: 'Around base of neck', fr: 'Tour de cou' },
+  'hint.longueurEpaule': { en: 'From neck point to shoulder tip', fr: 'Du point de cou à la pointe d\'épaule' },
+  'hint.carrureDos': { en: 'Across back between armholes', fr: 'Carrure dos entre les emmanchures' },
+  'hint.longueurTailleDos': { en: 'From neck base to waist', fr: 'De la base du cou à la taille' },
+  'hint.addedWearingRoom': { en: 'Added wearing room', fr: 'Aisance de confort' },
+
+  // Measurement hints - Pants
+  'hint.measureFullestThigh': { en: 'Measure at fullest part of thigh', fr: 'Mesurer à l\'endroit le plus large de la cuisse' },
+  'hint.measureAroundKnee': { en: 'Measure around the knee', fr: 'Mesurer autour du genou' },
+  'hint.measureAroundAnkle': { en: 'Measure around the ankle', fr: 'Mesurer autour de la cheville' },
+  'hint.waistToSeat': { en: 'Waist to seat while sitting', fr: 'Taille à l\'assise en position assise' },
+  'hint.waistToFloor': { en: 'Waist to floor along outside leg', fr: 'Taille au sol le long de la jambe extérieure' },
+  'hint.crotchToFloor': { en: 'Crotch to floor along inside leg', fr: 'Entrejambe au sol le long de la jambe intérieure' },
+
+  // Measurement hints - Knit
+  'hint.knitEase': { en: 'Knit ease (0 = body-hugging, negative = compression)', fr: 'Aisance maille (0 = près du corps, négatif = compression)' },
+
+  // Section headers
+  'section.circumferences': { en: 'Circumferences', fr: 'Circonférences' },
+  'section.lengths': { en: 'Lengths', fr: 'Longueurs' },
+  'section.core': { en: 'Core', fr: 'Principales' },
+  'section.widthLength': { en: 'Width & Length', fr: 'Largeur & Longueur' },
+  'section.forKnitFabrics': { en: 'For Knit Fabrics', fr: 'Pour tissus maille' },
+
+  // Footer notes
+  'note.allMeasurementsIn': { en: 'All measurements in', fr: 'Toutes les mesures en' },
+  'note.centimeters': { en: 'centimeters', fr: 'centimètres' },
+  'note.inches': { en: 'inches', fr: 'pouces' },
+  'note.standardEase': { en: 'The pattern includes standard ease allowances.', fr: 'Le patron inclut les marges d\'aisance standard.' },
+  'note.optimizedKnit': { en: 'Optimized for stretch knit fabrics.', fr: 'Optimisé pour les tissus maille extensibles.' },
+  'note.simpleBodice': { en: 'Simple bodice block without bust darts', fr: 'Corsage de base sans pinces de poitrine' },
+
   // Buttons & actions
   'action.reset': { en: 'Reset', fr: 'Réinitialiser' },
   'action.exportPdf': { en: 'Export PDF', fr: 'Exporter PDF' },
@@ -49,6 +134,22 @@ const translations: Record<string, Record<Language, string>> = {
   'action.manageSubscription': { en: 'Manage Subscription', fr: 'Gérer l\'abonnement' },
   'action.contactUs': { en: 'Contact Us', fr: 'Nous contacter' },
   'action.backToPatterns': { en: 'Back to Patterns', fr: 'Retour aux patrons' },
+  'action.saveAsNew': { en: 'Save as new profile', fr: 'Sauvegarder comme nouveau profil' },
+  'action.deleteProfile': { en: 'Delete profile', fr: 'Supprimer le profil' },
+  'action.updateCurrentProfile': { en: 'Update Current Profile', fr: 'Mettre à jour le profil actuel' },
+  'action.cancel': { en: 'Cancel', fr: 'Annuler' },
+  'action.saveProfile': { en: 'Save Profile', fr: 'Sauvegarder le profil' },
+  'action.delete': { en: 'Delete', fr: 'Supprimer' },
+
+  // Profile manager
+  'profile.loading': { en: 'Loading...', fr: 'Chargement...' },
+  'profile.noSavedProfiles': { en: 'No saved profiles', fr: 'Aucun profil sauvegardé' },
+  'profile.selectProfile': { en: 'Select profile', fr: 'Sélectionner un profil' },
+  'profile.saveNewTitle': { en: 'Save New Profile', fr: 'Sauvegarder un nouveau profil' },
+  'profile.namePlaceholder': { en: "Profile name (e.g., 'My measurements', 'Client A')", fr: "Nom du profil (ex: 'Mes mesures', 'Client A')" },
+  'profile.deleteTitle': { en: 'Delete Profile?', fr: 'Supprimer le profil ?' },
+  'profile.deleteDescription': { en: 'This will permanently delete', fr: 'Ceci supprimera définitivement' },
+  'profile.cannotBeUndone': { en: 'This action cannot be undone.', fr: 'Cette action est irréversible.' },
 
   // Misc
   'misc.soon': { en: 'Soon', fr: 'Bientôt' },

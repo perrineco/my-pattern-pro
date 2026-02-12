@@ -3,6 +3,7 @@ import { MeasurementInput } from './MeasurementInput';
 import { MeasurementGuide } from './MeasurementGuide';
 import { Card } from '@/components/ui/card';
 import { MeasurementUnit } from './UnitToggle';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SkirtMeasurementFormProps {
   measurements: SkirtMeasurements;
@@ -23,6 +24,8 @@ export function SkirtMeasurementForm({
   category,
   unit = 'cm',
 }: SkirtMeasurementFormProps) {
+  const { t } = useLanguage();
+  
   const handleChange = (key: keyof SkirtMeasurements) => (value: number) => {
     onChange({ ...measurements, [key]: value });
   };
@@ -34,54 +37,54 @@ export function SkirtMeasurementForm({
   return (
     <Card className="p-6 space-y-6 bg-card border-border">
       <div className="flex items-center justify-between">
-        <h3 className="font-serif text-xl font-semibold text-foreground">Measurements</h3>
+        <h3 className="font-serif text-xl font-semibold text-foreground">{t('label.measurements')}</h3>
         <div className="flex items-center gap-2">
           <MeasurementGuide category={category} />
           <button
             onClick={handleReset}
             className="text-sm text-muted-foreground hover:text-primary transition-colors"
           >
-            Reset
+            {t('action.reset')}
           </button>
         </div>
       </div>
 
       <div className="space-y-4">
         <MeasurementInput
-          label="Waist Circumference"
+          label={t('meas.waistCircumference')}
           value={measurements.waist}
           onChange={handleChange('waist')}
-          hint="Measure at natural waist"
+          hint={t('hint.measureAtNaturalWaist')}
           min={40}
           max={150}
           unit={unit}
         />
 
         <MeasurementInput
-          label="Hip Circumference"
+          label={t('meas.hipCircumference')}
           value={measurements.hip}
           onChange={handleChange('hip')}
-          hint="Measure at fullest part"
+          hint={t('hint.measureAtFullestPart')}
           min={50}
           max={180}
           unit={unit}
         />
 
         <MeasurementInput
-          label="Waist to Hip"
+          label={t('meas.waistToHip')}
           value={measurements.waistToHip}
           onChange={handleChange('waistToHip')}
-          hint="Distance between waist and hip"
+          hint={t('hint.distanceBetweenWaistAndHip')}
           min={10}
           max={35}
           unit={unit}
         />
 
         <MeasurementInput
-          label="Skirt Length"
+          label={t('meas.skirtLength')}
           value={measurements.skirtLength}
           onChange={handleChange('skirtLength')}
-          hint="From waist to hem"
+          hint={t('hint.fromWaistToHem')}
           min={20}
           max={150}
           unit={unit}
@@ -89,10 +92,10 @@ export function SkirtMeasurementForm({
 
         <div className="pt-4 border-t border-border">
           <MeasurementInput
-            label="Ease"
+            label={t('meas.ease')}
             value={measurements.ease ?? (category === 'kids' ? 0.5 : 1)}
             onChange={handleChange('ease')}
-            hint="Wearing ease allowance"
+            hint={t('hint.wearingEaseAllowance')}
             min={0}
             max={4}
             step={0.5}
@@ -103,7 +106,7 @@ export function SkirtMeasurementForm({
 
       <div className="pt-4 border-t border-border">
         <p className="text-xs text-muted-foreground">
-          All measurements in {unit === 'inches' ? 'inches' : 'centimeters'}. The pattern includes standard ease allowances.
+          {t('note.allMeasurementsIn')} {unit === 'inches' ? t('note.inches') : t('note.centimeters')}. {t('note.standardEase')}
         </p>
       </div>
     </Card>
