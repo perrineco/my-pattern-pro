@@ -46,7 +46,7 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
   const maxPatternHeight = Math.max(frontPatternHeight, backPatternHeight);
 
   // Calculate scale to fit both panels side by side
-  const padding = 40;
+  const padding = 50;
   const availableWidth = dimensions.width / 2 - padding * 2;
   const availableHeight = dimensions.height - padding * 2;
   const scale = Math.min(availableWidth / singlePatternWidth, availableHeight / maxPatternHeight, 8);
