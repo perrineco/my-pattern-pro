@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
- import { Scissors, User, LogOut, CreditCard, Crown, MessageSquare } from 'lucide-react';
+ import { Scissors, User, LogOut, CreditCard, Crown, MessageSquare, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Header() {
@@ -57,6 +57,11 @@ export function Header() {
                         <span className="capitalize">{subscription.tier}</span>
                       </div>
                     )}
+
+                    <Button variant="outline" size="sm" onClick={() => navigate('/adjustments')}>
+                      <Wrench className="w-4 h-4 mr-2" />
+                      Adjustments
+                    </Button>
 
                     <Button variant="outline" size="sm" onClick={() => navigate('/pricing')}>
                       <CreditCard className="w-4 h-4 mr-2" />
