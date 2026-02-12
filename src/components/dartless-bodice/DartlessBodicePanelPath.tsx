@@ -107,11 +107,12 @@ export function useDartlessBodicePath({
     panel === "front" ? s(backLength) + backNeckDepthBase * scale - frontNeckDepthBase * scale : s(backLength);
   // const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
   const armholeDepthScaled = backLengthScaled / 6;
+
   const buildPath = () => {
     const points: string[] = [];
 
     // Start at neck center
-    const newoffsetY = offsetY + frontNeckDepthBase - backNeckDepthBase;
+    const newoffsetY = panel === "front" ? offsetY + frontNeckDepthBase - backNeckDepthBase : offsetY;
     points.push(`M ${offsetX} ${newoffsetY}`);
 
     // Neck curve to shoulder
@@ -147,7 +148,7 @@ export function useDartlessBodicePath({
     points.push(`C ${cp1_1x} ${cp1_1y}, ${cp1_2x} ${cp1_2y}, ${midPointX} ${midPointY}`);
 
     const ArmholeDendX = offsetX + bustQuarterScaled;
-    const ArmholeDendY = newoffsetY + backLengthScaled / 6;
+    const ArmholeDendY = newoffsetY + backLengthScaled - s(backLength) / 2;
 
     const cp2_1x = midPointX;
     const cp2_1y = midPointY + (ArmholeDendY - midPointY) * 0.8;
