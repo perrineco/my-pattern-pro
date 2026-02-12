@@ -27,7 +27,10 @@ import { UnitToggle, MeasurementUnit } from '@/components/UnitToggle';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Printer, Lock, ArrowLeft } from 'lucide-react';
+import { Download, Printer, Lock, ArrowLeft, RotateCcw } from 'lucide-react';
+import { MeasurementGuide } from '@/components/MeasurementGuide';
+import { BodiceMeasurementGuide } from '@/components/BodiceMeasurementGuide';
+import { SleeveMeasurementGuide } from '@/components/SleeveMeasurementGuide';
 import { toast } from 'sonner';
 import { getPatternsLimit, STRIPE_CONFIG } from '@/lib/stripe-config';
 import { generatePatternPDF } from '@/lib/pdf-export';
@@ -440,6 +443,30 @@ const Index = () => {
                         : patternType === 'sleeve' ? 'Basic Sleeve'
                         : 'Pattern Preview'}
                     </h2>
+                    <div className="flex items-center gap-2 mt-1">
+                      {patternType === 'skirt' || patternType === 'pants' ? (
+                        <MeasurementGuide category={category} />
+                      ) : patternType === 'sleeve' ? (
+                        <SleeveMeasurementGuide category={category} />
+                      ) : (
+                        <BodiceMeasurementGuide category={category} />
+                      )}
+                      <button
+                        onClick={() => {
+                          if (patternType === 'skirt') setSkirtMeasurements(defaultSkirtMeasurements[category]);
+                          else if (patternType === 'bodice') setBodiceMeasurements(defaultBodiceMeasurements[category]);
+                          else if (patternType === 'bodice-dartless') setDartlessBodiceMeasurements(defaultDartlessBodiceMeasurements[category]);
+                          else if (patternType === 'bodice-with-darts') setBodiceDartsMeasurements(defaultBodiceDartsMeasurements[category]);
+                          else if (patternType === 'bodice-knit') setKnitBodiceMeasurements(defaultKnitBodiceMeasurements[category]);
+                          else if (patternType === 'pants') setPantsMeasurements(defaultPantsMeasurements[category]);
+                          else if (patternType === 'sleeve') setSleeveMeasurements(defaultSleeveMeasurements[category]);
+                        }}
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        Reset
+                      </button>
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     {isBodiceVariant && (
