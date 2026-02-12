@@ -256,13 +256,13 @@ const Index = () => {
               <div className="flex items-center gap-6">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                    Category
+                    Category / Catégorie
                   </label>
                   <CategorySelector selected={category} onSelect={handleCategoryChange} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                    Units
+                    Units / Unités
                   </label>
                   <UnitToggle unit={measurementUnit} onChange={handleUnitChange} />
                 </div>
@@ -270,7 +270,7 @@ const Index = () => {
 
               <div>
                 <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                  Garment Type
+                  Garment Type / Type de vêtement
                 </label>
                 <PatternTypeNav selected={patternType} onSelect={handlePatternTypeChange} category={category} />
               </div>
@@ -442,14 +442,14 @@ const Index = () => {
                   <div>
                     <h2 className="font-serif text-2xl font-bold text-foreground">
                       {selectedProfileName ? `${selectedProfileName}'s ` : ''}
-                      {patternType === 'skirt' ? 'Basic Skirt' 
-                        : patternType === 'bodice' ? 'Basic Bodice'
-                        : patternType === 'bodice-dartless' ? 'Dartless Bodice'
-                        : patternType === 'bodice-with-darts' ? 'Bodice with Darts'
-                        : patternType === 'bodice-knit' ? 'Knit Bodice'
-                        : patternType === 'pants' ? 'Basic Pants'
-                        : patternType === 'sleeve' ? 'Basic Sleeve'
-                        : 'Pattern Preview'}
+                      {patternType === 'skirt' ? 'Basic Skirt / Jupe de base' 
+                        : patternType === 'bodice' ? 'Basic Bodice / Corsage de base'
+                        : patternType === 'bodice-dartless' ? 'Dartless Bodice / Corsage sans pinces'
+                        : patternType === 'bodice-with-darts' ? 'Bodice with Darts / Corsage avec pinces'
+                        : patternType === 'bodice-knit' ? 'Knit Bodice / Corsage maille'
+                        : patternType === 'pants' ? 'Basic Pants / Pantalon de base'
+                        : patternType === 'sleeve' ? 'Basic Sleeve / Manche de base'
+                        : 'Pattern Preview / Aperçu du patron'}
                     </h2>
                     {patternType !== 'pants' && (
                       <div className="flex items-center gap-2 mt-1">
