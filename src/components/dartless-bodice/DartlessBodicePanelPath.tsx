@@ -96,7 +96,7 @@ export function useDartlessBodicePath({
   //  (shoulderLengthScaled - 1.5) * (shoulderLengthScaled - 1.5) - shoulderSlopeY * shoulderSlopeY,
   // );
 
-  const L_back = shoulderLengthScaled + config.backShoulderAdd;
+  const L_back = shoulderLength + config.backShoulderAdd;
   const L_front = L_back + config.frontShoulderAdd;
 
   const shoulderSlopeY = panel === "back" ? s(Math.sin(angleRadBack) * L_back) : s(Math.sin(angleRadFront) * L_front);
