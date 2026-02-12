@@ -106,7 +106,7 @@ export function useDartlessBodicePath({
   const backLengthScaled =
     panel === "front" ? s(backLength) + backNeckDepthBase * scale - frontNeckDepthBase * scale : s(backLength);
   // const armholeDepthScaled = backLengthScaled / 2 + neckHalfHeight - shoulderSlopeY - s(backLength / 6);
-
+  const armholeDepthScaled = backLengthScaled / 6;
   const buildPath = () => {
     const points: string[] = [];
 
