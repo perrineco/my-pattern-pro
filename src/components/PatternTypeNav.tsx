@@ -26,13 +26,13 @@ const patternTypes: PatternTypeConfig[] = [
     hasSubmenu: true,
     submenu: [
       { value: 'bodice-dartless', label: 'Dartless', available: true },
-      { value: 'bodice-with-darts', label: 'With Darts', available: true },
-      { value: 'bodice-knit', label: 'For Knit', available: true },
+      { value: 'bodice-with-darts', label: 'With Darts', available: false },
+      { value: 'bodice-knit', label: 'For Knit', available: false },
     ]
   },
   { value: 'dress', label: 'Dress', available: false },
   { value: 'pants', label: 'Pants', available: true },
-  { value: 'sleeve', label: 'Sleeve', available: true },
+  { value: 'sleeve', label: 'Sleeve', available: false },
 ];
 
 export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavProps) {
