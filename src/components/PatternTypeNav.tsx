@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { PatternType, BodiceVariant, Category } from '@/types/sloper';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 
@@ -11,46 +12,44 @@ interface PatternTypeNavProps {
 
 interface PatternTypeConfig {
   value: PatternType;
-  label: string;
+  labelKey: string;
   available: boolean;
   hasSubmenu?: boolean;
-  submenu?: { value: PatternType; label: string; available: boolean }[];
+  submenu?: { value: PatternType; labelKey: string; available: boolean }[];
 }
 
 const patternTypes: PatternTypeConfig[] = [
-  { value: 'skirt', label: 'Skirt / Jupe', available: true },
+  { value: 'skirt', labelKey: 'pattern.skirt', available: true },
   { 
     value: 'bodice', 
-    label: 'Bodice / Corsage', 
+    labelKey: 'pattern.bodice', 
     available: true,
     hasSubmenu: true,
     submenu: [
-      { value: 'bodice-dartless', label: 'Dartless / Sans pinces', available: true },
-      { value: 'bodice-with-darts', label: 'With Darts / Avec pinces', available: false },
-      { value: 'bodice-knit', label: 'For Knit / Pour maille', available: false },
+      { value: 'bodice-dartless', labelKey: 'pattern.dartless', available: true },
+      { value: 'bodice-with-darts', labelKey: 'pattern.withDarts', available: false },
+      { value: 'bodice-knit', labelKey: 'pattern.forKnit', available: false },
     ]
   },
-  { value: 'dress', label: 'Dress / Robe', available: false },
-  { value: 'pants', label: 'Pants / Pantalon', available: true },
-  { value: 'sleeve', label: 'Sleeve / Manche', available: false },
+  { value: 'dress', labelKey: 'pattern.dress', available: false },
+  { value: 'pants', labelKey: 'pattern.pants', available: true },
+  { value: 'sleeve', labelKey: 'pattern.sleeve', available: false },
 ];
 
 export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavProps) {
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const submenuRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   // Filter pattern types based on category
   const filteredPatternTypes = patternTypes.filter(type => {
-    // Hide skirt for men
     if (type.value === 'skirt' && category === 'men') return false;
     return true;
   });
 
-  // Check if current selection is a bodice variant
   const isBodiceVariant = selected.startsWith('bodice');
   const selectedBodiceVariant = isBodiceVariant ? selected : null;
 
-  // Close submenu when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (submenuRef.current && !submenuRef.current.contains(event.target as Node)) {
@@ -63,7 +62,6 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
 
   const handleMainClick = (type: PatternTypeConfig) => {
     if (!type.available) return;
-    
     if (type.hasSubmenu) {
       setOpenSubmenu(openSubmenu === type.value ? null : type.value);
     } else {
@@ -81,9 +79,9 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
   const getDisplayLabel = (type: PatternTypeConfig): string => {
     if (type.hasSubmenu && selectedBodiceVariant && type.value === 'bodice') {
       const variant = type.submenu?.find(s => s.value === selectedBodiceVariant);
-      return variant ? `Bodice: ${variant.label}` : type.label;
+      return variant ? `${t('pattern.bodice')}: ${t(variant.labelKey)}` : t(type.labelKey);
     }
-    return type.label;
+    return t(type.labelKey);
   };
 
   return (
@@ -111,12 +109,11 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
             )}
             {!type.available && (
               <span className="absolute -top-1 -right-1 text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">
-                Soon
+                {t('misc.soon')}
               </span>
             )}
           </button>
 
-          {/* Submenu dropdown */}
           {type.hasSubmenu && openSubmenu === type.value && (
             <div className="absolute top-full left-0 mt-1 py-1 bg-card border border-border rounded-lg shadow-lg z-50 min-w-[140px] animate-fade-in">
               {type.submenu?.map((subType) => (
@@ -133,10 +130,10 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
                       : "text-muted-foreground/50 cursor-not-allowed"
                   )}
                 >
-                  {subType.label}
+                  {t(subType.labelKey)}
                   {!subType.available && (
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">
-                      Soon
+                      {t('misc.soon')}
                     </span>
                   )}
                 </button>
