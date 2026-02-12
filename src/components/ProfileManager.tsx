@@ -44,6 +44,7 @@ interface ProfileManagerProps {
   currentMeasurements: Measurements;
   onLoadProfile: (measurements: Measurements) => void;
   onProfileSaved?: () => void;
+  onProfileNameChange?: (name: string | null) => void;
 }
 
 export function ProfileManager({
@@ -53,6 +54,7 @@ export function ProfileManager({
   currentMeasurements,
   onLoadProfile,
   onProfileSaved,
+  onProfileNameChange,
 }: ProfileManagerProps) {
   const [profiles, setProfiles] = useState<SavedProfile[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
@@ -95,6 +97,9 @@ export function ProfileManager({
       if (parsed.length > 0 && !selectedProfileId) {
         setSelectedProfileId(parsed[0].id);
         onLoadProfile(parsed[0].measurements);
+        onProfileNameChange?.(parsed[0].name);
+      } else if (parsed.length === 0) {
+        onProfileNameChange?.(null);
       }
     } catch (err) {
       console.error('Failed to fetch profiles:', err);
@@ -108,6 +113,7 @@ export function ProfileManager({
     const profile = profiles.find((p) => p.id === profileId);
     if (profile) {
       onLoadProfile(profile.measurements);
+      onProfileNameChange?.(profile.name);
       toast.success(`Loaded "${profile.name}"`);
     }
   };
