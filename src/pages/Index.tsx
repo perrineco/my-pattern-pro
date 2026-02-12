@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, PantsMeasurements, SleeveMeasurements, Measurements, isBodiceMeasurements, isPantsMeasurements, isSleeveMeasurements, UnifiedMeasurements } from '@/types/sloper';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { CategorySelector } from '@/components/CategorySelector';
@@ -40,6 +41,7 @@ const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const isProfileMode = searchParams.get('mode') === 'profiles';
   const { user, session, subscription, purchasedPatterns } = useAuth();
+  const { t } = useLanguage();
   
   const [category, setCategory] = useState<Category>('women');
   const [patternType, setPatternType] = useState<PatternType>('skirt');
@@ -256,13 +258,13 @@ const Index = () => {
               <div className="flex items-center gap-6">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                    Category / Catégorie
+                    {t('label.category')}
                   </label>
                   <CategorySelector selected={category} onSelect={handleCategoryChange} />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                    Units / Unités
+                    {t('label.units')}
                   </label>
                   <UnitToggle unit={measurementUnit} onChange={handleUnitChange} />
                 </div>
@@ -270,7 +272,7 @@ const Index = () => {
 
               <div>
                 <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                  Garment Type / Type de vêtement
+                  {t('label.garmentType')}
                 </label>
                 <PatternTypeNav selected={patternType} onSelect={handlePatternTypeChange} category={category} />
               </div>
@@ -361,7 +363,7 @@ const Index = () => {
                       onClick={handleExportPDF}
                     >
                       <Download className="w-4 h-4" />
-                      Export PDF
+                      {t('action.exportPdf')}
                     </Button>
                     <Button
                       variant="outline"
@@ -374,7 +376,7 @@ const Index = () => {
                       }}
                     >
                       <Printer className="w-4 h-4" />
-                      Print
+                      {t('action.print')}
                     </Button>
                   </div>
                 </div>
@@ -383,14 +385,14 @@ const Index = () => {
                 {!user && (
                   <Card className="p-4 bg-primary/5 border-primary/20">
                     <p className="text-sm text-foreground mb-3">
-                      <strong>Sign in</strong> to save your measurements and access all pattern types.
+                      {t('misc.signInPrompt')}
                     </p>
                     <Button
                       size="sm"
                       className="w-full"
                       onClick={() => navigate('/auth')}
                     >
-                      Sign In
+                      {t('action.signIn')}
                     </Button>
                   </Card>
                 )}
@@ -398,14 +400,14 @@ const Index = () => {
                 {user && subscription.tier === 'none' && (
                   <Card className="p-4 bg-primary/5 border-primary/20">
                     <p className="text-sm text-foreground mb-3">
-                      <strong>Upgrade</strong> to access dress, pants, and sleeve patterns.
+                      {t('misc.upgradePrompt')}
                     </p>
                     <Button
                       size="sm"
                       className="w-full"
                       onClick={() => navigate('/pricing')}
                     >
-                      View Plans
+                      {t('action.viewPlans')}
                     </Button>
                   </Card>
                 )}
@@ -442,14 +444,14 @@ const Index = () => {
                   <div>
                     <h2 className="font-serif text-2xl font-bold text-foreground">
                       {selectedProfileName ? `${selectedProfileName}'s ` : ''}
-                      {patternType === 'skirt' ? 'Basic Skirt / Jupe de base' 
-                        : patternType === 'bodice' ? 'Basic Bodice / Corsage de base'
-                        : patternType === 'bodice-dartless' ? 'Dartless Bodice / Corsage sans pinces'
-                        : patternType === 'bodice-with-darts' ? 'Bodice with Darts / Corsage avec pinces'
-                        : patternType === 'bodice-knit' ? 'Knit Bodice / Corsage maille'
-                        : patternType === 'pants' ? 'Basic Pants / Pantalon de base'
-                        : patternType === 'sleeve' ? 'Basic Sleeve / Manche de base'
-                        : 'Pattern Preview / Aperçu du patron'}
+                      {patternType === 'skirt' ? t('title.basicSkirt')
+                        : patternType === 'bodice' ? t('title.basicBodice')
+                        : patternType === 'bodice-dartless' ? t('title.dartlessBodice')
+                        : patternType === 'bodice-with-darts' ? t('title.bodiceWithDarts')
+                        : patternType === 'bodice-knit' ? t('title.knitBodice')
+                        : patternType === 'pants' ? t('title.basicPants')
+                        : patternType === 'sleeve' ? t('title.basicSleeve')
+                        : t('title.patternPreview')}
                     </h2>
                     {patternType !== 'pants' && (
                       <div className="flex items-center gap-2 mt-1">
@@ -472,7 +474,7 @@ const Index = () => {
                           className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
-                          Reset
+                          {t('action.reset')}
                         </button>
                       </div>
                     )}

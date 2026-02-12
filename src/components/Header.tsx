@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,12 +9,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
- import { Scissors, User, LogOut, CreditCard, Crown, MessageSquare, Wrench } from 'lucide-react';
+import { Scissors, User, LogOut, CreditCard, Crown, MessageSquare, Wrench, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Header() {
   const navigate = useNavigate();
   const { user, subscription, signOut, loading } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
 
   const handleSignOut = async () => {
     await signOut();
@@ -33,17 +35,27 @@ export function Header() {
                 Sloper Studio
               </h1>
               <p className="text-xs text-muted-foreground">
-                Create your custom sewing patterns
+                {t('misc.createPatterns')}
               </p>
             </div>
           </button>
 
           <div className="flex items-center gap-3">
+            {/* Language Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLanguage(language === 'en' ? 'fr' : 'en')}
+              className="gap-1.5 text-xs"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              {language === 'en' ? 'FR' : 'EN'}
+            </Button>
+
             {!loading && (
               <>
                 {user ? (
                   <>
-                    {/* Subscription Badge */}
                     {subscription.tier !== 'none' && (
                       <div
                         className={cn(
@@ -60,12 +72,12 @@ export function Header() {
 
                     <Button variant="outline" size="sm" onClick={() => navigate('/adjustments')}>
                       <Wrench className="w-4 h-4 mr-2" />
-                      Adjustments
+                      {t('action.adjustments')}
                     </Button>
 
                     <Button variant="outline" size="sm" onClick={() => navigate('/pricing')}>
                       <CreditCard className="w-4 h-4 mr-2" />
-                      Plans
+                      {t('action.plans')}
                     </Button>
 
                     <DropdownMenu>
@@ -80,7 +92,7 @@ export function Header() {
                         <div className="px-3 py-2">
                           <p className="text-sm font-medium truncate">{user.email}</p>
                           <p className="text-xs text-muted-foreground capitalize">
-                            {subscription.tier === 'none' ? 'Free' : subscription.tier} plan
+                            {subscription.tier === 'none' ? t('misc.free') : subscription.tier} {t('misc.plan')}
                           </p>
                         </div>
                         <DropdownMenuSeparator />
@@ -89,21 +101,21 @@ export function Header() {
                             navigate('/?mode=profiles');
                           }}>
                             <User className="w-4 h-4 mr-2" />
-                            Manage Profiles
+                            {t('action.manageProfiles')}
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem onClick={() => navigate('/pricing')}>
                           <CreditCard className="w-4 h-4 mr-2" />
-                          Manage Subscription
+                          {t('action.manageSubscription')}
                         </DropdownMenuItem>
                          <DropdownMenuItem onClick={() => navigate('/contact')}>
                            <MessageSquare className="w-4 h-4 mr-2" />
-                           Contact Us
+                           {t('action.contactUs')}
                          </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleSignOut}>
                           <LogOut className="w-4 h-4 mr-2" />
-                          Sign Out
+                          {t('action.signOut')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -111,13 +123,13 @@ export function Header() {
                 ) : (
                   <>
                     <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>
-                      Pricing
+                      {t('action.pricing')}
                     </Button>
                      <Button variant="ghost" size="sm" onClick={() => navigate('/contact')}>
-                       Contact
+                       {t('action.contact')}
                      </Button>
                     <Button size="sm" onClick={() => navigate('/auth')}>
-                      Sign In
+                      {t('action.signIn')}
                     </Button>
                   </>
                 )}
