@@ -65,6 +65,7 @@ const Index = () => {
     defaultSleeveMeasurements.women
   );
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
+  const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null);
   
   // Unit toggle state - persist to localStorage
   const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>(() => {
@@ -283,6 +284,7 @@ const Index = () => {
                       patternType={patternType}
                       currentMeasurements={getCurrentMeasurements() as Measurements}
                       onLoadProfile={(m) => handleLoadProfile(m)}
+                      onProfileNameChange={setSelectedProfileName}
                     />
                   </div>
                 )}
@@ -434,6 +436,7 @@ const Index = () => {
                 <div className="p-4 border-b border-border flex items-center justify-between">
                   <div>
                     <h2 className="font-serif text-2xl font-bold text-foreground">
+                      {selectedProfileName ? `${selectedProfileName}'s ` : ''}
                       {patternType === 'skirt' ? 'Basic Skirt' 
                         : patternType === 'bodice' ? 'Basic Bodice'
                         : patternType === 'bodice-dartless' ? 'Dartless Bodice'
@@ -443,30 +446,31 @@ const Index = () => {
                         : patternType === 'sleeve' ? 'Basic Sleeve'
                         : 'Pattern Preview'}
                     </h2>
-                    <div className="flex items-center gap-2 mt-1">
-                      {patternType === 'skirt' || patternType === 'pants' ? (
-                        <MeasurementGuide category={category} />
-                      ) : patternType === 'sleeve' ? (
-                        <SleeveMeasurementGuide category={category} />
-                      ) : (
-                        <BodiceMeasurementGuide category={category} />
-                      )}
-                      <button
-                        onClick={() => {
-                          if (patternType === 'skirt') setSkirtMeasurements(defaultSkirtMeasurements[category]);
-                          else if (patternType === 'bodice') setBodiceMeasurements(defaultBodiceMeasurements[category]);
-                          else if (patternType === 'bodice-dartless') setDartlessBodiceMeasurements(defaultDartlessBodiceMeasurements[category]);
-                          else if (patternType === 'bodice-with-darts') setBodiceDartsMeasurements(defaultBodiceDartsMeasurements[category]);
-                          else if (patternType === 'bodice-knit') setKnitBodiceMeasurements(defaultKnitBodiceMeasurements[category]);
-                          else if (patternType === 'pants') setPantsMeasurements(defaultPantsMeasurements[category]);
-                          else if (patternType === 'sleeve') setSleeveMeasurements(defaultSleeveMeasurements[category]);
-                        }}
-                        className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-                      >
-                        <RotateCcw className="w-3.5 h-3.5" />
-                        Reset
-                      </button>
-                    </div>
+                    {patternType !== 'pants' && (
+                      <div className="flex items-center gap-2 mt-1">
+                        {patternType === 'skirt' ? (
+                          <MeasurementGuide category={category} />
+                        ) : patternType === 'sleeve' ? (
+                          <SleeveMeasurementGuide category={category} />
+                        ) : (
+                          <BodiceMeasurementGuide category={category} />
+                        )}
+                        <button
+                          onClick={() => {
+                            if (patternType === 'skirt') setSkirtMeasurements(defaultSkirtMeasurements[category]);
+                            else if (patternType === 'bodice') setBodiceMeasurements(defaultBodiceMeasurements[category]);
+                            else if (patternType === 'bodice-dartless') setDartlessBodiceMeasurements(defaultDartlessBodiceMeasurements[category]);
+                            else if (patternType === 'bodice-with-darts') setBodiceDartsMeasurements(defaultBodiceDartsMeasurements[category]);
+                            else if (patternType === 'bodice-knit') setKnitBodiceMeasurements(defaultKnitBodiceMeasurements[category]);
+                            else if (patternType === 'sleeve') setSleeveMeasurements(defaultSleeveMeasurements[category]);
+                          }}
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          Reset
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-3">
                     {isBodiceVariant && (
