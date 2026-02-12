@@ -1,13 +1,7 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { HelpCircle } from 'lucide-react';
-import { Category } from '@/types/sloper';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { HelpCircle } from "lucide-react";
+import { Category } from "@/types/sloper";
 
 interface MeasurementGuideProps {
   category: Category;
@@ -19,22 +13,20 @@ export function MeasurementGuide({ category }: MeasurementGuideProps) {
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
           <HelpCircle className="w-4 h-4" />
-          How to measure
+          How to measureCC
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-serif text-xl">
-            Measurement Guide
-          </DialogTitle>
+          <DialogTitle className="font-serif text-xl">Measurement Guide</DialogTitle>
         </DialogHeader>
-        
+
         <div className="grid md:grid-cols-2 gap-6 mt-4">
           {/* Body diagram */}
           <div className="flex justify-center">
             <BodyDiagram category={category} />
           </div>
-          
+
           {/* Measurement instructions */}
           <div className="space-y-4">
             <MeasurementInstruction
@@ -63,7 +55,7 @@ export function MeasurementGuide({ category }: MeasurementGuideProps) {
             />
           </div>
         </div>
-        
+
         {/* Tips section */}
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
           <h4 className="font-medium mb-2">Tips for accurate measurements</h4>
@@ -110,37 +102,25 @@ interface BodyDiagramProps {
 
 function BodyDiagram({ category }: BodyDiagramProps) {
   // Adjust proportions slightly based on category
-  const isKids = category === 'kids';
-  const isMen = category === 'men';
-  
+  const isKids = category === "kids";
+  const isMen = category === "men";
+
   const height = isKids ? 280 : 320;
   const shoulderWidth = isMen ? 90 : 75;
   const hipWidth = isMen ? 70 : 80;
   const waistWidth = isMen ? 65 : 55;
-  
+
   // Vertical positions
   const shoulderY = 60;
   const waistY = 140;
   const hipY = 175;
   const hemY = 280;
-  
+
   return (
-    <svg
-      viewBox="0 0 200 340"
-      className="w-full max-w-[200px]"
-      style={{ height }}
-    >
+    <svg viewBox="0 0 200 340" className="w-full max-w-[200px]" style={{ height }}>
       {/* Head */}
-      <ellipse
-        cx="100"
-        cy="25"
-        rx="20"
-        ry="24"
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="2"
-      />
-      
+      <ellipse cx="100" cy="25" rx="20" ry="24" fill="none" stroke="hsl(var(--border))" strokeWidth="2" />
+
       {/* Neck */}
       <path
         d={`M 90 48 L 90 ${shoulderY} M 110 48 L 110 ${shoulderY}`}
@@ -148,7 +128,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
         stroke="hsl(var(--border))"
         strokeWidth="2"
       />
-      
+
       {/* Body outline */}
       <path
         d={`
@@ -169,7 +149,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
         stroke="hsl(var(--border))"
         strokeWidth="2"
       />
-      
+
       {/* Arms */}
       <path
         d={`
@@ -191,7 +171,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
         stroke="hsl(var(--border))"
         strokeWidth="2"
       />
-      
+
       {/* Measurement lines */}
       {/* 1. Waist line */}
       <line
@@ -203,12 +183,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
         strokeWidth="2"
         strokeDasharray="6,3"
       />
-      <circle
-        cx={100 - waistWidth / 2 - 20}
-        cy={waistY}
-        r="10"
-        fill="hsl(var(--primary))"
-      />
+      <circle cx={100 - waistWidth / 2 - 20} cy={waistY} r="10" fill="hsl(var(--primary))" />
       <text
         x={100 - waistWidth / 2 - 20}
         y={waistY + 4}
@@ -217,7 +192,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
       >
         1
       </text>
-      
+
       {/* 2. Hip line */}
       <line
         x1={100 - hipWidth / 2 - 20}
@@ -228,12 +203,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
         strokeWidth="2"
         strokeDasharray="6,3"
       />
-      <circle
-        cx={100 + hipWidth / 2 + 20}
-        cy={hipY}
-        r="10"
-        fill="hsl(var(--destructive))"
-      />
+      <circle cx={100 + hipWidth / 2 + 20} cy={hipY} r="10" fill="hsl(var(--destructive))" />
       <text
         x={100 + hipWidth / 2 + 20}
         y={hipY + 4}
@@ -242,7 +212,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
       >
         2
       </text>
-      
+
       {/* 3. Waist to Hip vertical */}
       <line
         x1={100 + hipWidth / 2 + 35}
@@ -268,12 +238,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
         stroke="hsl(var(--chart-3))"
         strokeWidth="2"
       />
-      <circle
-        cx={100 + hipWidth / 2 + 35}
-        cy={(waistY + hipY) / 2}
-        r="10"
-        fill="hsl(var(--chart-3))"
-      />
+      <circle cx={100 + hipWidth / 2 + 35} cy={(waistY + hipY) / 2} r="10" fill="hsl(var(--chart-3))" />
       <text
         x={100 + hipWidth / 2 + 35}
         y={(waistY + hipY) / 2 + 4}
@@ -282,7 +247,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
       >
         3
       </text>
-      
+
       {/* 4. Skirt length vertical */}
       <line
         x1={100 - hipWidth / 2 - 35}
@@ -308,12 +273,7 @@ function BodyDiagram({ category }: BodyDiagramProps) {
         stroke="hsl(var(--chart-4))"
         strokeWidth="2"
       />
-      <circle
-        cx={100 - hipWidth / 2 - 35}
-        cy={(waistY + hemY) / 2}
-        r="10"
-        fill="hsl(var(--chart-4))"
-      />
+      <circle cx={100 - hipWidth / 2 - 35} cy={(waistY + hemY) / 2} r="10" fill="hsl(var(--chart-4))" />
       <text
         x={100 - hipWidth / 2 - 35}
         y={(waistY + hemY) / 2 + 4}
@@ -322,22 +282,12 @@ function BodyDiagram({ category }: BodyDiagramProps) {
       >
         4
       </text>
-      
+
       {/* Labels */}
-      <text
-        x="100"
-        y={waistY - 8}
-        textAnchor="middle"
-        className="fill-muted-foreground text-[10px]"
-      >
+      <text x="100" y={waistY - 8} textAnchor="middle" className="fill-muted-foreground text-[10px]">
         Waist
       </text>
-      <text
-        x="100"
-        y={hipY + 18}
-        textAnchor="middle"
-        className="fill-muted-foreground text-[10px]"
-      >
+      <text x="100" y={hipY + 18} textAnchor="middle" className="fill-muted-foreground text-[10px]">
         Hip
       </text>
     </svg>

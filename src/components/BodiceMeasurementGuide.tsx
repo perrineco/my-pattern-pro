@@ -1,14 +1,8 @@
-import { HelpCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Category } from '@/types/sloper';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { HelpCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Category } from "@/types/sloper";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface BodiceMeasurementGuideProps {
   category: Category;
@@ -20,7 +14,7 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
           <HelpCircle className="w-4 h-4 mr-1" />
-          How to measure
+          How to measurePP
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[85vh]">
@@ -108,14 +102,14 @@ function MeasurementInstruction({ number, name, color, description }: Measuremen
 }
 
 function BodiceBodyDiagram({ category }: { category: Category }) {
-  const isKids = category === 'kids';
-  const isMen = category === 'men';
+  const isKids = category === "kids";
+  const isMen = category === "men";
 
   // Adjust proportions based on category
   const shoulderWidth = isMen ? 90 : isKids ? 60 : 75;
   const bustWidth = isMen ? 85 : isKids ? 55 : 80;
   const waistWidth = isMen ? 75 : isKids ? 50 : 60;
-  
+
   // Vertical positions
   const neckBaseY = 55;
   const shoulderY = 50;
@@ -126,20 +120,9 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
   const centerX = 100;
 
   return (
-    <svg
-      viewBox="0 0 200 260"
-      className="w-full max-w-[200px] h-auto"
-    >
+    <svg viewBox="0 0 200 260" className="w-full max-w-[200px] h-auto">
       {/* Head */}
-      <ellipse
-        cx={centerX}
-        cy={25}
-        rx={18}
-        ry={22}
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="2"
-      />
+      <ellipse cx={centerX} cy={25} rx={18} ry={22} fill="none" stroke="hsl(var(--border))" strokeWidth="2" />
 
       {/* Neck */}
       <path
@@ -150,12 +133,7 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
       />
 
       {/* Nape point (7th cervical vertebra) */}
-      <circle
-        cx={centerX}
-        cy={neckBaseY - 5}
-        r="3"
-        fill="hsl(var(--chart-5))"
-      />
+      <circle cx={centerX} cy={neckBaseY - 5} r="3" fill="hsl(var(--chart-5))" />
 
       {/* Body outline */}
       <path
@@ -202,7 +180,14 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         strokeDasharray="4,2"
       />
       <circle cx={centerX - bustWidth / 2 - 20} cy={bustY} r="10" fill="hsl(var(--primary))" />
-      <text x={centerX - bustWidth / 2 - 20} y={bustY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">1</text>
+      <text
+        x={centerX - bustWidth / 2 - 20}
+        y={bustY + 4}
+        textAnchor="middle"
+        className="fill-white text-[10px] font-bold"
+      >
+        1
+      </text>
 
       {/* 2: Neckline circumference */}
       <ellipse
@@ -216,7 +201,9 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         strokeDasharray="3,2"
       />
       <circle cx={centerX + 20} cy={neckBaseY} r="10" fill="hsl(var(--chart-2))" />
-      <text x={centerX + 20} y={neckBaseY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">2</text>
+      <text x={centerX + 20} y={neckBaseY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">
+        2
+      </text>
 
       {/* 3: Shoulder length (left shoulder highlighted) */}
       <line
@@ -230,7 +217,14 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
       <circle cx={centerX - shoulderWidth / 2} cy={shoulderY} r="4" fill="hsl(var(--chart-3))" />
       <circle cx={centerX - 8} cy={neckBaseY} r="4" fill="hsl(var(--chart-3))" />
       <circle cx={centerX - shoulderWidth / 4 - 4} cy={(neckBaseY + shoulderY) / 2} r="10" fill="hsl(var(--chart-3))" />
-      <text x={centerX - shoulderWidth / 4 - 4} y={(neckBaseY + shoulderY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">3</text>
+      <text
+        x={centerX - shoulderWidth / 4 - 4}
+        y={(neckBaseY + shoulderY) / 2 + 4}
+        textAnchor="middle"
+        className="fill-white text-[10px] font-bold"
+      >
+        3
+      </text>
 
       {/* 4: Back width (Carrure dos) */}
       <line
@@ -259,9 +253,13 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         strokeWidth="2"
       />
       <circle cx={centerX} cy={backWidthY - 12} r="10" fill="hsl(var(--chart-4))" />
-      <text x={centerX} y={backWidthY - 8} textAnchor="middle" className="fill-white text-[10px] font-bold">4</text>
+      <text x={centerX} y={backWidthY - 8} textAnchor="middle" className="fill-white text-[10px] font-bold">
+        4
+      </text>
       {/* Label for clarity */}
-      <text x={centerX} y={backWidthY + 15} textAnchor="middle" className="fill-muted-foreground text-[8px]">Carrure dos</text>
+      <text x={centerX} y={backWidthY + 15} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        Carrure dos
+      </text>
 
       {/* 5: Back length (from nape to waist) */}
       <line
@@ -281,16 +279,16 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         stroke="hsl(var(--chart-5))"
         strokeWidth="2"
       />
-      <line
-        x1={centerX + 10}
-        y1={waistY}
-        x2={centerX + 20}
-        y2={waistY}
-        stroke="hsl(var(--chart-5))"
-        strokeWidth="2"
-      />
+      <line x1={centerX + 10} y1={waistY} x2={centerX + 20} y2={waistY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
       <circle cx={centerX + 30} cy={(neckBaseY + waistY) / 2} r="10" fill="hsl(var(--chart-5))" />
-      <text x={centerX + 30} y={(neckBaseY + waistY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">5</text>
+      <text
+        x={centerX + 30}
+        y={(neckBaseY + waistY) / 2 + 4}
+        textAnchor="middle"
+        className="fill-white text-[10px] font-bold"
+      >
+        5
+      </text>
 
       {/* Waist line indicator (reference) */}
       <line
@@ -302,11 +300,13 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         strokeWidth="1"
         strokeDasharray="3,3"
       />
-      <text x={centerX + waistWidth / 2 + 15} y={waistY + 4} className="fill-muted-foreground text-[8px]">Waist</text>
+      <text x={centerX + waistWidth / 2 + 15} y={waistY + 4} className="fill-muted-foreground text-[8px]">
+        Waist
+      </text>
 
       {/* Labels */}
       <text x={centerX} y={245} textAnchor="middle" className="fill-muted-foreground text-[9px]">
-        {category === 'women' ? 'Women' : category === 'men' ? 'Men' : 'Kids'}
+        {category === "women" ? "Women" : category === "men" ? "Men" : "Kids"}
       </text>
     </svg>
   );
