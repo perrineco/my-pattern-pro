@@ -1,8 +1,8 @@
-import { SleeveMeasurements, Category } from '@/types/sloper';
-import { MeasurementInput } from '@/components/MeasurementInput';
-import { MeasurementUnit } from '@/components/UnitToggle';
-import { Card } from '@/components/ui/card';
- import { SleeveMeasurementGuide } from '@/components/SleeveMeasurementGuide';
+import { SleeveMeasurements, Category } from "@/types/sloper";
+import { MeasurementInput } from "@/components/MeasurementInput";
+import { MeasurementUnit } from "@/components/UnitToggle";
+import { Card } from "@/components/ui/card";
+import { SleeveMeasurementGuide } from "@/components/SleeveMeasurementGuide";
 
 interface SleeveMeasurementFormProps {
   measurements: SleeveMeasurements;
@@ -38,29 +38,22 @@ export const defaultSleeveMeasurements: Record<Category, SleeveMeasurements> = {
   },
 };
 
-export function SleeveMeasurementForm({
-  measurements,
-  onChange,
-  category,
-  unit = 'cm',
-}: SleeveMeasurementFormProps) {
+export function SleeveMeasurementForm({ measurements, onChange, category, unit = "cm" }: SleeveMeasurementFormProps) {
   const handleChange = (key: keyof SleeveMeasurements, value: number) => {
     onChange({ ...measurements, [key]: value });
   };
 
   return (
     <Card className="p-5 bg-card">
-       <div className="flex items-center justify-between mb-4">
-         <h3 className="font-serif text-lg font-semibold text-foreground">
-           Sleeve Measurements
-         </h3>
-         <SleeveMeasurementGuide category={category} />
-       </div>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-serif text-lg font-semibold text-foreground">Measurements</h3>
+        <SleeveMeasurementGuide category={category} />
+      </div>
       <div className="space-y-4">
         <MeasurementInput
           label="Upper Arm"
           value={measurements.upperArm}
-          onChange={(v) => handleChange('upperArm', v)}
+          onChange={(v) => handleChange("upperArm", v)}
           min={15}
           max={50}
           step={0.5}
@@ -69,7 +62,7 @@ export function SleeveMeasurementForm({
         <MeasurementInput
           label="Wrist"
           value={measurements.wrist}
-          onChange={(v) => handleChange('wrist', v)}
+          onChange={(v) => handleChange("wrist", v)}
           min={10}
           max={30}
           step={0.5}
@@ -78,7 +71,7 @@ export function SleeveMeasurementForm({
         <MeasurementInput
           label="Sleeve Length"
           value={measurements.sleeveLength}
-          onChange={(v) => handleChange('sleeveLength', v)}
+          onChange={(v) => handleChange("sleeveLength", v)}
           min={30}
           max={80}
           step={0.5}
@@ -87,7 +80,7 @@ export function SleeveMeasurementForm({
         <MeasurementInput
           label="Elbow Length"
           value={measurements.elbowLength}
-          onChange={(v) => handleChange('elbowLength', v)}
+          onChange={(v) => handleChange("elbowLength", v)}
           min={20}
           max={50}
           step={0.5}
@@ -96,7 +89,7 @@ export function SleeveMeasurementForm({
         <MeasurementInput
           label="Armhole Depth"
           value={measurements.armholeDepth}
-          onChange={(v) => handleChange('armholeDepth', v)}
+          onChange={(v) => handleChange("armholeDepth", v)}
           min={8}
           max={25}
           step={0.5}
@@ -105,7 +98,7 @@ export function SleeveMeasurementForm({
         <MeasurementInput
           label="Ease"
           value={measurements.ease ?? 2}
-          onChange={(v) => handleChange('ease', v)}
+          onChange={(v) => handleChange("ease", v)}
           min={0}
           max={8}
           step={0.5}
