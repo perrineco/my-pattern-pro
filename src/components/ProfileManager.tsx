@@ -29,6 +29,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Category, PatternType, Measurements } from '@/types/sloper';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SavedProfile {
   id: string;
@@ -56,17 +57,15 @@ export function ProfileManager({
   onProfileSaved,
   onProfileNameChange,
 }: ProfileManagerProps) {
+  const { t } = useLanguage();
   const [profiles, setProfiles] = useState<SavedProfile[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  // Dialog states
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [newProfileName, setNewProfileName] = useState('');
 
-  // Fetch profiles when user/category/patternType changes
   useEffect(() => {
     fetchProfiles();
   }, [userId, category, patternType]);
@@ -93,7 +92,6 @@ export function ProfileManager({
 
       setProfiles(parsed);
 
-      // Auto-select first profile if none selected
       if (parsed.length > 0 && !selectedProfileId) {
         setSelectedProfileId(parsed[0].id);
         onLoadProfile(parsed[0].measurements);
@@ -128,15 +126,13 @@ export function ProfileManager({
     try {
       const { data, error } = await supabase
         .from('saved_measurements')
-        .insert([
-          {
-            user_id: userId,
-            category,
-            pattern_type: patternType,
-            name: newProfileName.trim(),
-            measurements: JSON.parse(JSON.stringify(currentMeasurements)),
-          },
-        ])
+        .insert([{
+          user_id: userId,
+          category,
+          pattern_type: patternType,
+          name: newProfileName.trim(),
+          measurements: JSON.parse(JSON.stringify(currentMeasurements)),
+        }])
         .select('id, name, measurements, created_at')
         .single();
 
@@ -165,7 +161,6 @@ export function ProfileManager({
 
   const handleUpdateCurrent = async () => {
     if (!selectedProfileId) return;
-
     const profile = profiles.find((p) => p.id === selectedProfileId);
     if (!profile) return;
 
@@ -173,19 +168,13 @@ export function ProfileManager({
     try {
       const { error } = await supabase
         .from('saved_measurements')
-        .update({
-          measurements: JSON.parse(JSON.stringify(currentMeasurements)),
-        })
+        .update({ measurements: JSON.parse(JSON.stringify(currentMeasurements)) })
         .eq('id', selectedProfileId);
 
       if (error) throw error;
 
       setProfiles((prev) =>
-        prev.map((p) =>
-          p.id === selectedProfileId
-            ? { ...p, measurements: currentMeasurements }
-            : p
-        )
+        prev.map((p) => p.id === selectedProfileId ? { ...p, measurements: currentMeasurements } : p)
       );
 
       toast.success(`Profile "${profile.name}" updated!`);
@@ -200,7 +189,6 @@ export function ProfileManager({
 
   const handleDelete = async () => {
     if (!selectedProfileId) return;
-
     const profile = profiles.find((p) => p.id === selectedProfileId);
     if (!profile) return;
 
@@ -215,7 +203,6 @@ export function ProfileManager({
       const remaining = profiles.filter((p) => p.id !== selectedProfileId);
       setProfiles(remaining);
 
-      // Select next available profile
       if (remaining.length > 0) {
         setSelectedProfileId(remaining[0].id);
         onLoadProfile(remaining[0].measurements);
@@ -235,7 +222,7 @@ export function ProfileManager({
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <User className="w-4 h-4 text-muted-foreground" />
-        <span className="text-sm font-medium text-foreground">Profile</span>
+        <span className="text-sm font-medium text-foreground">{t('label.profile')}</span>
       </div>
 
       <div className="flex gap-2">
@@ -248,10 +235,10 @@ export function ProfileManager({
             <SelectValue
               placeholder={
                 loading
-                  ? 'Loading...'
+                  ? t('profile.loading')
                   : profiles.length === 0
-                  ? 'No saved profiles'
-                  : 'Select profile'
+                  ? t('profile.noSavedProfiles')
+                  : t('profile.selectProfile')
               }
             />
           </SelectTrigger>
@@ -264,95 +251,61 @@ export function ProfileManager({
           </SelectContent>
         </Select>
 
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setSaveDialogOpen(true)}
-          title="Save as new profile"
-        >
+        <Button variant="outline" size="icon" onClick={() => setSaveDialogOpen(true)} title={t('action.saveAsNew')}>
           <Plus className="w-4 h-4" />
         </Button>
 
         {selectedProfileId && (
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setDeleteDialogOpen(true)}
-            title="Delete profile"
-            className="text-destructive hover:text-destructive"
-          >
+          <Button variant="outline" size="icon" onClick={() => setDeleteDialogOpen(true)} title={t('action.deleteProfile')} className="text-destructive hover:text-destructive">
             <Trash2 className="w-4 h-4" />
           </Button>
         )}
       </div>
 
       {selectedProfileId && (
-        <Button
-          variant="secondary"
-          size="sm"
-          className="w-full gap-2"
-          onClick={handleUpdateCurrent}
-          disabled={saving}
-        >
-          {saving ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Check className="w-4 h-4" />
-          )}
-          Update Current Profile
+        <Button variant="secondary" size="sm" className="w-full gap-2" onClick={handleUpdateCurrent} disabled={saving}>
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+          {t('action.updateCurrentProfile')}
         </Button>
       )}
 
-      {/* Save New Profile Dialog */}
       <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Save New Profile</DialogTitle>
+            <DialogTitle>{t('profile.saveNewTitle')}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <Input
-              placeholder="Profile name (e.g., 'My measurements', 'Client A')"
+              placeholder={t('profile.namePlaceholder')}
               value={newProfileName}
               onChange={(e) => setNewProfileName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSaveNew()}
             />
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setSaveDialogOpen(false)}
-              disabled={saving}
-            >
-              Cancel
+            <Button variant="outline" onClick={() => setSaveDialogOpen(false)} disabled={saving}>
+              {t('action.cancel')}
             </Button>
             <Button onClick={handleSaveNew} disabled={saving}>
-              {saving ? (
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : null}
-              Save Profile
+              {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {t('action.saveProfile')}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Profile?</AlertDialogTitle>
+            <AlertDialogTitle>{t('profile.deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete "
-              {profiles.find((p) => p.id === selectedProfileId)?.name}". This
-              action cannot be undone.
+              {t('profile.deleteDescription')} "{profiles.find((p) => p.id === selectedProfileId)?.name}". {t('profile.cannotBeUndone')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
+            <AlertDialogCancel>{t('action.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {t('action.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
