@@ -3,23 +3,26 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Category } from "@/types/sloper";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BodiceMeasurementGuideProps {
   category: Category;
 }
 
 export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps) {
+  const { t } = useLanguage();
+  
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
           <HelpCircle className="w-4 h-4 mr-1" />
-          How to measurePP
+          {t('action.howToMeasure')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[85vh]">
         <DialogHeader>
-          <DialogTitle className="font-serif text-xl">Bodice Measurement Guide</DialogTitle>
+          <DialogTitle className="font-serif text-xl">{t('guide.bodiceGuide')}</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[65vh] pr-4">
           <div className="grid md:grid-cols-2 gap-6">

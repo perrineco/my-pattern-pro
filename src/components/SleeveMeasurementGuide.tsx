@@ -2,58 +2,61 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
 import { Category } from "@/types/sloper";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SleeveMeasurementGuideProps {
   category: Category;
 }
 
 export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps) {
+  const { t } = useLanguage();
+  
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
           <HelpCircle className="w-4 h-4" />
-          How to measureUU
+          {t('action.howToMeasure')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-serif text-xl">Sleeve Measurement Guide</DialogTitle>
+          <DialogTitle className="font-serif text-xl">{t('guide.sleeveMeasurementGuide')}</DialogTitle>
         </DialogHeader>
 
         <div className="grid md:grid-cols-2 gap-6 mt-4">
           <div className="flex justify-center">
-            <ArmDiagram category={category} />
+            <ArmDiagram category={category} t={t} />
           </div>
 
           <div className="space-y-4">
             <MeasurementInstruction
               number={1}
-              name="Upper Arm"
+              name={t('guide.upperArm')}
               color="hsl(var(--primary))"
               description="Measure around the fullest part of your upper arm (bicep). Keep the tape snug but not tight, with your arm relaxed at your side."
             />
             <MeasurementInstruction
               number={2}
-              name="Wrist"
+              name={t('guide.wrist')}
               color="hsl(var(--destructive))"
               description="Measure around your wrist bone. Keep the tape comfortably snug, allowing for natural movement."
             />
             <MeasurementInstruction
               number={3}
-              name="Sleeve Length"
+              name={t('guide.sleeveLength')}
               color="hsl(var(--chart-3))"
               description="Measure from the shoulder point (where shoulder meets arm) straight down to the wrist bone. Keep your arm slightly bent."
             />
             <MeasurementInstruction
               number={4}
-              name="Elbow Length"
+              name={t('guide.elbowLength')}
               color="hsl(var(--chart-4))"
               description="Measure from the shoulder point down to the elbow. Bend your arm slightly to locate the elbow point accurately."
             />
             <MeasurementInstruction
               number={5}
-              name="Armhole Depth"
+              name={t('guide.armholeDepth')}
               color="hsl(var(--chart-5))"
               description="This is the sleeve cap height. Measure from shoulder point to underarm level (approximately 2-3cm below the armpit)."
             />
@@ -61,7 +64,7 @@ export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps
         </div>
 
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-          <h4 className="font-medium mb-2">Tips for accurate measurements</h4>
+          <h4 className="font-medium mb-2">{t('guide.tipsForAccurate')}</h4>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>• Wear a fitted shirt or measure over undergarments</li>
             <li>• Keep your arm relaxed and slightly bent at the elbow</li>
@@ -101,9 +104,10 @@ function MeasurementInstruction({ number, name, color, description }: Measuremen
 
 interface ArmDiagramProps {
   category: Category;
+  t: (key: string) => string;
 }
 
-function ArmDiagram({ category }: ArmDiagramProps) {
+function ArmDiagram({ category, t }: ArmDiagramProps) {
   const isKids = category === "kids";
   const isMen = category === "men";
 
@@ -346,13 +350,13 @@ function ArmDiagram({ category }: ArmDiagramProps) {
       {/* Shoulder point marker */}
       <circle cx={centerX} cy={shoulderY} r="4" fill="hsl(var(--foreground))" />
       <text x={centerX} y={shoulderY - 12} textAnchor="middle" className="fill-muted-foreground text-[9px]">
-        Shoulder point
+        {t('guide.shoulderPoint')}
       </text>
 
       {/* Elbow marker */}
       <circle cx={centerX} cy={elbowY} r="3" fill="hsl(var(--muted-foreground))" />
       <text x={centerX - 25} y={elbowY + 4} textAnchor="end" className="fill-muted-foreground text-[9px]">
-        Elbow
+        {t('guide.elbow')}
       </text>
     </svg>
   );
