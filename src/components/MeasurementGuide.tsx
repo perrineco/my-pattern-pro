@@ -2,54 +2,57 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
 import { Category } from "@/types/sloper";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface MeasurementGuideProps {
   category: Category;
 }
 
 export function MeasurementGuide({ category }: MeasurementGuideProps) {
+  const { t } = useLanguage();
+  
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
           <HelpCircle className="w-4 h-4" />
-          How to measureCC
+          {t('action.howToMeasure')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-serif text-xl">Measurement Guide</DialogTitle>
+          <DialogTitle className="font-serif text-xl">{t('guide.measurementGuide')}</DialogTitle>
         </DialogHeader>
 
         <div className="grid md:grid-cols-2 gap-6 mt-4">
           {/* Body diagram */}
           <div className="flex justify-center">
-            <BodyDiagram category={category} />
+            <BodyDiagram category={category} t={t} />
           </div>
 
           {/* Measurement instructions */}
           <div className="space-y-4">
             <MeasurementInstruction
               number={1}
-              name="Waist"
+              name={t('guide.waist')}
               color="hsl(var(--primary))"
               description="Measure around your natural waistline—the narrowest part of your torso, typically about 2.5cm above your belly button. Keep the tape snug but not tight."
             />
             <MeasurementInstruction
               number={2}
-              name="Hip"
+              name={t('guide.hip')}
               color="hsl(var(--destructive))"
               description="Measure around the fullest part of your hips and buttocks. Stand with feet together and keep the tape level all the way around."
             />
             <MeasurementInstruction
               number={3}
-              name="Waist to Hip"
+              name={t('guide.waistToHip')}
               color="hsl(var(--chart-3))"
               description="Measure straight down from your natural waistline to the fullest part of your hip. This is typically 18-23cm for adults."
             />
             <MeasurementInstruction
               number={4}
-              name="Skirt Length"
+              name={t('guide.skirtLength')}
               color="hsl(var(--chart-4))"
               description="Measure from your natural waistline down to where you want the skirt to end. Stand straight and have someone help for accuracy."
             />
@@ -58,7 +61,7 @@ export function MeasurementGuide({ category }: MeasurementGuideProps) {
 
         {/* Tips section */}
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-          <h4 className="font-medium mb-2">Tips for accurate measurements</h4>
+          <h4 className="font-medium mb-2">{t('guide.tipsForAccurate')}</h4>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>• Wear thin, fitted clothing or measure over undergarments</li>
             <li>• Use a flexible measuring tape, not a rigid ruler</li>
@@ -98,9 +101,10 @@ function MeasurementInstruction({ number, name, color, description }: Measuremen
 
 interface BodyDiagramProps {
   category: Category;
+  t: (key: string) => string;
 }
 
-function BodyDiagram({ category }: BodyDiagramProps) {
+function BodyDiagram({ category, t }: BodyDiagramProps) {
   // Adjust proportions slightly based on category
   const isKids = category === "kids";
   const isMen = category === "men";
@@ -285,10 +289,10 @@ function BodyDiagram({ category }: BodyDiagramProps) {
 
       {/* Labels */}
       <text x="100" y={waistY - 8} textAnchor="middle" className="fill-muted-foreground text-[10px]">
-        Waist
+        {t('guide.waist')}
       </text>
       <text x="100" y={hipY + 18} textAnchor="middle" className="fill-muted-foreground text-[10px]">
-        Hip
+        {t('guide.hip')}
       </text>
     </svg>
   );

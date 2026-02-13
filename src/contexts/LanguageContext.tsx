@@ -119,10 +119,11 @@ const translations: Record<string, Record<Language, string>> = {
   'note.optimizedKnit': { en: 'Optimized for stretch knit fabrics.', fr: 'Optimisé pour les tissus maille extensibles.' },
   'note.simpleBodice': { en: 'Simple bodice block without bust darts', fr: 'Corsage de base sans pinces de poitrine' },
 
-  // Buttons & actions
-  'action.reset': { en: 'Reset', fr: 'Réinitialiser' },
-  'action.exportPdf': { en: 'Export PDF', fr: 'Exporter PDF' },
-  'action.print': { en: 'Print', fr: 'Imprimer' },
+   // Buttons & actions
+   'action.reset': { en: 'Reset', fr: 'Réinitialiser' },
+   'action.exportPdf': { en: 'Export PDF', fr: 'Exporter PDF' },
+   'action.print': { en: 'Print', fr: 'Imprimer' },
+   'action.howToMeasure': { en: 'How to measure', fr: 'Comment mesurer' },
   'action.signIn': { en: 'Sign In', fr: 'Connexion' },
   'action.signOut': { en: 'Sign Out', fr: 'Déconnexion' },
   'action.plans': { en: 'Plans', fr: 'Abonnements' },
@@ -151,9 +152,26 @@ const translations: Record<string, Record<Language, string>> = {
   'profile.deleteDescription': { en: 'This will permanently delete', fr: 'Ceci supprimera définitivement' },
   'profile.cannotBeUndone': { en: 'This action cannot be undone.', fr: 'Cette action est irréversible.' },
 
-  // Misc
-  'misc.soon': { en: 'Soon', fr: 'Bientôt' },
-  'misc.free': { en: 'Free', fr: 'Gratuit' },
+   // Guides
+   'guide.measurementGuide': { en: 'Measurement Guide', fr: 'Guide de mesure' },
+   'guide.sleeveMeasurementGuide': { en: 'Sleeve Measurement Guide', fr: 'Guide de mesure pour manches' },
+   'guide.bodiceGuide': { en: 'Bodice Measurement Guide', fr: 'Guide de mesure pour corsage' },
+   'guide.tipsForAccurate': { en: 'Tips for accurate measurements', fr: 'Conseils pour des mesures précises' },
+   'guide.waist': { en: 'Waist', fr: 'Taille' },
+   'guide.hip': { en: 'Hip', fr: 'Hanches' },
+   'guide.waistToHip': { en: 'Waist to Hip', fr: 'Taille aux hanches' },
+   'guide.skirtLength': { en: 'Skirt Length', fr: 'Longueur de jupe' },
+   'guide.upperArm': { en: 'Upper Arm', fr: 'Tour de bras' },
+   'guide.wrist': { en: 'Wrist', fr: 'Poignet' },
+   'guide.sleeveLength': { en: 'Sleeve Length', fr: 'Longueur de manche' },
+   'guide.elbowLength': { en: 'Elbow Length', fr: 'Longueur coude' },
+   'guide.armholeDepth': { en: 'Armhole Depth', fr: 'Profondeur d\'emmanchure' },
+   'guide.shoulderPoint': { en: 'Shoulder point', fr: 'Pointe d\'épaule' },
+   'guide.elbow': { en: 'Elbow', fr: 'Coude' },
+
+   // Misc
+   'misc.soon': { en: 'Soon', fr: 'Bientôt' },
+   'misc.free': { en: 'Free', fr: 'Gratuit' },
   'misc.plan': { en: 'plan', fr: 'plan' },
   'misc.createPatterns': { en: 'Create your custom sewing patterns', fr: 'Créez vos patrons de couture sur mesure' },
   'misc.signInPrompt': { en: 'Sign in to save your measurements and access all pattern types.', fr: 'Connectez-vous pour sauvegarder vos mesures et accéder à tous les types de patrons.' },
