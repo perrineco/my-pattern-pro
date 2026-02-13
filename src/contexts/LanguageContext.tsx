@@ -168,6 +168,51 @@ const translations: Record<string, Record<Language, string>> = {
    'guide.armholeDepth': { en: 'Armhole Depth', fr: 'Profondeur d\'emmanchure' },
    'guide.shoulderPoint': { en: 'Shoulder point', fr: 'Pointe d\'épaule' },
    'guide.elbow': { en: 'Elbow', fr: 'Coude' },
+   'guide.bust': { en: 'Bust', fr: 'Tour de poitrine' },
+   'guide.neckline': { en: 'Neckline Circumference', fr: 'Tour de cou' },
+   'guide.shoulderLength': { en: 'Shoulder Length', fr: 'Longueur d\'épaule' },
+   'guide.backWidth': { en: 'Back Width', fr: 'Carrure dos' },
+   'guide.backLength': { en: 'Back Length', fr: 'Longueur taille-dos' },
+
+   // Guide descriptions - Skirt
+   'guide.desc.waist': { en: 'Measure around your natural waistline—the narrowest part of your torso, typically about 2.5cm above your belly button. Keep the tape snug but not tight.', fr: 'Mesurez autour de votre taille naturelle — la partie la plus étroite du torse, généralement environ 2,5 cm au-dessus du nombril. Le ruban doit être ajusté mais pas serré.' },
+   'guide.desc.hip': { en: 'Measure around the fullest part of your hips and buttocks. Stand with feet together and keep the tape level all the way around.', fr: 'Mesurez autour de la partie la plus large des hanches et des fesses. Tenez-vous debout, pieds joints, et gardez le ruban bien horizontal.' },
+   'guide.desc.waistToHip': { en: 'Measure straight down from your natural waistline to the fullest part of your hip. This is typically 18-23cm for adults.', fr: 'Mesurez en ligne droite de la taille naturelle jusqu\'à la partie la plus large des hanches. C\'est généralement 18 à 23 cm pour les adultes.' },
+   'guide.desc.skirtLength': { en: 'Measure from your natural waistline down to where you want the skirt to end. Stand straight and have someone help for accuracy.', fr: 'Mesurez de la taille naturelle jusqu\'à l\'endroit où vous souhaitez que la jupe s\'arrête. Restez debout et faites-vous aider pour plus de précision.' },
+
+   // Guide descriptions - Sleeve
+   'guide.desc.upperArm': { en: 'Measure around the fullest part of your upper arm (bicep). Keep the tape snug but not tight, with your arm relaxed at your side.', fr: 'Mesurez autour de la partie la plus large du bras (biceps). Le ruban doit être ajusté mais pas serré, bras détendu le long du corps.' },
+   'guide.desc.wrist': { en: 'Measure around your wrist bone. Keep the tape comfortably snug, allowing for natural movement.', fr: 'Mesurez autour de l\'os du poignet. Le ruban doit être confortable, permettant un mouvement naturel.' },
+   'guide.desc.sleeveLength': { en: 'Measure from the shoulder point (where shoulder meets arm) straight down to the wrist bone. Keep your arm slightly bent.', fr: 'Mesurez de la pointe d\'épaule (où l\'épaule rejoint le bras) jusqu\'à l\'os du poignet. Gardez le bras légèrement fléchi.' },
+   'guide.desc.elbowLength': { en: 'Measure from the shoulder point down to the elbow. Bend your arm slightly to locate the elbow point accurately.', fr: 'Mesurez de la pointe d\'épaule jusqu\'au coude. Pliez légèrement le bras pour localiser le coude avec précision.' },
+   'guide.desc.armholeDepth': { en: 'This is the sleeve cap height. Measure from shoulder point to underarm level (approximately 2-3cm below the armpit).', fr: 'C\'est la hauteur de la tête de manche. Mesurez de la pointe d\'épaule au niveau du dessous de bras (environ 2-3 cm sous l\'aisselle).' },
+
+   // Guide descriptions - Bodice
+   'guide.desc.bust': { en: 'Measure around the fullest part of the bust, keeping the tape horizontal and snug but not tight.', fr: 'Mesurez autour de la partie la plus forte de la poitrine, en gardant le ruban horizontal, ajusté mais pas serré.' },
+   'guide.desc.neckline': { en: 'Measure around the base of the neck where a collar would sit, keeping the tape close but comfortable.', fr: 'Mesurez autour de la base du cou, là où un col se poserait, en gardant le ruban près du cou mais confortable.' },
+   'guide.desc.shoulderLength': { en: 'Measure from the base of the neck (where it meets the shoulder) to the shoulder point (where the arm begins).', fr: 'Mesurez de la base du cou (où il rejoint l\'épaule) jusqu\'à la pointe d\'épaule (où le bras commence).' },
+   'guide.desc.backWidth': { en: 'Measure across the back from armhole to armhole, approximately 10-15cm below the nape of the neck. Keep arms relaxed at sides.', fr: 'Mesurez en travers du dos d\'une emmanchure à l\'autre, environ 10-15 cm sous la nuque. Gardez les bras détendus le long du corps.' },
+   'guide.desc.backLength': { en: 'Measure from the prominent bone at the back of the neck (7th cervical vertebra) straight down to the natural waistline.', fr: 'Mesurez de l\'os saillant à la base de la nuque (7e vertèbre cervicale) en ligne droite jusqu\'à la taille naturelle.' },
+
+   // Guide tips - Skirt/Sleeve
+   'guide.tip1': { en: 'Wear thin, fitted clothing or measure over undergarments', fr: 'Portez des vêtements fins et ajustés ou mesurez par-dessus les sous-vêtements' },
+   'guide.tip2': { en: 'Use a flexible measuring tape, not a rigid ruler', fr: 'Utilisez un ruban à mesurer souple, pas une règle rigide' },
+   'guide.tip3': { en: 'Stand naturally—don\'t hold your breath or slouch', fr: 'Tenez-vous naturellement — ne retenez pas votre souffle et ne vous voûtez pas' },
+   'guide.tip4': { en: 'Have someone help you measure for better accuracy', fr: 'Faites-vous aider pour plus de précision' },
+   'guide.tip5': { en: 'Take each measurement twice and use the average', fr: 'Prenez chaque mesure deux fois et utilisez la moyenne' },
+
+   // Guide tips - Sleeve specific
+   'guide.tip.sleeve1': { en: 'Wear a fitted shirt or measure over undergarments', fr: 'Portez une chemise ajustée ou mesurez par-dessus les sous-vêtements' },
+   'guide.tip.sleeve2': { en: 'Keep your arm relaxed and slightly bent at the elbow', fr: 'Gardez le bras détendu et légèrement fléchi au coude' },
+   'guide.tip.sleeve5': { en: 'Stand naturally—don\'t flex your arm muscles', fr: 'Tenez-vous naturellement — ne contractez pas les muscles du bras' },
+
+   // Guide tips - Bodice specific
+   'guide.tip.bodice1': { en: 'Wear a well-fitting bra (for bust measurements)', fr: 'Portez un soutien-gorge bien ajusté (pour les mesures de poitrine)' },
+   'guide.tip.bodice2': { en: 'Stand naturally with arms relaxed at sides', fr: 'Tenez-vous naturellement avec les bras détendus le long du corps' },
+   'guide.tip.bodice3': { en: 'Keep the tape snug but not tight', fr: 'Gardez le ruban ajusté mais pas serré' },
+   'guide.tip.bodice4': { en: 'Have someone help for back measurements', fr: 'Faites-vous aider pour les mesures du dos' },
+   'guide.tip.bodice5': { en: 'Take measurements over fitted clothing or undergarments', fr: 'Prenez les mesures par-dessus des vêtements ajustés ou des sous-vêtements' },
+   'guide.tip.bodice6': { en: 'For back width (carrure dos), locate it by feeling where the arms connect to the body', fr: 'Pour la carrure dos, localisez-la en sentant où les bras se connectent au corps' },
 
    // Misc
    'misc.soon': { en: 'Soon', fr: 'Bientôt' },

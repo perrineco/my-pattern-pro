@@ -36,25 +36,25 @@ export function MeasurementGuide({ category }: MeasurementGuideProps) {
               number={1}
               name={t('guide.waist')}
               color="hsl(var(--primary))"
-              description="Measure around your natural waistline—the narrowest part of your torso, typically about 2.5cm above your belly button. Keep the tape snug but not tight."
+              description={t('guide.desc.waist')}
             />
             <MeasurementInstruction
               number={2}
               name={t('guide.hip')}
               color="hsl(var(--destructive))"
-              description="Measure around the fullest part of your hips and buttocks. Stand with feet together and keep the tape level all the way around."
+              description={t('guide.desc.hip')}
             />
             <MeasurementInstruction
               number={3}
               name={t('guide.waistToHip')}
               color="hsl(var(--chart-3))"
-              description="Measure straight down from your natural waistline to the fullest part of your hip. This is typically 18-23cm for adults."
+              description={t('guide.desc.waistToHip')}
             />
             <MeasurementInstruction
               number={4}
               name={t('guide.skirtLength')}
               color="hsl(var(--chart-4))"
-              description="Measure from your natural waistline down to where you want the skirt to end. Stand straight and have someone help for accuracy."
+              description={t('guide.desc.skirtLength')}
             />
           </div>
         </div>
@@ -63,11 +63,11 @@ export function MeasurementGuide({ category }: MeasurementGuideProps) {
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
           <h4 className="font-medium mb-2">{t('guide.tipsForAccurate')}</h4>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• Wear thin, fitted clothing or measure over undergarments</li>
-            <li>• Use a flexible measuring tape, not a rigid ruler</li>
-            <li>• Stand naturally—don't hold your breath or slouch</li>
-            <li>• Have someone help you measure for better accuracy</li>
-            <li>• Take each measurement twice and use the average</li>
+            <li>• {t('guide.tip1')}</li>
+            <li>• {t('guide.tip2')}</li>
+            <li>• {t('guide.tip3')}</li>
+            <li>• {t('guide.tip4')}</li>
+            <li>• {t('guide.tip5')}</li>
           </ul>
         </div>
       </DialogContent>

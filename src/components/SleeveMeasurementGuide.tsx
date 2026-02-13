@@ -34,31 +34,31 @@ export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps
               number={1}
               name={t('guide.upperArm')}
               color="hsl(var(--primary))"
-              description="Measure around the fullest part of your upper arm (bicep). Keep the tape snug but not tight, with your arm relaxed at your side."
+              description={t('guide.desc.upperArm')}
             />
             <MeasurementInstruction
               number={2}
               name={t('guide.wrist')}
               color="hsl(var(--destructive))"
-              description="Measure around your wrist bone. Keep the tape comfortably snug, allowing for natural movement."
+              description={t('guide.desc.wrist')}
             />
             <MeasurementInstruction
               number={3}
               name={t('guide.sleeveLength')}
               color="hsl(var(--chart-3))"
-              description="Measure from the shoulder point (where shoulder meets arm) straight down to the wrist bone. Keep your arm slightly bent."
+              description={t('guide.desc.sleeveLength')}
             />
             <MeasurementInstruction
               number={4}
               name={t('guide.elbowLength')}
               color="hsl(var(--chart-4))"
-              description="Measure from the shoulder point down to the elbow. Bend your arm slightly to locate the elbow point accurately."
+              description={t('guide.desc.elbowLength')}
             />
             <MeasurementInstruction
               number={5}
               name={t('guide.armholeDepth')}
               color="hsl(var(--chart-5))"
-              description="This is the sleeve cap height. Measure from shoulder point to underarm level (approximately 2-3cm below the armpit)."
+              description={t('guide.desc.armholeDepth')}
             />
           </div>
         </div>
@@ -66,11 +66,11 @@ export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
           <h4 className="font-medium mb-2">{t('guide.tipsForAccurate')}</h4>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• Wear a fitted shirt or measure over undergarments</li>
-            <li>• Keep your arm relaxed and slightly bent at the elbow</li>
-            <li>• Have someone help you measure for better accuracy</li>
-            <li>• Take each measurement twice and use the average</li>
-            <li>• Stand naturally—don't flex your arm muscles</li>
+            <li>• {t('guide.tip.sleeve1')}</li>
+            <li>• {t('guide.tip.sleeve2')}</li>
+            <li>• {t('guide.tip4')}</li>
+            <li>• {t('guide.tip5')}</li>
+            <li>• {t('guide.tip.sleeve5')}</li>
           </ul>
         </div>
       </DialogContent>
