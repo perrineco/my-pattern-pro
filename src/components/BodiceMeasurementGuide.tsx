@@ -32,46 +32,46 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
             <div className="space-y-4">
               <MeasurementInstruction
                 number={1}
-                name="Bust (Tour de poitrine)"
+                name={t('guide.bust')}
                 color="hsl(var(--primary))"
-                description="Measure around the fullest part of the bust, keeping the tape horizontal and snug but not tight."
+                description={t('guide.desc.bust')}
               />
               <MeasurementInstruction
                 number={2}
-                name="Neckline Circumference (Tour de cou)"
+                name={t('guide.neckline')}
                 color="hsl(var(--chart-2))"
-                description="Measure around the base of the neck where a collar would sit, keeping the tape close but comfortable."
+                description={t('guide.desc.neckline')}
               />
               <MeasurementInstruction
                 number={3}
-                name="Shoulder Length (Longueur d'épaule)"
+                name={t('guide.shoulderLength')}
                 color="hsl(var(--chart-3))"
-                description="Measure from the base of the neck (where it meets the shoulder) to the shoulder point (where the arm begins)."
+                description={t('guide.desc.shoulderLength')}
               />
               <MeasurementInstruction
                 number={4}
-                name="Back Width (Carrure dos)"
+                name={t('guide.backWidth')}
                 color="hsl(var(--chart-4))"
-                description="Measure across the back from armhole to armhole, approximately 10-15cm below the nape of the neck. Keep arms relaxed at sides."
+                description={t('guide.desc.backWidth')}
               />
               <MeasurementInstruction
                 number={5}
-                name="Back Length (Longueur taille-dos)"
+                name={t('guide.backLength')}
                 color="hsl(var(--chart-5))"
-                description="Measure from the prominent bone at the back of the neck (7th cervical vertebra) straight down to the natural waistline."
+                description={t('guide.desc.backLength')}
               />
             </div>
           </div>
 
           <div className="mt-6 p-4 bg-secondary/50 rounded-lg">
-            <h4 className="font-medium text-foreground mb-2">Tips for Accurate Measurements</h4>
+            <h4 className="font-medium text-foreground mb-2">{t('guide.tipsForAccurate')}</h4>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Wear a well-fitting bra (for bust measurements)</li>
-              <li>• Stand naturally with arms relaxed at sides</li>
-              <li>• Keep the tape snug but not tight</li>
-              <li>• Have someone help for back measurements</li>
-              <li>• Take measurements over fitted clothing or undergarments</li>
-              <li>• For back width (carrure dos), locate it by feeling where the arms connect to the body</li>
+              <li>• {t('guide.tip.bodice1')}</li>
+              <li>• {t('guide.tip.bodice2')}</li>
+              <li>• {t('guide.tip.bodice3')}</li>
+              <li>• {t('guide.tip.bodice4')}</li>
+              <li>• {t('guide.tip.bodice5')}</li>
+              <li>• {t('guide.tip.bodice6')}</li>
             </ul>
           </div>
         </ScrollArea>
