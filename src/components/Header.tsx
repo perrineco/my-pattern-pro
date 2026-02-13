@@ -104,6 +104,10 @@ export function Header() {
                             {t('action.manageProfiles')}
                           </DropdownMenuItem>
                         )}
+                        <DropdownMenuItem onClick={() => navigate('/app')}>
+                          <Scissors className="w-4 h-4 mr-2" />
+                          {t('title.patternPreview')}
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => navigate('/pricing')}>
                           <CreditCard className="w-4 h-4 mr-2" />
                           {t('action.manageSubscription')}
