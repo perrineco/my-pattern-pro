@@ -1,88 +1,49 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Scissors, Ruler, Download, Users, Crown, Star, ArrowRight, CheckCircle2, MessageSquare } from 'lucide-react';
-
-const features = [
-  {
-    icon: Ruler,
-    title: 'Custom Measurements',
-    description: 'Enter your exact body measurements and get pattern blocks tailored precisely to your shape.',
-  },
-  {
-    icon: Scissors,
-    title: 'Multiple Pattern Types',
-    description: 'Skirts, bodices (dartless, with darts, knit), pants, and sleeves — all from one tool.',
-  },
-  {
-    icon: Users,
-    title: 'Women, Men & Kids',
-    description: 'Category-specific drafting logic ensures accurate results for every body type.',
-  },
-  {
-    icon: Download,
-    title: 'PDF Export',
-    description: 'Download print-ready pattern PDFs instantly. No waiting, no shipping.',
-  },
-];
-
-const plans = [
-  {
-    name: 'Free',
-    price: '$0',
-    period: '',
-    features: ['Skirt pattern block', 'All categories', 'PDF export', 'Live preview'],
-    cta: 'Get Started',
-    highlighted: false,
-  },
-  {
-    name: 'Basic',
-    price: '$9',
-    period: '/mo',
-    features: ['All pattern types', 'Save measurement profiles', '10 patterns/month', 'Priority support'],
-    cta: 'Start Basic',
-    highlighted: false,
-  },
-  {
-    name: 'Pro',
-    price: '$19',
-    period: '/mo',
-    features: ['Unlimited patterns', 'Unlimited profiles', 'All future pattern types', 'Early access to new features'],
-    cta: 'Go Pro',
-    highlighted: true,
-  },
-];
-
-const testimonials = [
-  {
-    quote: "Finally, a pattern tool that understands real bodies. The fit is incredible compared to standard size charts.",
-    author: "Marie L.",
-    role: "Home Sewist",
-  },
-  {
-    quote: "I use Sloper Studio for all my client fittings. The PDF export saves me hours of manual drafting.",
-    author: "James K.",
-    role: "Tailor",
-  },
-  {
-    quote: "The kids category is a game-changer. My children's clothes actually fit now!",
-    author: "Sofia R.",
-    role: "Parent & Maker",
-  },
-];
+import { Scissors, Ruler, Download, Users, Crown, Star, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 export default function Welcome() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const handleGetStarted = () => {
-    if (user) {
-      navigate('/app');
-    } else {
-      navigate('/auth');
-    }
+    navigate(user ? '/app' : '/auth');
   };
+
+  const features = [
+    { icon: Ruler, title: t('welcome.feat.measurements'), description: t('welcome.feat.measurementsDesc') },
+    { icon: Scissors, title: t('welcome.feat.patterns'), description: t('welcome.feat.patternsDesc') },
+    { icon: Users, title: t('welcome.feat.categories'), description: t('welcome.feat.categoriesDesc') },
+    { icon: Download, title: t('welcome.feat.pdf'), description: t('welcome.feat.pdfDesc') },
+  ];
+
+  const plans = [
+    {
+      name: t('welcome.plan.free'), price: '$0', period: '',
+      features: [t('welcome.plan.feat.skirt'), t('welcome.plan.feat.allCategories'), t('welcome.plan.feat.pdfExport'), t('welcome.plan.feat.livePreview')],
+      cta: t('welcome.plan.getStarted'), highlighted: false,
+    },
+    {
+      name: t('welcome.plan.basic'), price: '$9', period: '/mo',
+      features: [t('welcome.plan.feat.allPatterns'), t('welcome.plan.feat.saveProfiles'), t('welcome.plan.feat.tenPatterns'), t('welcome.plan.feat.prioritySupport')],
+      cta: t('welcome.plan.startBasic'), highlighted: false,
+    },
+    {
+      name: t('welcome.plan.pro'), price: '$19', period: '/mo',
+      features: [t('welcome.plan.feat.unlimited'), t('welcome.plan.feat.unlimitedProfiles'), t('welcome.plan.feat.allFuture'), t('welcome.plan.feat.earlyAccess')],
+      cta: t('welcome.plan.goPro'), highlighted: true,
+    },
+  ];
+
+  const testimonials = [
+    { quote: t('welcome.testimonial1'), author: t('welcome.testimonial1Author'), role: t('welcome.testimonial1Role') },
+    { quote: t('welcome.testimonial2'), author: t('welcome.testimonial2Author'), role: t('welcome.testimonial2Role') },
+    { quote: t('welcome.testimonial3'), author: t('welcome.testimonial3Author'), role: t('welcome.testimonial3Role') },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -94,27 +55,17 @@ export default function Welcome() {
               <Scissors className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-serif text-xl font-semibold text-foreground tracking-tight">
-                Sloper Studio
-              </h1>
-              <p className="text-xs text-muted-foreground">Custom sewing patterns</p>
+              <h1 className="font-serif text-xl font-semibold text-foreground tracking-tight">Sloper Studio</h1>
+              <p className="text-xs text-muted-foreground">{t('misc.createPatterns')}</p>
             </div>
           </button>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>
-              Pricing
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/contact')}>
-              Contact
-            </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>{t('action.pricing')}</Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate('/contact')}>{t('action.contact')}</Button>
             {user ? (
-              <Button size="sm" onClick={() => navigate('/app')}>
-                Open App
-              </Button>
+              <Button size="sm" onClick={() => navigate('/app')}>{t('welcome.openApp')}</Button>
             ) : (
-              <Button size="sm" onClick={() => navigate('/auth')}>
-                Sign In
-              </Button>
+              <Button size="sm" onClick={() => navigate('/auth')}>{t('action.signIn')}</Button>
             )}
           </div>
         </div>
@@ -125,23 +76,22 @@ export default function Welcome() {
         <div className="max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
             <Star className="w-4 h-4" />
-            Pattern drafting made personal
+            {t('welcome.badge')}
           </div>
           <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight mb-6">
-            Sewing patterns built{' '}
-            <span className="text-primary">to your body</span>
+            {t('welcome.heroTitle1')}{' '}
+            <span className="text-primary">{t('welcome.heroTitle2')}</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed">
-            Enter your measurements, choose your pattern type, and download a custom-fit sloper in seconds. 
-            No more grading between sizes.
+            {t('welcome.heroDesc')}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="lg" className="gap-2 text-base px-8" onClick={handleGetStarted}>
-              Start Drafting
+              {t('welcome.startDrafting')}
               <ArrowRight className="w-4 h-4" />
             </Button>
             <Button variant="outline" size="lg" className="gap-2 text-base px-8" onClick={() => navigate('/pricing')}>
-              View Plans
+              {t('welcome.viewPlans')}
             </Button>
           </div>
         </div>
@@ -150,12 +100,8 @@ export default function Welcome() {
       {/* Features */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h3 className="font-serif text-3xl font-semibold text-foreground mb-3">
-            Everything you need to draft
-          </h3>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Professional-grade pattern tools, accessible to everyone.
-          </p>
+          <h3 className="font-serif text-3xl font-semibold text-foreground mb-3">{t('welcome.featuresTitle')}</h3>
+          <p className="text-muted-foreground max-w-md mx-auto">{t('welcome.featuresDesc')}</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
           {features.map((f) => (
@@ -174,27 +120,16 @@ export default function Welcome() {
       <section className="bg-secondary/30 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h3 className="font-serif text-3xl font-semibold text-foreground mb-3">
-              Simple, transparent pricing
-            </h3>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              Start free with the skirt block. Upgrade when you need more.
-            </p>
+            <h3 className="font-serif text-3xl font-semibold text-foreground mb-3">{t('welcome.pricingTitle')}</h3>
+            <p className="text-muted-foreground max-w-md mx-auto">{t('welcome.pricingDesc')}</p>
           </div>
           <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {plans.map((plan) => (
-              <Card
-                key={plan.name}
-                className={`p-6 flex flex-col ${
-                  plan.highlighted
-                    ? 'border-primary shadow-lg ring-2 ring-primary/20'
-                    : ''
-                }`}
-              >
+              <Card key={plan.name} className={`p-6 flex flex-col ${plan.highlighted ? 'border-primary shadow-lg ring-2 ring-primary/20' : ''}`}>
                 {plan.highlighted && (
                   <div className="flex items-center gap-1.5 text-xs font-medium text-primary mb-3">
                     <Crown className="w-3.5 h-3.5" />
-                    Most popular
+                    {t('welcome.plan.mostPopular')}
                   </div>
                 )}
                 <h4 className="font-serif text-xl font-semibold text-foreground">{plan.name}</h4>
@@ -210,11 +145,7 @@ export default function Welcome() {
                     </li>
                   ))}
                 </ul>
-                <Button
-                  variant={plan.highlighted ? 'default' : 'outline'}
-                  className="w-full"
-                  onClick={() => navigate('/pricing')}
-                >
+                <Button variant={plan.highlighted ? 'default' : 'outline'} className="w-full" onClick={() => navigate('/pricing')}>
                   {plan.cta}
                 </Button>
               </Card>
@@ -226,19 +157,15 @@ export default function Welcome() {
       {/* Testimonials */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h3 className="font-serif text-3xl font-semibold text-foreground mb-3">
-            Loved by makers
-          </h3>
+          <h3 className="font-serif text-3xl font-semibold text-foreground mb-3">{t('welcome.testimonialsTitle')}</h3>
         </div>
         <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {testimonials.map((t) => (
-            <Card key={t.author} className="p-6">
-              <p className="text-sm text-muted-foreground leading-relaxed italic mb-4">
-                "{t.quote}"
-              </p>
+          {testimonials.map((tst) => (
+            <Card key={tst.author} className="p-6">
+              <p className="text-sm text-muted-foreground leading-relaxed italic mb-4">"{tst.quote}"</p>
               <div>
-                <p className="text-sm font-medium text-foreground">{t.author}</p>
-                <p className="text-xs text-muted-foreground">{t.role}</p>
+                <p className="text-sm font-medium text-foreground">{tst.author}</p>
+                <p className="text-xs text-muted-foreground">{tst.role}</p>
               </div>
             </Card>
           ))}
@@ -248,14 +175,10 @@ export default function Welcome() {
       {/* CTA */}
       <section className="container mx-auto px-4 py-16 text-center">
         <Card className="max-w-2xl mx-auto p-10 bg-primary/5 border-primary/20">
-          <h3 className="font-serif text-2xl font-semibold text-foreground mb-3">
-            Ready to create your perfect fit?
-          </h3>
-          <p className="text-muted-foreground mb-6">
-            Join thousands of sewists drafting custom patterns with Sloper Studio.
-          </p>
+          <h3 className="font-serif text-2xl font-semibold text-foreground mb-3">{t('welcome.ctaTitle')}</h3>
+          <p className="text-muted-foreground mb-6">{t('welcome.ctaDesc')}</p>
           <Button size="lg" className="gap-2 text-base px-8" onClick={handleGetStarted}>
-            Get Started Free
+            {t('welcome.ctaButton')}
             <ArrowRight className="w-4 h-4" />
           </Button>
         </Card>
@@ -264,14 +187,10 @@ export default function Welcome() {
       {/* Footer */}
       <footer className="border-t border-border py-8">
         <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>Sloper Studio — Create custom-fit sewing patterns</p>
+          <p>{t('welcome.footer')}</p>
           <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/pricing')} className="hover:text-foreground transition-colors">
-              Pricing
-            </button>
-            <button onClick={() => navigate('/contact')} className="hover:text-foreground transition-colors">
-              Contact
-            </button>
+            <button onClick={() => navigate('/pricing')} className="hover:text-foreground transition-colors">{t('action.pricing')}</button>
+            <button onClick={() => navigate('/contact')} className="hover:text-foreground transition-colors">{t('action.contact')}</button>
           </div>
         </div>
       </footer>
