@@ -36,36 +36,11 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
               <BodiceBodyDiagram category={category} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} />
             </div>
             <div className="space-y-4">
-              <MeasurementInstruction
-                number={1}
-                name={t('guide.bust')}
-                color="hsl(var(--primary))"
-                description={t('guide.desc.bust')}
-              />
-              <MeasurementInstruction
-                number={2}
-                name={t('guide.neckline')}
-                color="hsl(var(--chart-2))"
-                description={t('guide.desc.neckline')}
-              />
-              <MeasurementInstruction
-                number={3}
-                name={t('guide.shoulderLength')}
-                color="hsl(var(--chart-3))"
-                description={t('guide.desc.shoulderLength')}
-              />
-              <MeasurementInstruction
-                number={4}
-                name={t('guide.backWidth')}
-                color="hsl(var(--chart-4))"
-                description={t('guide.desc.backWidth')}
-              />
-              <MeasurementInstruction
-                number={5}
-                name={t('guide.backLength')}
-                color="hsl(var(--chart-5))"
-                description={t('guide.desc.backLength')}
-              />
+              <MeasurementInstruction number={1} name={t('guide.bust')} color="hsl(var(--primary))" description={t('guide.desc.bust')} highlighted={highlightedNumber === 1} />
+              <MeasurementInstruction number={2} name={t('guide.neckline')} color="hsl(var(--chart-2))" description={t('guide.desc.neckline')} highlighted={highlightedNumber === 2} />
+              <MeasurementInstruction number={3} name={t('guide.shoulderLength')} color="hsl(var(--chart-3))" description={t('guide.desc.shoulderLength')} highlighted={highlightedNumber === 3} />
+              <MeasurementInstruction number={4} name={t('guide.backWidth')} color="hsl(var(--chart-4))" description={t('guide.desc.backWidth')} highlighted={highlightedNumber === 4} />
+              <MeasurementInstruction number={5} name={t('guide.backLength')} color="hsl(var(--chart-5))" description={t('guide.desc.backLength')} highlighted={highlightedNumber === 5} />
             </div>
           </div>
 
@@ -91,14 +66,16 @@ interface MeasurementInstructionProps {
   name: string;
   color: string;
   description: string;
+  highlighted?: boolean;
 }
 
-function MeasurementInstruction({ number, name, color, description }: MeasurementInstructionProps) {
+function MeasurementInstruction({ number, name, color, description, highlighted }: MeasurementInstructionProps) {
+  const highlightColor = "#f97316";
   return (
-    <div className="flex gap-3">
+    <div className={`flex gap-3 rounded-lg p-2 transition-colors ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : ''}`}>
       <div
         className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
-        style={{ backgroundColor: color }}
+        style={{ backgroundColor: highlighted ? highlightColor : color }}
       >
         {number}
       </div>
@@ -109,7 +86,6 @@ function MeasurementInstruction({ number, name, color, description }: Measuremen
     </div>
   );
 }
-
 function BodiceBodyDiagram({ category, highlightedNumber, onNumberClick }: { category: Category; highlightedNumber: number | null; onNumberClick: (n: number) => void }) {
   const isKids = category === "kids";
   const highlightColor = "#f97316";
