@@ -276,6 +276,48 @@ const translations: Record<string, Record<Language, string>> = {
   'welcome.ctaDesc': { en: 'Join thousands of sewists drafting custom patterns with Sloper Studio.', fr: 'Rejoignez des milliers de couturiers qui créent des patrons sur mesure avec Sloper Studio.' },
   'welcome.ctaButton': { en: 'Get Started Free', fr: 'Commencer gratuitement' },
   'welcome.footer': { en: 'Sloper Studio — Create custom-fit sewing patterns', fr: 'Sloper Studio — Créez des patrons de couture sur mesure' },
+
+  // Adjustments page
+  'adj.title': { en: 'Sloper Adjustment Guide', fr: 'Guide d\'ajustement du patron de base' },
+  'adj.subtitle': { en: 'Your drafted sloper is a starting point. Here are common fit issues and how to correct them by adjusting your measurements or the pattern.', fr: 'Votre patron de base est un point de départ. Voici les problèmes d\'ajustement courants et comment les corriger en modifiant vos mesures ou le patron.' },
+  'adj.back': { en: 'Back', fr: 'Retour' },
+  'adj.problem': { en: 'Problem:', fr: 'Problème :' },
+  'adj.solution': { en: 'Solution:', fr: 'Solution :' },
+
+  'adj.1.title': { en: 'Armhole too deep or flat at the underarm', fr: 'Emmanchure trop profonde ou plate sous le bras' },
+  'adj.1.problem': { en: 'The armhole shape drops too low or appears too flat under the arm, causing discomfort or poor fit.', fr: 'L\'emmanchure descend trop bas ou semble trop plate sous le bras, causant inconfort ou mauvais ajustement.' },
+  'adj.1.solution': { en: 'Add ease to the across back (carrure dos) measurement. This will narrow the underarm and extend the shoulder length, lifting the armhole into a better position.', fr: 'Ajoutez de l\'aisance à la mesure de carrure dos. Cela réduira le dessous de bras et allongera l\'épaule, repositionnant l\'emmanchure.' },
+  'adj.1.tip': { en: 'Try adding 1–2 cm to the back width and redraft to see the effect.', fr: 'Essayez d\'ajouter 1 à 2 cm à la carrure dos et retracez pour voir l\'effet.' },
+
+  'adj.2.title': { en: 'Shoulder seam falls off the shoulder', fr: 'La couture d\'épaule tombe au-delà de l\'épaule' },
+  'adj.2.problem': { en: 'The shoulder seam extends past the shoulder point, creating a dropped-shoulder look when you intended a fitted one.', fr: 'La couture d\'épaule dépasse la pointe de l\'épaule, créant un effet épaule tombante alors que vous vouliez un ajustement près du corps.' },
+  'adj.2.solution': { en: 'Reduce the shoulder length measurement by 0.5–1 cm. You can also check that your back width measurement isn\'t too wide, as this can push the shoulder out.', fr: 'Réduisez la longueur d\'épaule de 0,5 à 1 cm. Vérifiez aussi que votre carrure dos n\'est pas trop large, car cela peut repousser l\'épaule.' },
+  'adj.2.tip': { en: 'Mark your shoulder point precisely—it\'s where the arm begins to curve downward.', fr: 'Marquez précisément votre pointe d\'épaule — c\'est là où le bras commence à courber vers le bas.' },
+
+  'adj.3.title': { en: 'Bodice is too tight across the chest', fr: 'Le corsage est trop serré au niveau de la poitrine' },
+  'adj.3.problem': { en: 'The front or back feels restrictive across the bust or upper chest area, pulling at the armhole.', fr: 'Le devant ou le dos est trop serré au niveau de la poitrine, tirant au niveau de l\'emmanchure.' },
+  'adj.3.solution': { en: 'Increase the bust ease. For woven fabrics, ensure you have at least 4–6 cm of total ease. For knits, you may use 0 to negative ease depending on stretch.', fr: 'Augmentez l\'aisance de poitrine. Pour les tissus chaîne et trame, prévoyez au moins 4 à 6 cm d\'aisance totale. Pour la maille, vous pouvez utiliser 0 ou une aisance négative selon l\'extensibilité.' },
+  'adj.3.tip': { en: 'Always check ease against the intended fabric type before cutting.', fr: 'Vérifiez toujours l\'aisance en fonction du tissu prévu avant de couper.' },
+
+  'adj.4.title': { en: 'Neckline gaps or stands away from the body', fr: 'L\'encolure bâille ou s\'écarte du corps' },
+  'adj.4.problem': { en: 'The neckline doesn\'t sit flat against the base of the neck, creating gaps especially at the front or back.', fr: 'L\'encolure ne repose pas à plat contre la base du cou, créant des ouvertures surtout devant ou dans le dos.' },
+  'adj.4.solution': { en: 'Reduce the neckline circumference slightly (0.5–1 cm) or adjust the front/back neckline depth. A shallower neckline depth will bring the edge closer to the neck.', fr: 'Réduisez légèrement le tour de cou (0,5 à 1 cm) ou ajustez la profondeur d\'encolure devant/dos. Une encolure moins profonde rapprochera le bord du cou.' },
+  'adj.4.tip': { en: 'Pin-fit a muslin to determine exactly where the gap occurs before adjusting the pattern.', fr: 'Épinglez une toile d\'essai pour déterminer exactement où le bâillement se produit avant de modifier le patron.' },
+
+  'adj.5.title': { en: 'Back length is too long or too short', fr: 'La longueur dos est trop longue ou trop courte' },
+  'adj.5.problem': { en: 'The waistline of the bodice doesn\'t align with your natural waist—either riding up or dropping below.', fr: 'La ligne de taille du corsage ne correspond pas à votre taille naturelle — elle remonte ou descend.' },
+  'adj.5.solution': { en: 'Adjust the back length (longueur taille-dos) measurement. Lengthen or shorten by the exact difference between your measured waist and the pattern waistline.', fr: 'Ajustez la mesure de longueur taille-dos. Rallongez ou raccourcissez de la différence exacte entre votre taille mesurée et la ligne de taille du patron.' },
+  'adj.5.tip': { en: 'Measure from the prominent bone at the nape of the neck straight down to a tie around your natural waist.', fr: 'Mesurez depuis l\'os saillant à la nuque en ligne droite jusqu\'à un lien noué autour de votre taille naturelle.' },
+
+  'adj.6.title': { en: 'Skirt rides up at the back', fr: 'La jupe remonte dans le dos' },
+  'adj.6.problem': { en: 'The back hemline of the skirt is shorter than the front, often caused by a prominent seat.', fr: 'L\'ourlet arrière de la jupe est plus court que l\'avant, souvent à cause de fesses proéminentes.' },
+  'adj.6.solution': { en: 'Add length to the center back of the skirt pattern. Typically 1–3 cm is enough. Taper the addition to nothing at the side seam.', fr: 'Ajoutez de la longueur au milieu dos du patron de jupe. En général, 1 à 3 cm suffisent. Dégradez l\'ajout à zéro à la couture de côté.' },
+  'adj.6.tip': { en: 'Compare front and back measurements from waist to floor to quantify the difference.', fr: 'Comparez les mesures devant et dos de la taille au sol pour quantifier la différence.' },
+
+  'adj.7.title': { en: 'Pants crotch is too tight or too loose', fr: 'L\'entrejambe du pantalon est trop serré ou trop lâche' },
+  'adj.7.problem': { en: 'The crotch area pulls uncomfortably or has excess fabric hanging below.', fr: 'La zone d\'entrejambe tire inconfortablement ou a un excès de tissu qui pend.' },
+  'adj.7.solution': { en: 'For a tight crotch, lower the crotch point by 1–2 cm and add to the crotch extension. For a loose crotch, raise the crotch point and reduce the extension.', fr: 'Pour un entrejambe serré, abaissez le point d\'entrejambe de 1 à 2 cm et augmentez l\'extension. Pour un entrejambe lâche, remontez le point et réduisez l\'extension.' },
+  'adj.7.tip': { en: 'Sit down while pin-fitting to check crotch ease—you need at least 2.5 cm of ease when seated.', fr: 'Asseyez-vous pendant l\'essayage pour vérifier l\'aisance d\'entrejambe — il faut au moins 2,5 cm d\'aisance en position assise.' },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
