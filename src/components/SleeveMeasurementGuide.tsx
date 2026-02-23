@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
 import { Category } from "@/types/sloper";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { SharedBodyDiagram, BodyPositions } from "@/components/guides/SharedBodyDiagram";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface SleeveMeasurementGuideProps {
   category: Category;
@@ -11,6 +13,11 @@ interface SleeveMeasurementGuideProps {
 
 export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps) {
   const { t } = useLanguage();
+  const [highlightedNumber, setHighlightedNumber] = useState<number | null>(null);
+
+  const handleNumberClick = (n: number) => {
+    setHighlightedNumber(prev => prev === n ? null : n);
+  };
 
   return (
     <Dialog>
@@ -20,57 +27,54 @@ export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps
           {t('action.howToMeasure')}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[85vh]">
         <DialogHeader>
           <DialogTitle className="font-serif text-xl">{t('guide.sleeveMeasurementGuide')}</DialogTitle>
         </DialogHeader>
-
-        <div className="grid md:grid-cols-2 gap-6 mt-4">
-          <div className="flex justify-center">
-            <SharedBodyDiagram
-              category={category}
-              renderOverlay={(pos) => <SleeveOverlay pos={pos} t={t} />}
-            />
+        <ScrollArea className="h-[65vh] pr-4">
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="flex justify-center">
+              <SharedBodyDiagram
+                category={category}
+                renderOverlay={(pos) => <SleeveOverlay pos={pos} t={t} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} />}
+              />
+            </div>
+            <div className="space-y-4">
+              <MeasurementInstruction number={1} name={t('guide.upperArm')} color="hsl(var(--primary))" description={t('guide.desc.upperArm')} highlighted={highlightedNumber === 1} />
+              <MeasurementInstruction number={2} name={t('guide.wrist')} color="hsl(var(--destructive))" description={t('guide.desc.wrist')} highlighted={highlightedNumber === 2} />
+              <MeasurementInstruction number={3} name={t('guide.sleeveLength')} color="hsl(var(--chart-3))" description={t('guide.desc.sleeveLength')} highlighted={highlightedNumber === 3} />
+              <MeasurementInstruction number={4} name={t('guide.elbowLength')} color="hsl(var(--chart-4))" description={t('guide.desc.elbowLength')} highlighted={highlightedNumber === 4} />
+              <MeasurementInstruction number={5} name={t('guide.armholeDepth')} color="hsl(var(--chart-5))" description={t('guide.desc.armholeDepth')} highlighted={highlightedNumber === 5} />
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <MeasurementInstruction number={1} name={t('guide.upperArm')} color="hsl(var(--primary))" description={t('guide.desc.upperArm')} />
-            <MeasurementInstruction number={2} name={t('guide.wrist')} color="hsl(var(--destructive))" description={t('guide.desc.wrist')} />
-            <MeasurementInstruction number={3} name={t('guide.sleeveLength')} color="hsl(var(--chart-3))" description={t('guide.desc.sleeveLength')} />
-            <MeasurementInstruction number={4} name={t('guide.elbowLength')} color="hsl(var(--chart-4))" description={t('guide.desc.elbowLength')} />
-            <MeasurementInstruction number={5} name={t('guide.armholeDepth')} color="hsl(var(--chart-5))" description={t('guide.desc.armholeDepth')} />
+          <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+            <h4 className="font-medium mb-2">{t('guide.tipsForAccurate')}</h4>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li>• {t('guide.tip.sleeve1')}</li>
+              <li>• {t('guide.tip.sleeve2')}</li>
+              <li>• {t('guide.tip4')}</li>
+              <li>• {t('guide.tip5')}</li>
+              <li>• {t('guide.tip.sleeve5')}</li>
+            </ul>
           </div>
-        </div>
-
-        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-          <h4 className="font-medium mb-2">{t('guide.tipsForAccurate')}</h4>
-          <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• {t('guide.tip.sleeve1')}</li>
-            <li>• {t('guide.tip.sleeve2')}</li>
-            <li>• {t('guide.tip4')}</li>
-            <li>• {t('guide.tip5')}</li>
-            <li>• {t('guide.tip.sleeve5')}</li>
-          </ul>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
 }
 
-function SleeveOverlay({ pos, t }: { pos: BodyPositions; t: (key: string) => string }) {
-  // We use the RIGHT arm for sleeve measurements
-  const armCx = pos.rightShoulderX + 8; // center of the right arm
-  const armOuterX = pos.rightShoulderX + 8;
+function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyPositions; t: (key: string) => string; highlightedNumber: number | null; onNumberClick: (n: number) => void }) {
+  const highlightColor = "#f97316";
+  const getCircleFill = (n: number, defaultColor: string) => highlightedNumber === n ? highlightColor : defaultColor;
 
-  // Key Y positions along the right arm
+  const armCx = pos.rightShoulderX + 8;
   const shoulderPtY = pos.shoulderY;
   const bicepY = pos.underarmY + 15;
   const elbowY = pos.elbowY;
   const wristArmY = pos.wristY;
-
-  // Offset for dimension lines (to the right of the arm)
-  const dimX = armOuterX + 30;
-  const dimX2 = armOuterX + 45;
+  const dimX = armCx + 30;
+  const dimX2 = armCx + 45;
 
   return (
     <>
@@ -88,34 +92,44 @@ function SleeveOverlay({ pos, t }: { pos: BodyPositions; t: (key: string) => str
 
       {/* 1. Upper Arm circumference */}
       <ellipse cx={armCx} cy={bicepY} rx={pos.armWidth / 2 + 8} ry={5} fill="none" stroke="hsl(var(--primary))" strokeWidth="2" strokeDasharray="6,3" />
-      <circle cx={armCx + pos.armWidth / 2 + 15} cy={bicepY} r="10" fill="hsl(var(--primary))" />
-      <text x={armCx + pos.armWidth / 2 + 15} y={bicepY + 4} textAnchor="middle" className="fill-primary-foreground text-xs font-bold">1</text>
+      <g onClick={() => onNumberClick(1)} className="cursor-pointer">
+        <circle cx={armCx + pos.armWidth / 2 + 15} cy={bicepY} r="10" fill={getCircleFill(1, "hsl(var(--primary))")} />
+        <text x={armCx + pos.armWidth / 2 + 15} y={bicepY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">1</text>
+      </g>
 
       {/* 2. Wrist circumference */}
       <ellipse cx={pos.rightShoulderX + 5 - pos.wristWidth / 2} cy={wristArmY - 3} rx={pos.wristWidth / 2 + 4} ry={4} fill="none" stroke="hsl(var(--destructive))" strokeWidth="2" strokeDasharray="6,3" />
-      <circle cx={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} cy={wristArmY - 3} r="10" fill="hsl(var(--destructive))" />
-      <text x={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} y={wristArmY + 1} textAnchor="middle" className="fill-destructive-foreground text-xs font-bold">2</text>
+      <g onClick={() => onNumberClick(2)} className="cursor-pointer">
+        <circle cx={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} cy={wristArmY - 3} r="10" fill={getCircleFill(2, "hsl(var(--destructive))")} />
+        <text x={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} y={wristArmY + 1} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">2</text>
+      </g>
 
-      {/* 3. Sleeve Length (shoulder to wrist) - left side of right arm */}
+      {/* 3. Sleeve Length */}
       <line x1={pos.leftShoulderX - 20} y1={shoulderPtY} x2={pos.leftShoulderX - 20} y2={wristArmY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
       <line x1={pos.leftShoulderX - 25} y1={shoulderPtY} x2={pos.leftShoulderX - 15} y2={shoulderPtY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
       <line x1={pos.leftShoulderX - 25} y1={wristArmY} x2={pos.leftShoulderX - 15} y2={wristArmY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
-      <circle cx={pos.leftShoulderX - 20} cy={(shoulderPtY + wristArmY) / 2} r="10" fill="hsl(var(--chart-3))" />
-      <text x={pos.leftShoulderX - 20} y={(shoulderPtY + wristArmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold">3</text>
+      <g onClick={() => onNumberClick(3)} className="cursor-pointer">
+        <circle cx={pos.leftShoulderX - 20} cy={(shoulderPtY + wristArmY) / 2} r="10" fill={getCircleFill(3, "hsl(var(--chart-3))")} />
+        <text x={pos.leftShoulderX - 20} y={(shoulderPtY + wristArmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">3</text>
+      </g>
 
-      {/* 4. Elbow Length (shoulder to elbow) */}
+      {/* 4. Elbow Length */}
       <line x1={dimX} y1={shoulderPtY} x2={dimX} y2={elbowY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
       <line x1={dimX - 5} y1={shoulderPtY} x2={dimX + 5} y2={shoulderPtY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
       <line x1={dimX - 5} y1={elbowY} x2={dimX + 5} y2={elbowY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
-      <circle cx={dimX} cy={(shoulderPtY + elbowY) / 2} r="10" fill="hsl(var(--chart-4))" />
-      <text x={dimX} y={(shoulderPtY + elbowY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold">4</text>
+      <g onClick={() => onNumberClick(4)} className="cursor-pointer">
+        <circle cx={dimX} cy={(shoulderPtY + elbowY) / 2} r="10" fill={getCircleFill(4, "hsl(var(--chart-4))")} />
+        <text x={dimX} y={(shoulderPtY + elbowY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">4</text>
+      </g>
 
-      {/* 5. Armhole Depth (shoulder to underarm) */}
+      {/* 5. Armhole Depth */}
       <line x1={dimX2} y1={shoulderPtY} x2={dimX2} y2={pos.underarmY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
       <line x1={dimX2 - 5} y1={shoulderPtY} x2={dimX2 + 5} y2={shoulderPtY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
       <line x1={dimX2 - 5} y1={pos.underarmY} x2={dimX2 + 5} y2={pos.underarmY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
-      <circle cx={dimX2} cy={(shoulderPtY + pos.underarmY) / 2} r="10" fill="hsl(var(--chart-5))" />
-      <text x={dimX2} y={(shoulderPtY + pos.underarmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold">5</text>
+      <g onClick={() => onNumberClick(5)} className="cursor-pointer">
+        <circle cx={dimX2} cy={(shoulderPtY + pos.underarmY) / 2} r="10" fill={getCircleFill(5, "hsl(var(--chart-5))")} />
+        <text x={dimX2} y={(shoulderPtY + pos.underarmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">5</text>
+      </g>
     </>
   );
 }
@@ -125,12 +139,14 @@ interface MeasurementInstructionProps {
   name: string;
   color: string;
   description: string;
+  highlighted?: boolean;
 }
 
-function MeasurementInstruction({ number, name, color, description }: MeasurementInstructionProps) {
+function MeasurementInstruction({ number, name, color, description, highlighted }: MeasurementInstructionProps) {
+  const highlightColor = "#f97316";
   return (
-    <div className="flex gap-3">
-      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0" style={{ backgroundColor: color }}>
+    <div className={`flex gap-3 rounded-lg p-2 transition-colors ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : ''}`}>
+      <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: highlighted ? highlightColor : color }}>
         {number}
       </div>
       <div>
