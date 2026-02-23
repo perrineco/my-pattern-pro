@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,6 +12,11 @@ interface BodiceMeasurementGuideProps {
 
 export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps) {
   const { t } = useLanguage();
+  const [highlightedNumber, setHighlightedNumber] = useState<number | null>(null);
+
+  const handleNumberClick = (n: number) => {
+    setHighlightedNumber(prev => prev === n ? null : n);
+  };
   
   return (
     <Dialog>
@@ -27,7 +33,7 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
         <ScrollArea className="h-[65vh] pr-4">
           <div className="grid md:grid-cols-2 gap-6">
             <div className="flex justify-center">
-              <BodiceBodyDiagram category={category} />
+              <BodiceBodyDiagram category={category} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} />
             </div>
             <div className="space-y-4">
               <MeasurementInstruction
@@ -104,8 +110,10 @@ function MeasurementInstruction({ number, name, color, description }: Measuremen
   );
 }
 
-function BodiceBodyDiagram({ category }: { category: Category }) {
+function BodiceBodyDiagram({ category, highlightedNumber, onNumberClick }: { category: Category; highlightedNumber: number | null; onNumberClick: (n: number) => void }) {
   const isKids = category === "kids";
+  const highlightColor = "#f97316";
+  const getCircleFill = (n: number, defaultColor: string) => highlightedNumber === n ? highlightColor : defaultColor;
   const isMen = category === "men";
 
   // Adjust proportions based on category
@@ -182,15 +190,10 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         strokeWidth="2.5"
         strokeDasharray="4,2"
       />
-      <circle cx={centerX - bustWidth / 2 - 20} cy={bustY} r="10" fill="hsl(var(--primary))" />
-      <text
-        x={centerX - bustWidth / 2 - 20}
-        y={bustY + 4}
-        textAnchor="middle"
-        className="fill-white text-[10px] font-bold"
-      >
-        1
-      </text>
+      <g onClick={() => onNumberClick(1)} className="cursor-pointer">
+        <circle cx={centerX - bustWidth / 2 - 20} cy={bustY} r="10" fill={getCircleFill(1, "hsl(var(--primary))")} />
+        <text x={centerX - bustWidth / 2 - 20} y={bustY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">1</text>
+      </g>
 
       {/* 2: Neckline circumference */}
       <ellipse
@@ -203,10 +206,10 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         strokeWidth="2.5"
         strokeDasharray="3,2"
       />
-      <circle cx={centerX + 20} cy={neckBaseY} r="10" fill="hsl(var(--chart-2))" />
-      <text x={centerX + 20} y={neckBaseY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold">
-        2
-      </text>
+      <g onClick={() => onNumberClick(2)} className="cursor-pointer">
+        <circle cx={centerX + 20} cy={neckBaseY} r="10" fill={getCircleFill(2, "hsl(var(--chart-2))")} />
+        <text x={centerX + 20} y={neckBaseY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">2</text>
+      </g>
 
       {/* 3: Shoulder length (left shoulder highlighted) */}
       <line
@@ -219,15 +222,10 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
       />
       <circle cx={centerX - shoulderWidth / 2} cy={shoulderY} r="4" fill="hsl(var(--chart-3))" />
       <circle cx={centerX - 8} cy={neckBaseY} r="4" fill="hsl(var(--chart-3))" />
-      <circle cx={centerX - shoulderWidth / 4 - 4} cy={(neckBaseY + shoulderY) / 2} r="10" fill="hsl(var(--chart-3))" />
-      <text
-        x={centerX - shoulderWidth / 4 - 4}
-        y={(neckBaseY + shoulderY) / 2 + 4}
-        textAnchor="middle"
-        className="fill-white text-[10px] font-bold"
-      >
-        3
-      </text>
+      <g onClick={() => onNumberClick(3)} className="cursor-pointer">
+        <circle cx={centerX - shoulderWidth / 4 - 4} cy={(neckBaseY + shoulderY) / 2} r="10" fill={getCircleFill(3, "hsl(var(--chart-3))")} />
+        <text x={centerX - shoulderWidth / 4 - 4} y={(neckBaseY + shoulderY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">3</text>
+      </g>
 
       {/* 4: Back width (Carrure dos) */}
       <line
@@ -255,10 +253,10 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         stroke="hsl(var(--chart-4))"
         strokeWidth="2"
       />
-      <circle cx={centerX} cy={backWidthY - 12} r="10" fill="hsl(var(--chart-4))" />
-      <text x={centerX} y={backWidthY - 8} textAnchor="middle" className="fill-white text-[10px] font-bold">
-        4
-      </text>
+      <g onClick={() => onNumberClick(4)} className="cursor-pointer">
+        <circle cx={centerX} cy={backWidthY - 12} r="10" fill={getCircleFill(4, "hsl(var(--chart-4))")} />
+        <text x={centerX} y={backWidthY - 8} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">4</text>
+      </g>
       {/* Label for clarity */}
       <text x={centerX} y={backWidthY + 15} textAnchor="middle" className="fill-muted-foreground text-[8px]">
         Carrure dos
@@ -283,15 +281,10 @@ function BodiceBodyDiagram({ category }: { category: Category }) {
         strokeWidth="2"
       />
       <line x1={centerX + 10} y1={waistY} x2={centerX + 20} y2={waistY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
-      <circle cx={centerX + 30} cy={(neckBaseY + waistY) / 2} r="10" fill="hsl(var(--chart-5))" />
-      <text
-        x={centerX + 30}
-        y={(neckBaseY + waistY) / 2 + 4}
-        textAnchor="middle"
-        className="fill-white text-[10px] font-bold"
-      >
-        5
-      </text>
+      <g onClick={() => onNumberClick(5)} className="cursor-pointer">
+        <circle cx={centerX + 30} cy={(neckBaseY + waistY) / 2} r="10" fill={getCircleFill(5, "hsl(var(--chart-5))")} />
+        <text x={centerX + 30} y={(neckBaseY + waistY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">5</text>
+      </g>
 
       {/* Waist line indicator (reference) */}
       <line
