@@ -16,13 +16,11 @@ export interface BodyPositions {
   bustWidth: number;
   waistWidth: number;
   hipWidth: number;
-  // Arm positions
   underarmY: number;
   elbowY: number;
   wristY: number;
   armWidth: number;
   wristWidth: number;
-  // Shoulder endpoints (left/right)
   leftShoulderX: number;
   rightShoulderX: number;
 }
@@ -33,26 +31,26 @@ function getPositions(category: Category): BodyPositions {
   if (category === "kids") {
     return {
       centerX,
-      headCenterY: 28,
-      neckBaseY: 58,
-      shoulderY: 55,
-      bustY: 90,
-      backWidthY: 75,
-      waistY: 115,
-      hipY: 140,
-      hemY: 210,
-      ankleY: 240,
-      shoulderWidth: 60,
-      bustWidth: 54,
-      waistWidth: 50,
-      hipWidth: 54,
-      underarmY: 80,
-      elbowY: 145,
-      wristY: 210,
-      armWidth: 16,
-      wristWidth: 12,
-      leftShoulderX: centerX - 30,
-      rightShoulderX: centerX + 30,
+      headCenterY: 46,
+      neckBaseY: 108,
+      shoulderY: 115,
+      bustY: 145,
+      backWidthY: 130,
+      waistY: 180,
+      hipY: 218,
+      hemY: 298,
+      ankleY: 318,
+      shoulderWidth: 90,
+      bustWidth: 88,
+      waistWidth: 84,
+      hipWidth: 90,
+      underarmY: 130,
+      elbowY: 178,
+      wristY: 222,
+      armWidth: 20,
+      wristWidth: 16,
+      leftShoulderX: centerX - 45,
+      rightShoulderX: centerX + 45,
     };
   }
 
@@ -108,335 +106,433 @@ function getPositions(category: Category): BodyPositions {
   };
 }
 
+// ─── Defs partagés (dégradés + ombre) ────────────────────────────────────────
+
+function SharedDefs() {
+  return (
+    <defs>
+      <linearGradient id="skinWomen" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#e8c9a8" stopOpacity={0.95} />
+        <stop offset="45%" stopColor="#f2d9bc" />
+        <stop offset="100%" stopColor="#e0b896" stopOpacity={0.95} />
+      </linearGradient>
+
+      <linearGradient id="skinMen" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#d9b898" stopOpacity={0.95} />
+        <stop offset="45%" stopColor="#eacaaa" />
+        <stop offset="100%" stopColor="#d0a882" stopOpacity={0.95} />
+      </linearGradient>
+
+      <linearGradient id="skinKids" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#efd4b6" stopOpacity={0.95} />
+        <stop offset="45%" stopColor="#fae2c8" />
+        <stop offset="100%" stopColor="#e8c0a0" stopOpacity={0.95} />
+      </linearGradient>
+
+      <filter id="shadow" x="-12%" y="-5%" width="124%" height="118%">
+        <feDropShadow dx={0} dy={2} stdDeviation={2.5} floodColor="#00000020" />
+      </filter>
+    </defs>
+  );
+}
+
+// ─── Silhouette Femme ─────────────────────────────────────────────────────────
+
+function WomenBody() {
+  return (
+    <g id="women">
+      {/* Bras gauche */}
+      <path
+        d="M 69 53 C 67 95 66 153 66 168 C 67 188 72 245 72 255
+           C 73 263 87 263 86 255 C 86 245 92 188 92 168
+           C 92 158 91 93 91 85 Z"
+        fill="url(#skinWomen)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
+      />
+      <path d="M 67 164 Q 79 172 91 164" fill="none" stroke="#c49070" strokeWidth={0.6} strokeOpacity={0.5} />
+
+      {/* Bras droit */}
+      <path
+        d="M 171 53 C 173 95 174 153 174 168 C 173 188 168 245 168 255
+           C 167 263 153 263 154 255 C 154 245 148 188 148 168
+           C 148 158 149 93 149 85 Z"
+        fill="url(#skinWomen)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
+      />
+      <path d="M 149 164 Q 161 172 173 164" fill="none" stroke="#c49070" strokeWidth={0.6} strokeOpacity={0.5} />
+
+      {/* Corps */}
+      <path
+        d="M 112 58 C 108 56 74 52 80 53 C 85 56 85 91 79 105
+           C 75 113 84 138 92 150 C 96 160 71 170 77 182
+           L 79 280 C 79 288 110 294 112 300 L 114 310 L 126 310
+           L 128 300 C 130 294 161 288 161 280 L 163 182
+           C 169 170 144 160 148 150 C 156 138 165 113 161 105
+           C 155 91 155 56 160 53 C 166 52 132 56 128 58
+           C 128 54 112 54 112 58 Z"
+        fill="url(#skinWomen)"
+        stroke="#b8845a"
+        strokeWidth={1}
+        strokeLinejoin="round"
+        filter="url(#shadow)"
+      />
+
+      {/* Courbes poitrine */}
+      <path d="M 82 101 Q 100 115 118 109" fill="none" stroke="#c49070" strokeWidth={0.7} strokeOpacity={0.4} />
+      <path d="M 122 109 Q 140 115 158 101" fill="none" stroke="#c49070" strokeWidth={0.7} strokeOpacity={0.4} />
+
+      {/* Ligne centrale */}
+      <line
+        x1="120"
+        y1="62"
+        x2="120"
+        y2="276"
+        stroke="#c49070"
+        strokeWidth={0.5}
+        strokeOpacity={0.3}
+        strokeDasharray="3,4"
+      />
+
+      {/* Cou */}
+      <path
+        d="M 114 46 C 114 52 112 54 112 58 L 128 58 C 128 54 126 52 126 46 Z"
+        fill="url(#skinWomen)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+      />
+
+      {/* Tête */}
+      <ellipse
+        cx={120}
+        cy={25}
+        rx={18}
+        ry={23}
+        fill="url(#skinWomen)"
+        stroke="#b8845a"
+        strokeWidth={0.9}
+        filter="url(#shadow)"
+      />
+      {/* Oreilles */}
+      <ellipse cx={103} cy={28} rx={2.5} ry={4} fill="#e0b896" stroke="#b8845a" strokeWidth={0.6} />
+      <ellipse cx={137} cy={28} rx={2.5} ry={4} fill="#e0b896" stroke="#b8845a" strokeWidth={0.6} />
+
+      {/* Séparation jambes */}
+      <path d="M 120 194 L 114 310" stroke="#b8845a" strokeWidth={0.7} strokeOpacity={0.45} fill="none" />
+      <path d="M 120 194 L 126 310" stroke="#b8845a" strokeWidth={0.7} strokeOpacity={0.45} fill="none" />
+
+      {/* Pieds */}
+      <ellipse cx={113} cy={316} rx={8} ry={4} fill="#e0b896" stroke="#b8845a" strokeWidth={0.7} />
+      <ellipse cx={127} cy={316} rx={8} ry={4} fill="#e0b896" stroke="#b8845a" strokeWidth={0.7} />
+
+      {/* Label */}
+      <text
+        x="120"
+        y="334"
+        textAnchor="middle"
+        fontFamily="Georgia, serif"
+        fontSize={9}
+        fill="#9a6040"
+        letterSpacing={1.5}
+      >
+        FEMME
+      </text>
+    </g>
+  );
+}
+
+// ─── Silhouette Homme ─────────────────────────────────────────────────────────
+
+function MenBody() {
+  return (
+    <g id="men">
+      {/* Bras gauche */}
+      <path
+        d="M 57 52 C 55 95 53 155 53 170 C 54 190 60 250 60 260
+           C 61 268 79 268 78 260 C 78 250 84 190 84 170
+           C 84 160 83 93 83 85 Z"
+        fill="url(#skinMen)"
+        stroke="#a07050"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
+      />
+      <path d="M 54 166 Q 68 175 83 166" fill="none" stroke="#b07848" strokeWidth={0.6} strokeOpacity={0.5} />
+
+      {/* Bras droit */}
+      <path
+        d="M 183 52 C 185 95 187 155 187 170 C 186 190 180 250 180 260
+           C 179 268 161 268 162 260 C 162 250 156 190 156 170
+           C 156 160 157 93 157 85 Z"
+        fill="url(#skinMen)"
+        stroke="#a07050"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
+      />
+      <path d="M 157 166 Q 171 175 186 166" fill="none" stroke="#b07848" strokeWidth={0.6} strokeOpacity={0.5} />
+
+      {/* Corps */}
+      <path
+        d="M 110 58 C 106 56 62 50 70 52 C 74 54 77 90 75 100
+           C 73 112 77 142 81 150 C 83 160 80 172 82 180
+           L 84 280 C 84 288 110 294 112 300 L 114 310 L 126 310
+           L 128 300 C 130 294 156 288 156 280 L 158 180
+           C 160 172 157 160 159 150 C 163 142 167 112 165 100
+           C 163 90 166 54 170 52 C 178 50 134 56 130 58
+           C 130 54 110 54 110 58 Z"
+        fill="url(#skinMen)"
+        stroke="#a07050"
+        strokeWidth={1}
+        strokeLinejoin="round"
+        filter="url(#shadow)"
+      />
+
+      {/* Ligne centrale */}
+      <line
+        x1="120"
+        y1="62"
+        x2="120"
+        y2="276"
+        stroke="#b07848"
+        strokeWidth={0.5}
+        strokeOpacity={0.3}
+        strokeDasharray="3,4"
+      />
+
+      {/* Cou */}
+      <path
+        d="M 112 46 C 112 52 110 54 110 58 L 130 58 C 130 54 128 52 128 46 Z"
+        fill="url(#skinMen)"
+        stroke="#a07050"
+        strokeWidth={0.8}
+      />
+
+      {/* Tête */}
+      <ellipse
+        cx={120}
+        cy={25}
+        rx={18}
+        ry={23}
+        fill="url(#skinMen)"
+        stroke="#a07050"
+        strokeWidth={0.9}
+        filter="url(#shadow)"
+      />
+      {/* Oreilles */}
+      <ellipse cx={103} cy={28} rx={2.5} ry={4} fill="#d0a882" stroke="#a07050" strokeWidth={0.6} />
+      <ellipse cx={137} cy={28} rx={2.5} ry={4} fill="#d0a882" stroke="#a07050" strokeWidth={0.6} />
+
+      {/* Séparation jambes */}
+      <path d="M 120 192 L 114 310" stroke="#a07050" strokeWidth={0.7} strokeOpacity={0.45} fill="none" />
+      <path d="M 120 192 L 126 310" stroke="#a07050" strokeWidth={0.7} strokeOpacity={0.45} fill="none" />
+
+      {/* Pieds */}
+      <ellipse cx={113} cy={316} rx={8} ry={4} fill="#d0a882" stroke="#a07050" strokeWidth={0.7} />
+      <ellipse cx={127} cy={316} rx={8} ry={4} fill="#d0a882" stroke="#a07050" strokeWidth={0.7} />
+
+      {/* Label */}
+      <text
+        x="120"
+        y="334"
+        textAnchor="middle"
+        fontFamily="Georgia, serif"
+        fontSize={9}
+        fill="#7a5030"
+        letterSpacing={1.5}
+      >
+        HOMME
+      </text>
+    </g>
+  );
+}
+
+// ─── Silhouette Enfant (bébé/tout-petit) ─────────────────────────────────────
+
+function KidsBody() {
+  return (
+    <g id="kids">
+      {/* ── Bras gauche (épais, coude visible) ── */}
+      <path
+        d="M 74 122 C 65 122 57 128 55 138 C 53 148 52 162 54 172
+           C 55 178 53 184 51 194 C 49 204 50 214 53 220
+           C 55 224 61 226 66 224 C 70 222 71 218 70 214
+           C 68 208 67 202 68 194 C 70 186 73 180 73 172
+           C 74 162 76 150 77 140 C 78 132 77 124 74 122 Z"
+        fill="url(#skinKids)"
+        stroke="#9a6040"
+        strokeWidth={1.2}
+        strokeLinejoin="round"
+      />
+      {/* Bosse coude gauche */}
+      <path d="M 52 178 Q 48 186 52 194" fill="none" stroke="#9a6040" strokeWidth={1} strokeOpacity={0.4} />
+      {/* Main gauche */}
+      <ellipse cx={60} cy={228} rx={9} ry={7} fill="url(#skinKids)" stroke="#9a6040" strokeWidth={1.1} />
+      <path d="M 53 224 C 51 220 50 215 53 213" fill="none" stroke="#9a6040" strokeWidth={0.8} />
+      <path d="M 52 227 C 49 224 48 219 51 217" fill="none" stroke="#9a6040" strokeWidth={0.8} />
+
+      {/* ── Bras droit (miroir) ── */}
+      <path
+        d="M 166 122 C 175 122 183 128 185 138 C 187 148 188 162 186 172
+           C 185 178 187 184 189 194 C 191 204 190 214 187 220
+           C 185 224 179 226 174 224 C 170 222 169 218 170 214
+           C 172 208 173 202 172 194 C 170 186 167 180 167 172
+           C 166 162 164 150 163 140 C 162 132 163 124 166 122 Z"
+        fill="url(#skinKids)"
+        stroke="#9a6040"
+        strokeWidth={1.2}
+        strokeLinejoin="round"
+      />
+      {/* Bosse coude droit */}
+      <path d="M 188 178 Q 192 186 188 194" fill="none" stroke="#9a6040" strokeWidth={1} strokeOpacity={0.4} />
+      {/* Main droite */}
+      <ellipse cx={180} cy={228} rx={9} ry={7} fill="url(#skinKids)" stroke="#9a6040" strokeWidth={1.1} />
+      <path d="M 187 224 C 189 220 190 215 187 213" fill="none" stroke="#9a6040" strokeWidth={0.8} />
+      <path d="M 188 227 C 191 224 192 219 189 217" fill="none" stroke="#9a6040" strokeWidth={0.8} />
+
+      {/* ── Corps (torse + jambes) ── */}
+      <path
+        d="M 112 108 C 109 106 78 112 74 122 C 70 132 72 152 74 164
+           C 76 174 76 184 74 194 C 72 202 72 210 76 218
+           C 80 226 92 232 104 234 C 108 236 110 244 110 254
+           C 110 262 108 272 107 280 C 106 286 105 292 107 298
+           C 108 302 112 306 116 307 C 118 308 120 308 120 308
+           C 120 308 122 308 124 307 C 128 306 132 302 133 298
+           C 135 292 134 286 133 280 C 132 272 130 262 130 254
+           C 130 244 132 236 136 234 C 148 232 160 226 164 218
+           C 168 210 168 202 166 194 C 164 184 164 174 166 164
+           C 168 152 170 132 166 122 C 162 112 131 106 128 108
+           C 128 104 112 104 112 108 Z"
+        fill="url(#skinKids)"
+        stroke="#9a6040"
+        strokeWidth={1.3}
+        strokeLinejoin="round"
+        filter="url(#shadow)"
+      />
+      {/* Pli entrejambe */}
+      <path d="M 120 234 C 118 240 117 246 117 252" fill="none" stroke="#9a6040" strokeWidth={1} strokeOpacity={0.5} />
+
+      {/* ── Cou (court, large) ── */}
+      <path
+        d="M 111 102 C 111 96 112 92 112 88 L 128 88 C 128 92 129 96 129 102 Z"
+        fill="url(#skinKids)"
+        stroke="#9a6040"
+        strokeWidth={1.1}
+        strokeLinejoin="round"
+      />
+      <path d="M 111 96 Q 120 99 129 96" fill="none" stroke="#9a6040" strokeWidth={0.7} strokeOpacity={0.35} />
+
+      {/* ── Tête (grosse, ronde — proportions bébé) ── */}
+      <ellipse
+        cx={120}
+        cy={46}
+        rx={40}
+        ry={44}
+        fill="url(#skinKids)"
+        stroke="#9a6040"
+        strokeWidth={1.3}
+        filter="url(#shadow)"
+      />
+      {/* Oreille gauche */}
+      <ellipse cx={81} cy={50} rx={5} ry={7} fill="#fae2c8" stroke="#9a6040" strokeWidth={1} />
+      {/* Oreille droite */}
+      <ellipse cx={159} cy={50} rx={5} ry={7} fill="#fae2c8" stroke="#9a6040" strokeWidth={1} />
+
+      {/* ── Pied gauche ── */}
+      <path
+        d="M 103 307 C 99 307 93 308 89 311 C 85 314 84 318 86 321
+           C 88 324 96 326 106 326 C 112 326 116 324 117 321
+           C 118 318 116 312 110 309 C 108 308 106 307 103 307 Z"
+        fill="url(#skinKids)"
+        stroke="#9a6040"
+        strokeWidth={1.1}
+        strokeLinejoin="round"
+      />
+      <path d="M 86 316 C 84 312 85 308 88 308" fill="none" stroke="#9a6040" strokeWidth={0.9} />
+      <path d="M 87 320 C 84 317 84 312 86 311" fill="none" stroke="#9a6040" strokeWidth={0.9} />
+
+      {/* ── Pied droit ── */}
+      <path
+        d="M 137 307 C 141 307 147 308 151 311 C 155 314 156 318 154 321
+           C 152 324 144 326 134 326 C 128 326 124 324 123 321
+           C 122 318 124 312 130 309 C 132 308 134 307 137 307 Z"
+        fill="url(#skinKids)"
+        stroke="#9a6040"
+        strokeWidth={1.1}
+        strokeLinejoin="round"
+      />
+      <path d="M 154 316 C 156 312 155 308 152 308" fill="none" stroke="#9a6040" strokeWidth={0.9} />
+      <path d="M 153 320 C 156 317 156 312 154 311" fill="none" stroke="#9a6040" strokeWidth={0.9} />
+
+      {/* Label */}
+      <text
+        x="120"
+        y="338"
+        textAnchor="middle"
+        fontFamily="Georgia, serif"
+        fontSize={9}
+        fill="#7a5030"
+        letterSpacing={1.5}
+      >
+        ENFANT
+      </text>
+    </g>
+  );
+}
+
+// ─── Composant principal (usage isolé par catégorie) ─────────────────────────
+
 interface SharedBodyDiagramProps {
   category: Category;
+  /** Rendu de l'overlay de mesures. Reçoit les positions du corps. */
   renderOverlay?: (pos: BodyPositions) => ReactNode;
+  /** Hauteur du viewBox (optionnel, calculée automatiquement sinon). */
   viewBoxHeight?: number;
   className?: string;
 }
 
 export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, className }: SharedBodyDiagramProps) {
   const pos = getPositions(category);
-  const cx = pos.centerX;
-  const isMen = category === "men";
-  const isKids = category === "kids";
-  const isWomen = category === "women" || (!isMen && !isKids);
-
-  const vbWidth = 240;
-  const vbHeight = viewBoxHeight ?? (isKids ? 270 : 335);
-
-  // ── shared measurements ──────────────────────────────────────────────
-  const neckHalf = isMen ? 10 : isKids ? 7 : 8;
-  const headRx = isKids ? 20 : 18;
-  const headRy = isKids ? 24 : 23;
-
-  const sw = pos.shoulderWidth / 2; // half-shoulder
-  const bw = pos.bustWidth / 2;
-  const ww = pos.waistWidth / 2;
-  const hw = pos.hipWidth / 2;
-
-  const lsx = pos.leftShoulderX; // left shoulder X
-  const rsx = pos.rightShoulderX; // right shoulder X
-
-  // ── Arm geometry ─────────────────────────────────────────────────────
-  const armHalf = pos.armWidth / 2;
-  const wristHalf = pos.wristWidth / 2;
-
-  // Left arm outer / inner
-  const leftArmOuterX = lsx - armHalf;
-  const leftArmInnerX = lsx + armHalf;
-  const rightArmInnerX = rsx - armHalf;
-  const rightArmOuterX = rsx + armHalf;
-
-  // ── Body path ────────────────────────────────────────────────────────
-  // Built with cubic bezier curves for smooth organic shape.
-  // Path goes clockwise: left shoulder → left side down → legs → right side up.
-
-  let bodyPath = "";
-
-  if (isMen) {
-    // Broad shoulders, mild taper to waist, straight hips
-    bodyPath = `
-      M ${cx - neckHalf} ${pos.neckBaseY}
-      C ${cx - neckHalf - 4} ${pos.shoulderY + 4}, ${lsx - 8} ${pos.shoulderY - 2}, ${lsx} ${pos.shoulderY}
-      C ${lsx + 4} ${pos.shoulderY + 2}, ${cx - bw + 2} ${pos.bustY - 10}, ${cx - bw} ${pos.bustY}
-      C ${cx - bw - 2} ${pos.bustY + 12}, ${cx - ww - 4} ${pos.waistY - 8}, ${cx - ww} ${pos.waistY}
-      C ${cx - ww + 2} ${pos.waistY + 10}, ${cx - hw - 2} ${pos.hipY - 8}, ${cx - hw} ${pos.hipY}
-      L ${cx - hw + 2} ${pos.hemY}
-      C ${cx - hw + 2} ${pos.hemY + 8}, ${cx - 10} ${pos.hemY + 14}, ${cx - 8} ${pos.hemY + 20}
-      L ${cx - 6} ${pos.ankleY}
-      L ${cx + 6} ${pos.ankleY}
-      L ${cx + 8} ${pos.hemY + 20}
-      C ${cx + 10} ${pos.hemY + 14}, ${cx + hw - 2} ${pos.hemY + 8}, ${cx + hw - 2} ${pos.hemY}
-      L ${cx + hw} ${pos.hipY}
-      C ${cx + hw + 2} ${pos.hipY - 8}, ${cx + ww - 2} ${pos.waistY + 10}, ${cx + ww} ${pos.waistY}
-      C ${cx + ww + 4} ${pos.waistY - 8}, ${cx + bw + 2} ${pos.bustY + 12}, ${cx + bw} ${pos.bustY}
-      C ${cx + bw - 2} ${pos.bustY - 10}, ${rsx - 4} ${pos.shoulderY + 2}, ${rsx} ${pos.shoulderY}
-      C ${rsx + 8} ${pos.shoulderY - 2}, ${cx + neckHalf + 4} ${pos.shoulderY + 4}, ${cx + neckHalf} ${pos.neckBaseY}
-      C ${cx + neckHalf} ${pos.neckBaseY - 4}, ${cx - neckHalf} ${pos.neckBaseY - 4}, ${cx - neckHalf} ${pos.neckBaseY}
-      Z
-    `;
-  } else if (isKids) {
-    // Rounder, softer proportions, straighter silhouette
-    bodyPath = `
-      M ${cx - neckHalf} ${pos.neckBaseY}
-      C ${cx - neckHalf - 3} ${pos.shoulderY + 3}, ${lsx - 4} ${pos.shoulderY}, ${lsx} ${pos.shoulderY}
-      C ${lsx + 6} ${pos.shoulderY + 4}, ${cx - bw + 4} ${pos.bustY - 8}, ${cx - bw} ${pos.bustY}
-      C ${cx - bw - 2} ${pos.bustY + 10}, ${cx - ww} ${pos.waistY - 6}, ${cx - ww} ${pos.waistY}
-      C ${cx - ww} ${pos.waistY + 8}, ${cx - hw + 2} ${pos.hipY - 6}, ${cx - hw} ${pos.hipY}
-      L ${cx - hw + 2} ${pos.hemY}
-      C ${cx - hw + 2} ${pos.hemY + 6}, ${cx - 9} ${pos.hemY + 10}, ${cx - 7} ${pos.hemY + 16}
-      L ${cx - 5} ${pos.ankleY}
-      L ${cx + 5} ${pos.ankleY}
-      L ${cx + 7} ${pos.hemY + 16}
-      C ${cx + 9} ${pos.hemY + 10}, ${cx + hw - 2} ${pos.hemY + 6}, ${cx + hw - 2} ${pos.hemY}
-      L ${cx + hw} ${pos.hipY}
-      C ${cx + hw - 2} ${pos.hipY - 6}, ${cx + ww} ${pos.waistY + 8}, ${cx + ww} ${pos.waistY}
-      C ${cx + ww} ${pos.waistY - 6}, ${cx + bw - 4} ${pos.bustY + 10}, ${cx + bw} ${pos.bustY}
-      C ${cx + bw - 4} ${pos.bustY - 8}, ${rsx - 6} ${pos.shoulderY + 4}, ${rsx} ${pos.shoulderY}
-      C ${rsx + 4} ${pos.shoulderY}, ${cx + neckHalf + 3} ${pos.shoulderY + 3}, ${cx + neckHalf} ${pos.neckBaseY}
-      C ${cx + neckHalf} ${pos.neckBaseY - 4}, ${cx - neckHalf} ${pos.neckBaseY - 4}, ${cx - neckHalf} ${pos.neckBaseY}
-      Z
-    `;
-  } else {
-    // Women – defined waist, fuller hips, bust curve
-    bodyPath = `
-      M ${cx - neckHalf} ${pos.neckBaseY}
-      C ${cx - neckHalf - 4} ${pos.shoulderY + 3}, ${lsx - 6} ${pos.shoulderY - 1}, ${lsx} ${pos.shoulderY}
-      C ${lsx + 5} ${pos.shoulderY + 3}, ${cx - bw + 6} ${pos.bustY - 14}, ${cx - bw} ${pos.bustY}
-      C ${cx - bw - 4} ${pos.bustY + 8}, ${cx - ww - 8} ${pos.waistY - 12}, ${cx - ww} ${pos.waistY}
-      C ${cx - ww + 4} ${pos.waistY + 10}, ${cx - hw - 6} ${pos.hipY - 12}, ${cx - hw} ${pos.hipY}
-      L ${cx - hw + 2} ${pos.hemY}
-      C ${cx - hw + 2} ${pos.hemY + 8}, ${cx - 10} ${pos.hemY + 14}, ${cx - 8} ${pos.hemY + 20}
-      L ${cx - 6} ${pos.ankleY}
-      L ${cx + 6} ${pos.ankleY}
-      L ${cx + 8} ${pos.hemY + 20}
-      C ${cx + 10} ${pos.hemY + 14}, ${cx + hw - 2} ${pos.hemY + 8}, ${cx + hw - 2} ${pos.hemY}
-      L ${cx + hw} ${pos.hipY}
-      C ${cx + hw + 6} ${pos.hipY - 12}, ${cx + ww - 4} ${pos.waistY + 10}, ${cx + ww} ${pos.waistY}
-      C ${cx + ww + 8} ${pos.waistY - 12}, ${cx + bw + 4} ${pos.bustY + 8}, ${cx + bw} ${pos.bustY}
-      C ${cx + bw - 6} ${pos.bustY - 14}, ${rsx - 5} ${pos.shoulderY + 3}, ${rsx} ${pos.shoulderY}
-      C ${rsx + 6} ${pos.shoulderY - 1}, ${cx + neckHalf + 4} ${pos.shoulderY + 3}, ${cx + neckHalf} ${pos.neckBaseY}
-      C ${cx + neckHalf} ${pos.neckBaseY - 4}, ${cx - neckHalf} ${pos.neckBaseY - 4}, ${cx - neckHalf} ${pos.neckBaseY}
-      Z
-    `;
-  }
-
-  // ── Arm paths ────────────────────────────────────────────────────────
-  // Each arm is a filled shape for a more realistic look
-
-  // LEFT ARM
-  // Outer edge curves slightly outward at elbow
-  const leftElbowOuter = leftArmOuterX - (isMen ? 4 : isKids ? 2 : 3);
-  const leftElbowInner = leftArmInnerX + 1;
-  const leftWristOuter = lsx - wristHalf - 1;
-  const leftWristInner = lsx + wristHalf - 1;
-
-  const leftArmPath = `
-    M ${leftArmOuterX} ${pos.shoulderY}
-    C ${leftArmOuterX - 2} ${pos.underarmY + 10}, ${leftElbowOuter} ${pos.elbowY - 15}, ${leftElbowOuter} ${pos.elbowY}
-    C ${leftElbowOuter + 1} ${pos.elbowY + 20}, ${leftWristOuter} ${pos.wristY - 10}, ${leftWristOuter} ${pos.wristY}
-    C ${lsx - wristHalf} ${pos.wristY + 8}, ${lsx + wristHalf} ${pos.wristY + 8}, ${leftWristInner} ${pos.wristY}
-    C ${leftWristInner} ${pos.wristY - 10}, ${leftElbowInner} ${pos.elbowY + 20}, ${leftElbowInner} ${pos.elbowY}
-    C ${leftElbowInner} ${pos.elbowY - 10}, ${leftArmInnerX} ${pos.underarmY + 8}, ${leftArmInnerX} ${pos.underarmY}
-    Z
-  `;
-
-  // RIGHT ARM (mirror)
-  const rightElbowOuter = rightArmOuterX + (isMen ? 4 : isKids ? 2 : 3);
-  const rightElbowInner = rightArmInnerX - 1;
-  const rightWristOuter = rsx + wristHalf + 1;
-  const rightWristInner = rsx - wristHalf + 1;
-
-  const rightArmPath = `
-    M ${rightArmOuterX} ${pos.shoulderY}
-    C ${rightArmOuterX + 2} ${pos.underarmY + 10}, ${rightElbowOuter} ${pos.elbowY - 15}, ${rightElbowOuter} ${pos.elbowY}
-    C ${rightElbowOuter - 1} ${pos.elbowY + 20}, ${rightWristOuter} ${pos.wristY - 10}, ${rightWristOuter} ${pos.wristY}
-    C ${rsx + wristHalf} ${pos.wristY + 8}, ${rsx - wristHalf} ${pos.wristY + 8}, ${rightWristInner} ${pos.wristY}
-    C ${rightWristInner} ${pos.wristY - 10}, ${rightElbowInner} ${pos.elbowY + 20}, ${rightElbowInner} ${pos.elbowY}
-    C ${rightElbowInner} ${pos.elbowY - 10}, ${rightArmInnerX} ${pos.underarmY + 8}, ${rightArmInnerX} ${pos.underarmY}
-    Z
-  `;
-
-  // ── Neck path ────────────────────────────────────────────────────────
-  // A gentle trapezoid with rounded top connecting head to shoulders
-  const neckTopHalf = neckHalf - (isKids ? 1 : 2);
-  const neckPath = `
-    M ${cx - neckTopHalf} ${pos.headCenterY + (isKids ? headRy - 4 : headRy - 2)}
-    C ${cx - neckTopHalf} ${pos.neckBaseY - 6}, ${cx - neckHalf} ${pos.neckBaseY - 4}, ${cx - neckHalf} ${pos.neckBaseY}
-    L ${cx + neckHalf} ${pos.neckBaseY}
-    C ${cx + neckHalf} ${pos.neckBaseY - 4}, ${cx + neckTopHalf} ${pos.neckBaseY - 6}, ${cx + neckTopHalf} ${pos.headCenterY + (isKids ? headRy - 4 : headRy - 2)}
-    Z
-  `;
-
-  // Unique gradient IDs per render (category-based)
-  const gradId = `bodyGrad-${category}`;
-  const armGradId = `armGrad-${category}`;
-  const shadowId = `bodyShadow-${category}`;
+  const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
 
   return (
     <svg
-      viewBox={`0 0 ${vbWidth} ${vbHeight}`}
+      viewBox={`0 0 240 ${vbHeight}`}
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       style={{ overflow: "visible" }}
     >
-      <defs>
-        {/* Main body gradient – subtle warm skin tone */}
-        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#e8c9a8" stopOpacity="0.95" />
-          <stop offset="40%" stopColor="#f2d9bc" />
-          <stop offset="100%" stopColor="#e0b896" stopOpacity="0.95" />
-        </linearGradient>
-
-        {/* Arm gradient */}
-        <linearGradient id={armGradId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#e0b896" stopOpacity="0.92" />
-          <stop offset="50%" stopColor="#eed4b2" />
-          <stop offset="100%" stopColor="#d9a882" stopOpacity="0.9" />
-        </linearGradient>
-
-        {/* Soft shadow filter */}
-        <filter id={shadowId} x="-10%" y="-5%" width="120%" height="115%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#00000022" />
-        </filter>
-      </defs>
-
-      {/* ── Arms (behind body) ── */}
-      <path d={leftArmPath} fill={`url(#${armGradId})`} stroke="#c49070" strokeWidth="0.8" strokeLinejoin="round" />
-      <path d={rightArmPath} fill={`url(#${armGradId})`} stroke="#c49070" strokeWidth="0.8" strokeLinejoin="round" />
-
-      {/* Elbow highlight lines */}
-      <path
-        d={`M ${leftElbowOuter + 2} ${pos.elbowY - 4} Q ${(leftElbowOuter + leftElbowInner) / 2} ${pos.elbowY + 4} ${leftElbowInner - 1} ${pos.elbowY - 4}`}
-        fill="none"
-        stroke="#c49070"
-        strokeWidth="0.6"
-        strokeOpacity="0.5"
-      />
-      <path
-        d={`M ${rightElbowInner + 1} ${pos.elbowY - 4} Q ${(rightElbowOuter + rightElbowInner) / 2} ${pos.elbowY + 4} ${rightElbowOuter - 2} ${pos.elbowY - 4}`}
-        fill="none"
-        stroke="#c49070"
-        strokeWidth="0.6"
-        strokeOpacity="0.5"
-      />
-
-      {/* ── Body ── */}
-      <path
-        d={bodyPath}
-        fill={`url(#${gradId})`}
-        stroke="#b8845a"
-        strokeWidth="1"
-        strokeLinejoin="round"
-        filter={`url(#${shadowId})`}
-      />
-
-      {/* Body centerline (subtle) */}
-      <line
-        x1={cx}
-        y1={pos.neckBaseY + 4}
-        x2={cx}
-        y2={pos.hemY - 4}
-        stroke="#c49070"
-        strokeWidth="0.5"
-        strokeOpacity="0.35"
-        strokeDasharray="3,4"
-      />
-
-      {/* Women: bust curve suggestion */}
-      {isWomen && (
-        <>
-          <path
-            d={`M ${cx - bw + 6} ${pos.bustY - 4} Q ${cx - bw / 2} ${pos.bustY + 10} ${cx - 2} ${pos.bustY + 4}`}
-            fill="none"
-            stroke="#c49070"
-            strokeWidth="0.7"
-            strokeOpacity="0.4"
-          />
-          <path
-            d={`M ${cx + 2} ${pos.bustY + 4} Q ${cx + bw / 2} ${pos.bustY + 10} ${cx + bw - 6} ${pos.bustY - 4}`}
-            fill="none"
-            stroke="#c49070"
-            strokeWidth="0.7"
-            strokeOpacity="0.4"
-          />
-        </>
-      )}
-
-      {/* ── Neck ── */}
-      <path d={neckPath} fill={`url(#${gradId})`} stroke="#b8845a" strokeWidth="0.8" strokeLinejoin="round" />
-
-      {/* ── Head ── */}
-      <ellipse
-        cx={cx}
-        cy={pos.headCenterY}
-        rx={headRx}
-        ry={headRy}
-        fill={`url(#${gradId})`}
-        stroke="#b8845a"
-        strokeWidth="0.9"
-        filter={`url(#${shadowId})`}
-      />
-
-      {/* Subtle ear marks */}
-      <ellipse
-        cx={cx - headRx + 1}
-        cy={pos.headCenterY + 3}
-        rx={2.5}
-        ry={4}
-        fill="#e0b896"
-        stroke="#b8845a"
-        strokeWidth="0.6"
-      />
-      <ellipse
-        cx={cx + headRx - 1}
-        cy={pos.headCenterY + 3}
-        rx={2.5}
-        ry={4}
-        fill="#e0b896"
-        stroke="#b8845a"
-        strokeWidth="0.6"
-      />
-
-      {/* ── Leg separation (inner seam) ── */}
-      <path
-        d={`M ${cx} ${pos.hipY + (isKids ? 8 : 12)} L ${cx - (isKids ? 4 : 6)} ${pos.ankleY}`}
-        stroke="#b8845a"
-        strokeWidth="0.7"
-        strokeOpacity="0.5"
-        fill="none"
-      />
-      <path
-        d={`M ${cx} ${pos.hipY + (isKids ? 8 : 12)} L ${cx + (isKids ? 4 : 6)} ${pos.ankleY}`}
-        stroke="#b8845a"
-        strokeWidth="0.7"
-        strokeOpacity="0.5"
-        fill="none"
-      />
-
-      {/* ── Feet ── */}
-      <ellipse
-        cx={cx - (isKids ? 5 : 7)}
-        cy={pos.ankleY + (isKids ? 5 : 6)}
-        rx={isKids ? 6 : 8}
-        ry={isKids ? 3 : 4}
-        fill="#e0b896"
-        stroke="#b8845a"
-        strokeWidth="0.7"
-      />
-      <ellipse
-        cx={cx + (isKids ? 5 : 7)}
-        cy={pos.ankleY + (isKids ? 5 : 6)}
-        rx={isKids ? 6 : 8}
-        ry={isKids ? 3 : 4}
-        fill="#e0b896"
-        stroke="#b8845a"
-        strokeWidth="0.7"
-      />
-
-      {/* ── Measurement overlay ── */}
+      <SharedDefs />
+      {category === "women" && <WomenBody />}
+      {category === "men" && <MenBody />}
+      {category === "kids" && <KidsBody />}
       {renderOverlay?.(pos)}
+    </svg>
+  );
+}
+
+// ─── Vue combinée (les trois silhouettes côte à côte) ────────────────────────
+
+export function AllBodiesDiagram({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 780 345" xmlns="http://www.w3.org/2000/svg" className={className} style={{ overflow: "visible" }}>
+      <SharedDefs />
+
+      {/* Femme — x offset +10 */}
+      <g transform="translate(10, 2)">
+        <WomenBody />
+      </g>
+
+      {/* Homme — x offset +280 */}
+      <g transform="translate(280, 2)">
+        <MenBody />
+      </g>
+
+      {/* Enfant — x offset +540 */}
+      <g transform="translate(540, 0)">
+        <KidsBody />
+      </g>
     </svg>
   );
 }
