@@ -254,8 +254,8 @@ const Index = () => {
           /* Normal Pattern Mode */
           <>
             {/* Top controls */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
-              <div className="flex items-center gap-6">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 lg:gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                 <div>
                   <label className="text-sm font-medium text-muted-foreground mb-2 block">
                     {t('label.category')}
@@ -270,7 +270,7 @@ const Index = () => {
                 </div>
               </div>
 
-              <div>
+              <div className="w-full lg:w-auto overflow-x-auto">
                 <label className="text-sm font-medium text-muted-foreground mb-2 block">
                   {t('label.garmentType')}
                 </label>
