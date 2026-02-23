@@ -280,8 +280,8 @@ const Index = () => {
 
             {/* Main content */}
             <div className="grid lg:grid-cols-[360px_1fr] gap-8">
-              {/* Left panel - Measurements */}
-              <div className="space-y-6">
+              {/* Left panel - Measurements (order-2 on mobile so pattern shows first) */}
+              <div className="space-y-6 order-2 lg:order-1">
                 {/* Profile Manager - Basic/Pro only - Now at top */}
                 {user && (subscription.tier === 'basic' || subscription.tier === 'pro') && (
                   <div id="profile-manager">
@@ -413,8 +413,8 @@ const Index = () => {
                 )}
               </div>
 
-              {/* Right panel - Pattern preview */}
-              <div className="bg-card rounded-xl border border-border overflow-hidden relative">
+              {/* Right panel - Pattern preview (order-1 on mobile so it shows first) */}
+              <div className="bg-card rounded-xl border border-border overflow-hidden relative order-1 lg:order-2">
                 {isPatternLocked && (
                   <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex items-center justify-center">
                     <div className="text-center p-6">
