@@ -222,6 +222,60 @@ const translations: Record<string, Record<Language, string>> = {
   'misc.signInPrompt': { en: 'Sign in to save your measurements and access all pattern types.', fr: 'Connectez-vous pour sauvegarder vos mesures et accéder à tous les types de patrons.' },
   'misc.upgradePrompt': { en: 'Upgrade to access dress, pants, and sleeve patterns.', fr: 'Passez à un abonnement supérieur pour accéder aux patrons de robe, pantalon et manche.' },
   'misc.language': { en: 'Language', fr: 'Langue' },
+
+  // Welcome page
+  'welcome.badge': { en: 'Pattern drafting made personal', fr: 'Le patronage sur mesure' },
+  'welcome.heroTitle1': { en: 'Sewing patterns built', fr: 'Des patrons de couture' },
+  'welcome.heroTitle2': { en: 'to your body', fr: 'à vos mesures' },
+  'welcome.heroDesc': { en: 'Enter your measurements, choose your pattern type, and download a custom-fit sloper in seconds. No more grading between sizes.', fr: 'Entrez vos mesures, choisissez votre type de patron, et téléchargez un patron ajusté en quelques secondes. Fini les gradations entre les tailles.' },
+  'welcome.startDrafting': { en: 'Start Drafting', fr: 'Commencer' },
+  'welcome.viewPlans': { en: 'View Plans', fr: 'Voir les offres' },
+  'welcome.openApp': { en: 'Open App', fr: 'Ouvrir l\'app' },
+  'welcome.featuresTitle': { en: 'Everything you need to draft', fr: 'Tout pour créer vos patrons' },
+  'welcome.featuresDesc': { en: 'Professional-grade pattern tools, accessible to everyone.', fr: 'Des outils de patronage professionnels, accessibles à tous.' },
+  'welcome.feat.measurements': { en: 'Custom Measurements', fr: 'Mesures personnalisées' },
+  'welcome.feat.measurementsDesc': { en: 'Enter your exact body measurements and get pattern blocks tailored precisely to your shape.', fr: 'Entrez vos mesures corporelles exactes et obtenez des patrons de base parfaitement adaptés à votre morphologie.' },
+  'welcome.feat.patterns': { en: 'Multiple Pattern Types', fr: 'Plusieurs types de patrons' },
+  'welcome.feat.patternsDesc': { en: 'Skirts, bodices (dartless, with darts, knit), pants, and sleeves — all from one tool.', fr: 'Jupes, corsages (sans pinces, avec pinces, maille), pantalons et manches — tout dans un seul outil.' },
+  'welcome.feat.categories': { en: 'Women, Men & Kids', fr: 'Femmes, Hommes & Enfants' },
+  'welcome.feat.categoriesDesc': { en: 'Category-specific drafting logic ensures accurate results for every body type.', fr: 'Une logique de patronage par catégorie garantit des résultats précis pour chaque morphologie.' },
+  'welcome.feat.pdf': { en: 'PDF Export', fr: 'Export PDF' },
+  'welcome.feat.pdfDesc': { en: 'Download print-ready pattern PDFs instantly. No waiting, no shipping.', fr: 'Téléchargez des PDF de patrons prêts à imprimer instantanément. Pas d\'attente, pas de livraison.' },
+  'welcome.pricingTitle': { en: 'Simple, transparent pricing', fr: 'Des tarifs simples et transparents' },
+  'welcome.pricingDesc': { en: 'Start free with the skirt block. Upgrade when you need more.', fr: 'Commencez gratuitement avec le patron de jupe. Passez à un abonnement supérieur quand vous en avez besoin.' },
+  'welcome.plan.free': { en: 'Free', fr: 'Gratuit' },
+  'welcome.plan.basic': { en: 'Basic', fr: 'Essentiel' },
+  'welcome.plan.pro': { en: 'Pro', fr: 'Pro' },
+  'welcome.plan.getStarted': { en: 'Get Started', fr: 'Commencer' },
+  'welcome.plan.startBasic': { en: 'Start Basic', fr: 'Choisir Essentiel' },
+  'welcome.plan.goPro': { en: 'Go Pro', fr: 'Passer Pro' },
+  'welcome.plan.mostPopular': { en: 'Most popular', fr: 'Le plus populaire' },
+  'welcome.plan.feat.skirt': { en: 'Skirt pattern block', fr: 'Patron de jupe' },
+  'welcome.plan.feat.allCategories': { en: 'All categories', fr: 'Toutes les catégories' },
+  'welcome.plan.feat.pdfExport': { en: 'PDF export', fr: 'Export PDF' },
+  'welcome.plan.feat.livePreview': { en: 'Live preview', fr: 'Aperçu en direct' },
+  'welcome.plan.feat.allPatterns': { en: 'All pattern types', fr: 'Tous les types de patrons' },
+  'welcome.plan.feat.saveProfiles': { en: 'Save measurement profiles', fr: 'Sauvegarder vos profils' },
+  'welcome.plan.feat.tenPatterns': { en: '10 patterns/month', fr: '10 patrons/mois' },
+  'welcome.plan.feat.prioritySupport': { en: 'Priority support', fr: 'Support prioritaire' },
+  'welcome.plan.feat.unlimited': { en: 'Unlimited patterns', fr: 'Patrons illimités' },
+  'welcome.plan.feat.unlimitedProfiles': { en: 'Unlimited profiles', fr: 'Profils illimités' },
+  'welcome.plan.feat.allFuture': { en: 'All future pattern types', fr: 'Tous les futurs patrons' },
+  'welcome.plan.feat.earlyAccess': { en: 'Early access to new features', fr: 'Accès anticipé aux nouveautés' },
+  'welcome.testimonialsTitle': { en: 'Loved by makers', fr: 'Adopté par les créateurs' },
+  'welcome.testimonial1': { en: 'Finally, a pattern tool that understands real bodies. The fit is incredible compared to standard size charts.', fr: 'Enfin, un outil de patronage qui comprend les vrais corps. L\'ajustement est incroyable comparé aux tableaux de tailles standard.' },
+  'welcome.testimonial1Author': { en: 'Marie L.', fr: 'Marie L.' },
+  'welcome.testimonial1Role': { en: 'Home Sewist', fr: 'Couturière amateur' },
+  'welcome.testimonial2': { en: 'I use Sloper Studio for all my client fittings. The PDF export saves me hours of manual drafting.', fr: 'J\'utilise Sloper Studio pour tous mes essayages clients. L\'export PDF me fait gagner des heures de patronage manuel.' },
+  'welcome.testimonial2Author': { en: 'James K.', fr: 'Jacques K.' },
+  'welcome.testimonial2Role': { en: 'Tailor', fr: 'Tailleur' },
+  'welcome.testimonial3': { en: 'The kids category is a game-changer. My children\'s clothes actually fit now!', fr: 'La catégorie enfants est une révolution. Les vêtements de mes enfants leur vont enfin !' },
+  'welcome.testimonial3Author': { en: 'Sofia R.', fr: 'Sofia R.' },
+  'welcome.testimonial3Role': { en: 'Parent & Maker', fr: 'Parent & créatrice' },
+  'welcome.ctaTitle': { en: 'Ready to create your perfect fit?', fr: 'Prêt à créer votre patron parfait ?' },
+  'welcome.ctaDesc': { en: 'Join thousands of sewists drafting custom patterns with Sloper Studio.', fr: 'Rejoignez des milliers de couturiers qui créent des patrons sur mesure avec Sloper Studio.' },
+  'welcome.ctaButton': { en: 'Get Started Free', fr: 'Commencer gratuitement' },
+  'welcome.footer': { en: 'Sloper Studio — Create custom-fit sewing patterns', fr: 'Sloper Studio — Créez des patrons de couture sur mesure' },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -229,7 +283,9 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('language');
-    return (saved === 'en' || saved === 'fr') ? saved : 'en';
+    if (saved === 'en' || saved === 'fr') return saved;
+    const nav = navigator.language?.toLowerCase() ?? '';
+    return nav.startsWith('fr') ? 'fr' : 'en';
   });
 
   const handleSetLanguage = (lang: Language) => {
