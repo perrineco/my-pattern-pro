@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
 import { Category } from "@/types/sloper";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { SharedBodyDiagram, BodyPositions } from "@/components/guides/SharedBodyDiagram";
 
 interface SleeveMeasurementGuideProps {
   category: Category;
@@ -10,7 +11,7 @@ interface SleeveMeasurementGuideProps {
 
 export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps) {
   const { t } = useLanguage();
-  
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -26,40 +27,18 @@ export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps
 
         <div className="grid md:grid-cols-2 gap-6 mt-4">
           <div className="flex justify-center">
-            <ArmDiagram category={category} t={t} />
+            <SharedBodyDiagram
+              category={category}
+              renderOverlay={(pos) => <SleeveOverlay pos={pos} t={t} />}
+            />
           </div>
 
           <div className="space-y-4">
-            <MeasurementInstruction
-              number={1}
-              name={t('guide.upperArm')}
-              color="hsl(var(--primary))"
-              description={t('guide.desc.upperArm')}
-            />
-            <MeasurementInstruction
-              number={2}
-              name={t('guide.wrist')}
-              color="hsl(var(--destructive))"
-              description={t('guide.desc.wrist')}
-            />
-            <MeasurementInstruction
-              number={3}
-              name={t('guide.sleeveLength')}
-              color="hsl(var(--chart-3))"
-              description={t('guide.desc.sleeveLength')}
-            />
-            <MeasurementInstruction
-              number={4}
-              name={t('guide.elbowLength')}
-              color="hsl(var(--chart-4))"
-              description={t('guide.desc.elbowLength')}
-            />
-            <MeasurementInstruction
-              number={5}
-              name={t('guide.armholeDepth')}
-              color="hsl(var(--chart-5))"
-              description={t('guide.desc.armholeDepth')}
-            />
+            <MeasurementInstruction number={1} name={t('guide.upperArm')} color="hsl(var(--primary))" description={t('guide.desc.upperArm')} />
+            <MeasurementInstruction number={2} name={t('guide.wrist')} color="hsl(var(--destructive))" description={t('guide.desc.wrist')} />
+            <MeasurementInstruction number={3} name={t('guide.sleeveLength')} color="hsl(var(--chart-3))" description={t('guide.desc.sleeveLength')} />
+            <MeasurementInstruction number={4} name={t('guide.elbowLength')} color="hsl(var(--chart-4))" description={t('guide.desc.elbowLength')} />
+            <MeasurementInstruction number={5} name={t('guide.armholeDepth')} color="hsl(var(--chart-5))" description={t('guide.desc.armholeDepth')} />
           </div>
         </div>
 
@@ -78,6 +57,69 @@ export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps
   );
 }
 
+function SleeveOverlay({ pos, t }: { pos: BodyPositions; t: (key: string) => string }) {
+  // We use the RIGHT arm for sleeve measurements
+  const armCx = pos.rightShoulderX + 8; // center of the right arm
+  const armOuterX = pos.rightShoulderX + 8;
+
+  // Key Y positions along the right arm
+  const shoulderPtY = pos.shoulderY;
+  const bicepY = pos.underarmY + 15;
+  const elbowY = pos.elbowY;
+  const wristArmY = pos.wristY;
+
+  // Offset for dimension lines (to the right of the arm)
+  const dimX = armOuterX + 30;
+  const dimX2 = armOuterX + 45;
+
+  return (
+    <>
+      {/* Shoulder point marker */}
+      <circle cx={pos.rightShoulderX} cy={shoulderPtY} r="4" fill="hsl(var(--foreground))" />
+      <text x={pos.rightShoulderX} y={shoulderPtY - 10} textAnchor="middle" className="fill-muted-foreground text-[8px]">
+        {t('guide.shoulderPoint')}
+      </text>
+
+      {/* Elbow marker */}
+      <circle cx={armCx} cy={elbowY} r="3" fill="hsl(var(--muted-foreground))" />
+      <text x={armCx - 18} y={elbowY + 4} textAnchor="end" className="fill-muted-foreground text-[8px]">
+        {t('guide.elbow')}
+      </text>
+
+      {/* 1. Upper Arm circumference */}
+      <ellipse cx={armCx} cy={bicepY} rx={pos.armWidth / 2 + 8} ry={5} fill="none" stroke="hsl(var(--primary))" strokeWidth="2" strokeDasharray="6,3" />
+      <circle cx={armCx + pos.armWidth / 2 + 15} cy={bicepY} r="10" fill="hsl(var(--primary))" />
+      <text x={armCx + pos.armWidth / 2 + 15} y={bicepY + 4} textAnchor="middle" className="fill-primary-foreground text-xs font-bold">1</text>
+
+      {/* 2. Wrist circumference */}
+      <ellipse cx={pos.rightShoulderX + 5 - pos.wristWidth / 2} cy={wristArmY - 3} rx={pos.wristWidth / 2 + 4} ry={4} fill="none" stroke="hsl(var(--destructive))" strokeWidth="2" strokeDasharray="6,3" />
+      <circle cx={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} cy={wristArmY - 3} r="10" fill="hsl(var(--destructive))" />
+      <text x={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} y={wristArmY + 1} textAnchor="middle" className="fill-destructive-foreground text-xs font-bold">2</text>
+
+      {/* 3. Sleeve Length (shoulder to wrist) - left side of right arm */}
+      <line x1={pos.leftShoulderX - 20} y1={shoulderPtY} x2={pos.leftShoulderX - 20} y2={wristArmY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
+      <line x1={pos.leftShoulderX - 25} y1={shoulderPtY} x2={pos.leftShoulderX - 15} y2={shoulderPtY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
+      <line x1={pos.leftShoulderX - 25} y1={wristArmY} x2={pos.leftShoulderX - 15} y2={wristArmY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
+      <circle cx={pos.leftShoulderX - 20} cy={(shoulderPtY + wristArmY) / 2} r="10" fill="hsl(var(--chart-3))" />
+      <text x={pos.leftShoulderX - 20} y={(shoulderPtY + wristArmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold">3</text>
+
+      {/* 4. Elbow Length (shoulder to elbow) */}
+      <line x1={dimX} y1={shoulderPtY} x2={dimX} y2={elbowY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
+      <line x1={dimX - 5} y1={shoulderPtY} x2={dimX + 5} y2={shoulderPtY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
+      <line x1={dimX - 5} y1={elbowY} x2={dimX + 5} y2={elbowY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
+      <circle cx={dimX} cy={(shoulderPtY + elbowY) / 2} r="10" fill="hsl(var(--chart-4))" />
+      <text x={dimX} y={(shoulderPtY + elbowY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold">4</text>
+
+      {/* 5. Armhole Depth (shoulder to underarm) */}
+      <line x1={dimX2} y1={shoulderPtY} x2={dimX2} y2={pos.underarmY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
+      <line x1={dimX2 - 5} y1={shoulderPtY} x2={dimX2 + 5} y2={shoulderPtY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
+      <line x1={dimX2 - 5} y1={pos.underarmY} x2={dimX2 + 5} y2={pos.underarmY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
+      <circle cx={dimX2} cy={(shoulderPtY + pos.underarmY) / 2} r="10" fill="hsl(var(--chart-5))" />
+      <text x={dimX2} y={(shoulderPtY + pos.underarmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold">5</text>
+    </>
+  );
+}
+
 interface MeasurementInstructionProps {
   number: number;
   name: string;
@@ -88,10 +130,7 @@ interface MeasurementInstructionProps {
 function MeasurementInstruction({ number, name, color, description }: MeasurementInstructionProps) {
   return (
     <div className="flex gap-3">
-      <div
-        className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-        style={{ backgroundColor: color }}
-      >
+      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0" style={{ backgroundColor: color }}>
         {number}
       </div>
       <div>
@@ -99,265 +138,5 @@ function MeasurementInstruction({ number, name, color, description }: Measuremen
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
     </div>
-  );
-}
-
-interface ArmDiagramProps {
-  category: Category;
-  t: (key: string) => string;
-}
-
-function ArmDiagram({ category, t }: ArmDiagramProps) {
-  const isKids = category === "kids";
-  const isMen = category === "men";
-
-  // Adjust proportions based on category
-  const armScale = isKids ? 0.75 : 1;
-  const armWidth = isMen ? 28 : 24;
-  const wristWidth = isMen ? 18 : 15;
-
-  // Key positions (scaled)
-  const shoulderY = 40;
-  const underarmY = shoulderY + 50 * armScale;
-  const elbowY = shoulderY + 140 * armScale;
-  const wristY = shoulderY + 260 * armScale;
-
-  const centerX = 100;
-
-  return (
-    <svg viewBox="0 0 200 340" className="w-full max-w-[180px]">
-      {/* Shoulder area (partial torso) */}
-      <path
-        d={`
-           M ${centerX - 50} ${shoulderY - 20}
-           Q ${centerX - 30} ${shoulderY - 25} ${centerX} ${shoulderY - 20}
-           Q ${centerX + 30} ${shoulderY - 25} ${centerX + 50} ${shoulderY - 20}
-           L ${centerX + 50} ${shoulderY + 10}
-           Q ${centerX + 40} ${shoulderY + 20} ${centerX + armWidth / 2 + 5} ${underarmY}
-         `}
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="2"
-      />
-
-      {/* Left side of torso fade */}
-      <path
-        d={`
-           M ${centerX - 50} ${shoulderY - 20}
-           L ${centerX - 50} ${underarmY + 20}
-         `}
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="2"
-        strokeDasharray="4,4"
-      />
-
-      {/* Arm outline - outer edge (back of arm) */}
-      <path
-        d={`
-           M ${centerX + armWidth / 2 + 5} ${underarmY}
-           Q ${centerX + armWidth / 2 + 8} ${(underarmY + elbowY) / 2} ${centerX + armWidth / 2 + 3} ${elbowY}
-           Q ${centerX + wristWidth / 2 + 5} ${(elbowY + wristY) / 2} ${centerX + wristWidth / 2} ${wristY}
-         `}
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="2"
-      />
-
-      {/* Arm outline - inner edge (front of arm) */}
-      <path
-        d={`
-           M ${centerX - armWidth / 2 - 5} ${underarmY}
-           Q ${centerX - armWidth / 2 - 3} ${(underarmY + elbowY) / 2} ${centerX - armWidth / 2} ${elbowY}
-           Q ${centerX - wristWidth / 2 - 2} ${(elbowY + wristY) / 2} ${centerX - wristWidth / 2} ${wristY}
-         `}
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="2"
-      />
-
-      {/* Connect underarm to torso */}
-      <path
-        d={`
-           M ${centerX - armWidth / 2 - 5} ${underarmY}
-           Q ${centerX - 35} ${underarmY - 10} ${centerX - 50} ${underarmY + 20}
-         `}
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="2"
-      />
-
-      {/* Wrist/hand base */}
-      <ellipse
-        cx={centerX}
-        cy={wristY + 5}
-        rx={wristWidth / 2 + 3}
-        ry={8}
-        fill="none"
-        stroke="hsl(var(--border))"
-        strokeWidth="2"
-      />
-
-      {/* ===== MEASUREMENT LINES ===== */}
-
-      {/* 1. Upper Arm circumference */}
-      <ellipse
-        cx={centerX}
-        cy={underarmY + 15}
-        rx={armWidth / 2 + 8}
-        ry={6}
-        fill="none"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2"
-        strokeDasharray="6,3"
-      />
-      <circle cx={centerX + armWidth / 2 + 15} cy={underarmY + 15} r="10" fill="hsl(var(--primary))" />
-      <text
-        x={centerX + armWidth / 2 + 15}
-        y={underarmY + 19}
-        textAnchor="middle"
-        className="fill-primary-foreground text-xs font-bold"
-      >
-        1
-      </text>
-
-      {/* 2. Wrist circumference */}
-      <ellipse
-        cx={centerX}
-        cy={wristY - 5}
-        rx={wristWidth / 2 + 5}
-        ry={5}
-        fill="none"
-        stroke="hsl(var(--destructive))"
-        strokeWidth="2"
-        strokeDasharray="6,3"
-      />
-      <circle cx={centerX + wristWidth / 2 + 12} cy={wristY - 5} r="10" fill="hsl(var(--destructive))" />
-      <text
-        x={centerX + wristWidth / 2 + 12}
-        y={wristY - 1}
-        textAnchor="middle"
-        className="fill-destructive-foreground text-xs font-bold"
-      >
-        2
-      </text>
-
-      {/* 3. Sleeve Length (shoulder to wrist) */}
-      <line
-        x1={centerX - armWidth / 2 - 25}
-        y1={shoulderY}
-        x2={centerX - armWidth / 2 - 25}
-        y2={wristY}
-        stroke="hsl(var(--chart-3))"
-        strokeWidth="2"
-      />
-      <line
-        x1={centerX - armWidth / 2 - 30}
-        y1={shoulderY}
-        x2={centerX - armWidth / 2 - 20}
-        y2={shoulderY}
-        stroke="hsl(var(--chart-3))"
-        strokeWidth="2"
-      />
-      <line
-        x1={centerX - armWidth / 2 - 30}
-        y1={wristY}
-        x2={centerX - armWidth / 2 - 20}
-        y2={wristY}
-        stroke="hsl(var(--chart-3))"
-        strokeWidth="2"
-      />
-      <circle cx={centerX - armWidth / 2 - 25} cy={(shoulderY + wristY) / 2} r="10" fill="hsl(var(--chart-3))" />
-      <text
-        x={centerX - armWidth / 2 - 25}
-        y={(shoulderY + wristY) / 2 + 4}
-        textAnchor="middle"
-        className="fill-white text-xs font-bold"
-      >
-        3
-      </text>
-
-      {/* 4. Elbow Length (shoulder to elbow) */}
-      <line
-        x1={centerX + armWidth / 2 + 30}
-        y1={shoulderY}
-        x2={centerX + armWidth / 2 + 30}
-        y2={elbowY}
-        stroke="hsl(var(--chart-4))"
-        strokeWidth="2"
-      />
-      <line
-        x1={centerX + armWidth / 2 + 25}
-        y1={shoulderY}
-        x2={centerX + armWidth / 2 + 35}
-        y2={shoulderY}
-        stroke="hsl(var(--chart-4))"
-        strokeWidth="2"
-      />
-      <line
-        x1={centerX + armWidth / 2 + 25}
-        y1={elbowY}
-        x2={centerX + armWidth / 2 + 35}
-        y2={elbowY}
-        stroke="hsl(var(--chart-4))"
-        strokeWidth="2"
-      />
-      <circle cx={centerX + armWidth / 2 + 30} cy={(shoulderY + elbowY) / 2} r="10" fill="hsl(var(--chart-4))" />
-      <text
-        x={centerX + armWidth / 2 + 30}
-        y={(shoulderY + elbowY) / 2 + 4}
-        textAnchor="middle"
-        className="fill-white text-xs font-bold"
-      >
-        4
-      </text>
-
-      {/* 5. Armhole Depth (shoulder to underarm) */}
-      <line
-        x1={centerX + armWidth / 2 + 50}
-        y1={shoulderY}
-        x2={centerX + armWidth / 2 + 50}
-        y2={underarmY}
-        stroke="hsl(var(--chart-5))"
-        strokeWidth="2"
-      />
-      <line
-        x1={centerX + armWidth / 2 + 45}
-        y1={shoulderY}
-        x2={centerX + armWidth / 2 + 55}
-        y2={shoulderY}
-        stroke="hsl(var(--chart-5))"
-        strokeWidth="2"
-      />
-      <line
-        x1={centerX + armWidth / 2 + 45}
-        y1={underarmY}
-        x2={centerX + armWidth / 2 + 55}
-        y2={underarmY}
-        stroke="hsl(var(--chart-5))"
-        strokeWidth="2"
-      />
-      <circle cx={centerX + armWidth / 2 + 50} cy={(shoulderY + underarmY) / 2} r="10" fill="hsl(var(--chart-5))" />
-      <text
-        x={centerX + armWidth / 2 + 50}
-        y={(shoulderY + underarmY) / 2 + 4}
-        textAnchor="middle"
-        className="fill-white text-xs font-bold"
-      >
-        5
-      </text>
-
-      {/* Shoulder point marker */}
-      <circle cx={centerX} cy={shoulderY} r="4" fill="hsl(var(--foreground))" />
-      <text x={centerX} y={shoulderY - 12} textAnchor="middle" className="fill-muted-foreground text-[9px]">
-        {t('guide.shoulderPoint')}
-      </text>
-
-      {/* Elbow marker */}
-      <circle cx={centerX} cy={elbowY} r="3" fill="hsl(var(--muted-foreground))" />
-      <text x={centerX - 25} y={elbowY + 4} textAnchor="end" className="fill-muted-foreground text-[9px]">
-        {t('guide.elbow')}
-      </text>
-    </svg>
   );
 }
