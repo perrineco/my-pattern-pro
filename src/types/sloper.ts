@@ -49,11 +49,24 @@ export interface UnifiedMeasurements {
   waistToHip: number;
   skirtLength: number;
   // Bodice measurements
-  bust: number;              // Tour de poitrine
-  neckCircumference: number; // Tour de cou
-  shoulderLength: number;    // Longueur d'épaule
-  backWidth: number;         // Carrure dos
-  backLength: number;        // Longueur taille-dos
+  bust: number;
+  neckCircumference: number;
+  shoulderLength: number;
+  backWidth: number;
+  backLength: number;
+  // Pants measurements
+  thigh: number;
+  knee: number;
+  ankle: number;
+  crotchDepth: number;
+  outseamLength: number;
+  inseamLength: number;
+  // Sleeve measurements
+  upperArm: number;
+  wrist: number;
+  sleeveLength: number;
+  elbowLength: number;
+  armholeDepth: number;
 }
 
 export interface PatternDimensions {
@@ -100,5 +113,28 @@ export function toBodiceMeasurements(u: UnifiedMeasurements): BodiceMeasurements
     shoulderLength: u.shoulderLength,
     backWidth: u.backWidth,
     backLength: u.backLength,
+  };
+}
+
+export function toPantsMeasurements(u: UnifiedMeasurements): PantsMeasurements {
+  return {
+    waist: u.waist,
+    hip: u.hip,
+    thigh: u.thigh,
+    knee: u.knee,
+    ankle: u.ankle,
+    crotchDepth: u.crotchDepth,
+    outseamLength: u.outseamLength,
+    inseamLength: u.inseamLength,
+  };
+}
+
+export function toSleeveMeasurements(u: UnifiedMeasurements): SleeveMeasurements {
+  return {
+    upperArm: u.upperArm,
+    wrist: u.wrist,
+    sleeveLength: u.sleeveLength,
+    elbowLength: u.elbowLength,
+    armholeDepth: u.armholeDepth,
   };
 }
