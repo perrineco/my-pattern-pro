@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { STRIPE_CONFIG, getPatternsLimit } from '@/lib/stripe-config';
-import { Scissors, Check, Crown, Sparkles, ShoppingCart } from 'lucide-react';
+import { Header } from '@/components/Header';
+import { Check, Crown, Sparkles, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -12,11 +14,12 @@ import { cn } from '@/lib/utils';
 export default function Pricing() {
   const { user, session, subscription } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleSubscribe = async (priceId: string, tierName: string) => {
     if (!user) {
-      toast.error('Please sign in to subscribe');
+      toast.error(t('action.signIn'));
       navigate('/auth');
       return;
     }
@@ -67,35 +70,15 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <button onClick={() => navigate('/')} className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <Scissors className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="font-serif text-xl font-semibold text-foreground tracking-tight">
-                  Sloper Studio
-                </h1>
-              </div>
-            </button>
-            <Button variant="outline" onClick={() => navigate('/')}>
-              Back to App
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <main className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="font-serif text-4xl font-bold text-foreground mb-4">
-            Choose Your Plan
+            {t('pricing.title')}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Create professional sewing patterns with our sloper generator. Choose a subscription
-            or purchase individual patterns.
+            {t('pricing.subtitle')}
           </p>
         </div>
 
@@ -103,10 +86,10 @@ export default function Pricing() {
         {subscription.tier !== 'none' && (
           <div className="mb-8 p-4 bg-primary/10 border border-primary/20 rounded-lg text-center">
             <p className="text-sm font-medium text-foreground">
-              You're currently on the <span className="text-primary capitalize">{subscription.tier}</span> plan
+              {t('pricing.youreOn')} <span className="text-primary capitalize">{subscription.tier}</span> {t('pricing.plan')}
               {subscription.tier === 'basic' && (
                 <span className="text-muted-foreground">
-                  {' '}• {subscription.patternsUsedThisMonth}/{patternsLimit} patterns used this month
+                  {' '}• {subscription.patternsUsedThisMonth}/{patternsLimit} {t('pricing.patternsUsed')}
                 </span>
               )}
             </p>
@@ -116,7 +99,7 @@ export default function Pricing() {
               disabled={loading === 'manage'}
               className="mt-1"
             >
-              Manage Subscription
+              {t('pricing.manageSubscription')}
             </Button>
           </div>
         )}
@@ -129,29 +112,29 @@ export default function Pricing() {
               <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center mb-4">
                 <ShoppingCart className="w-6 h-6 text-secondary-foreground" />
               </div>
-              <h3 className="font-serif text-xl font-semibold mb-1">Single Pattern</h3>
-              <p className="text-sm text-muted-foreground">One-time purchase</p>
+              <h3 className="font-serif text-xl font-semibold mb-1">{t('pricing.single.title')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.single.desc')}</p>
             </div>
             <div className="mb-6">
               <span className="text-4xl font-bold">${STRIPE_CONFIG.singlePurchase.price}</span>
-              <span className="text-muted-foreground">/pattern</span>
+              <span className="text-muted-foreground">{t('pricing.perPattern')}</span>
             </div>
             <ul className="space-y-3 mb-6">
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>Access to one pattern type</span>
+                <span>{t('pricing.single.f1')}</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>Lifetime access</span>
+                <span>{t('pricing.single.f2')}</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>PDF export included</span>
+                <span>{t('pricing.single.f3')}</span>
               </li>
             </ul>
             <p className="text-xs text-muted-foreground text-center">
-              Purchase individual patterns from the app
+              {t('pricing.single.note')}
             </p>
           </Card>
 
@@ -159,36 +142,36 @@ export default function Pricing() {
           <Card className={cn("p-6 relative", isBasic && "ring-2 ring-primary")}>
             {isBasic && (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
-                Current Plan
+                {t('pricing.currentPlan')}
               </div>
             )}
             <div className="mb-6">
               <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                 <Sparkles className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-serif text-xl font-semibold mb-1">Basic</h3>
-              <p className="text-sm text-muted-foreground">For hobbyists</p>
+              <h3 className="font-serif text-xl font-semibold mb-1">{t('pricing.basic.title')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.basic.desc')}</p>
             </div>
             <div className="mb-6">
               <span className="text-4xl font-bold">${STRIPE_CONFIG.subscriptions.basic.price}</span>
-              <span className="text-muted-foreground">/month</span>
+              <span className="text-muted-foreground">{t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-3 mb-6">
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>5 patterns per month</span>
+                <span>{t('pricing.basic.f1')}</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>All pattern types</span>
+                <span>{t('pricing.basic.f2')}</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>Save measurements</span>
+                <span>{t('pricing.basic.f3')}</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>PDF export</span>
+                <span>{t('pricing.basic.f4')}</span>
               </li>
             </ul>
             <Button
@@ -197,7 +180,7 @@ export default function Pricing() {
               disabled={isBasic || loading === 'basic'}
               onClick={() => handleSubscribe(STRIPE_CONFIG.subscriptions.basic.priceId, 'basic')}
             >
-              {isBasic ? 'Current Plan' : loading === 'basic' ? 'Loading...' : 'Subscribe'}
+              {isBasic ? t('pricing.currentPlan') : loading === 'basic' ? t('pricing.loading') : t('pricing.subscribe')}
             </Button>
           </Card>
 
@@ -205,40 +188,40 @@ export default function Pricing() {
           <Card className={cn("p-6 relative border-primary", isPro && "ring-2 ring-primary")}>
             {isPro ? (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
-                Current Plan
+                {t('pricing.currentPlan')}
               </div>
             ) : (
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
-                Most Popular
+                {t('pricing.mostPopular')}
               </div>
             )}
             <div className="mb-6">
               <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mb-4">
                 <Crown className="w-6 h-6 text-primary-foreground" />
               </div>
-              <h3 className="font-serif text-xl font-semibold mb-1">Pro</h3>
-              <p className="text-sm text-muted-foreground">For professionals</p>
+              <h3 className="font-serif text-xl font-semibold mb-1">{t('pricing.pro.title')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.pro.desc')}</p>
             </div>
             <div className="mb-6">
               <span className="text-4xl font-bold">${STRIPE_CONFIG.subscriptions.pro.price}</span>
-              <span className="text-muted-foreground">/month</span>
+              <span className="text-muted-foreground">{t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-3 mb-6">
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span className="font-medium">Unlimited patterns</span>
+                <span className="font-medium">{t('pricing.pro.f1')}</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>All pattern types</span>
+                <span>{t('pricing.pro.f2')}</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>Save unlimited measurements</span>
+                <span>{t('pricing.pro.f3')}</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Check className="w-4 h-4 text-primary" />
-                <span>Priority support</span>
+                <span>{t('pricing.pro.f4')}</span>
               </li>
             </ul>
             <Button
@@ -247,7 +230,7 @@ export default function Pricing() {
               disabled={isPro || loading === 'pro'}
               onClick={() => handleSubscribe(STRIPE_CONFIG.subscriptions.pro.priceId, 'pro')}
             >
-              {isPro ? 'Current Plan' : loading === 'pro' ? 'Loading...' : 'Subscribe'}
+              {isPro ? t('pricing.currentPlan') : loading === 'pro' ? t('pricing.loading') : t('pricing.subscribe')}
             </Button>
           </Card>
         </div>
@@ -255,28 +238,20 @@ export default function Pricing() {
         {/* FAQ */}
         <div className="mt-16 max-w-2xl mx-auto">
           <h2 className="font-serif text-2xl font-semibold text-center mb-8">
-            Frequently Asked Questions
+            {t('pricing.faq.title')}
           </h2>
           <div className="space-y-6">
             <div>
-              <h3 className="font-medium mb-2">What patterns are included?</h3>
-              <p className="text-sm text-muted-foreground">
-                Currently we offer skirt slopers, with bodice, dress, pants, and sleeve patterns
-                coming soon. All subscribers get access to new patterns as they're released.
-              </p>
+              <h3 className="font-medium mb-2">{t('pricing.faq.q1')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.faq.a1')}</p>
             </div>
             <div>
-              <h3 className="font-medium mb-2">Can I cancel anytime?</h3>
-              <p className="text-sm text-muted-foreground">
-                Yes! You can cancel your subscription at any time. You'll continue to have
-                access until the end of your billing period.
-              </p>
+              <h3 className="font-medium mb-2">{t('pricing.faq.q2')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.faq.a2')}</p>
             </div>
             <div>
-              <h3 className="font-medium mb-2">Do single purchases expire?</h3>
-              <p className="text-sm text-muted-foreground">
-                No, single pattern purchases give you lifetime access to that pattern type.
-              </p>
+              <h3 className="font-medium mb-2">{t('pricing.faq.q3')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.faq.a3')}</p>
             </div>
           </div>
         </div>

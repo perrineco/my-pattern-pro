@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Scissors, User, LogOut, CreditCard, Crown, MessageSquare, Wrench, Globe } from 'lucide-react';
+import { Scissors, User, LogOut, CreditCard, MessageSquare, Wrench, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Header() {
@@ -56,19 +56,6 @@ export function Header() {
               <>
                 {user ? (
                   <>
-                    {subscription.tier !== 'none' && (
-                      <div
-                        className={cn(
-                          "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium",
-                          subscription.tier === 'pro'
-                            ? "bg-primary/10 text-primary"
-                            : "bg-secondary text-secondary-foreground"
-                        )}
-                      >
-                        <Crown className="w-3.5 h-3.5" />
-                        <span className="capitalize">{subscription.tier}</span>
-                      </div>
-                    )}
 
                     <Button variant="outline" size="sm" onClick={() => navigate('/adjustments')}>
                       <Wrench className="w-4 h-4 mr-2" />
