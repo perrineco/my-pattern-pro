@@ -62,10 +62,6 @@ export function Header() {
                       {t('action.adjustments')}
                     </Button>
 
-                    <Button variant="outline" size="sm" onClick={() => navigate('/pricing')}>
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      {t('action.plans')}
-                    </Button>
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -113,9 +109,6 @@ export function Header() {
                   </>
                 ) : (
                   <>
-                    <Button variant="ghost" size="sm" onClick={() => navigate('/pricing')}>
-                      {t('action.pricing')}
-                    </Button>
                      <Button variant="ghost" size="sm" onClick={() => navigate('/contact')}>
                        {t('action.contact')}
                      </Button>
