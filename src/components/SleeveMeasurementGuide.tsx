@@ -66,7 +66,8 @@ export function SleeveMeasurementGuide({ category }: SleeveMeasurementGuideProps
 
 function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyPositions; t: (key: string) => string; highlightedNumber: number | null; onNumberClick: (n: number) => void }) {
   const highlightColor = "#f97316";
-  const getCircleFill = (n: number, defaultColor: string) => highlightedNumber === n ? highlightColor : defaultColor;
+  const defaultColor = "hsl(var(--foreground))";
+  const getCircleFill = (n: number) => highlightedNumber === n ? highlightColor : defaultColor;
 
   const armCx = pos.rightShoulderX + 8;
   const shoulderPtY = pos.shoulderY;
@@ -93,14 +94,14 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       {/* 1. Upper Arm circumference */}
       <ellipse cx={armCx} cy={bicepY} rx={pos.armWidth / 2 + 8} ry={5} fill="none" stroke="hsl(var(--primary))" strokeWidth="2" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
-        <circle cx={armCx + pos.armWidth / 2 + 15} cy={bicepY} r="10" fill={getCircleFill(1, "hsl(var(--primary))")} />
+        <circle cx={armCx + pos.armWidth / 2 + 15} cy={bicepY} r="10" fill={getCircleFill(1)} />
         <text x={armCx + pos.armWidth / 2 + 15} y={bicepY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2. Wrist circumference */}
       <ellipse cx={pos.rightShoulderX + 5 - pos.wristWidth / 2} cy={wristArmY - 3} rx={pos.wristWidth / 2 + 4} ry={4} fill="none" stroke="hsl(var(--destructive))" strokeWidth="2" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
-        <circle cx={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} cy={wristArmY - 3} r="10" fill={getCircleFill(2, "hsl(var(--destructive))")} />
+        <circle cx={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} cy={wristArmY - 3} r="10" fill={getCircleFill(2)} />
         <text x={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} y={wristArmY + 1} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">2</text>
       </g>
 
@@ -109,7 +110,7 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       <line x1={pos.leftShoulderX - 25} y1={shoulderPtY} x2={pos.leftShoulderX - 15} y2={shoulderPtY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
       <line x1={pos.leftShoulderX - 25} y1={wristArmY} x2={pos.leftShoulderX - 15} y2={wristArmY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
-        <circle cx={pos.leftShoulderX - 20} cy={(shoulderPtY + wristArmY) / 2} r="10" fill={getCircleFill(3, "hsl(var(--chart-3))")} />
+        <circle cx={pos.leftShoulderX - 20} cy={(shoulderPtY + wristArmY) / 2} r="10" fill={getCircleFill(3)} />
         <text x={pos.leftShoulderX - 20} y={(shoulderPtY + wristArmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">3</text>
       </g>
 
@@ -118,7 +119,7 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       <line x1={dimX - 5} y1={shoulderPtY} x2={dimX + 5} y2={shoulderPtY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
       <line x1={dimX - 5} y1={elbowY} x2={dimX + 5} y2={elbowY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
-        <circle cx={dimX} cy={(shoulderPtY + elbowY) / 2} r="10" fill={getCircleFill(4, "hsl(var(--chart-4))")} />
+        <circle cx={dimX} cy={(shoulderPtY + elbowY) / 2} r="10" fill={getCircleFill(4)} />
         <text x={dimX} y={(shoulderPtY + elbowY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">4</text>
       </g>
 
@@ -127,7 +128,7 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       <line x1={dimX2 - 5} y1={shoulderPtY} x2={dimX2 + 5} y2={shoulderPtY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
       <line x1={dimX2 - 5} y1={pos.underarmY} x2={dimX2 + 5} y2={pos.underarmY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
       <g onClick={() => onNumberClick(5)} className="cursor-pointer">
-        <circle cx={dimX2} cy={(shoulderPtY + pos.underarmY) / 2} r="10" fill={getCircleFill(5, "hsl(var(--chart-5))")} />
+        <circle cx={dimX2} cy={(shoulderPtY + pos.underarmY) / 2} r="10" fill={getCircleFill(5)} />
         <text x={dimX2} y={(shoulderPtY + pos.underarmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">5</text>
       </g>
     </>
@@ -142,11 +143,11 @@ interface MeasurementInstructionProps {
   highlighted?: boolean;
 }
 
-function MeasurementInstruction({ number, name, color, description, highlighted }: MeasurementInstructionProps) {
+function MeasurementInstruction({ number, name, description, highlighted }: MeasurementInstructionProps) {
   const highlightColor = "#f97316";
   return (
     <div className={`flex gap-3 rounded-lg p-2 transition-colors ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : ''}`}>
-      <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: highlighted ? highlightColor : color }}>
+      <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground bg-foreground" style={highlighted ? { backgroundColor: highlightColor } : undefined}>
         {number}
       </div>
       <div>

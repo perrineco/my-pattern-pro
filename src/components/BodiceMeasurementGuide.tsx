@@ -71,7 +71,8 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
 function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: BodyPositions; highlightedNumber: number | null; onNumberClick: (n: number) => void; t: (key: string) => string }) {
   const cx = pos.centerX;
   const highlightColor = "#f97316";
-  const getCircleFill = (n: number, defaultColor: string) => highlightedNumber === n ? highlightColor : defaultColor;
+  const defaultColor = "hsl(var(--foreground))";
+  const getCircleFill = (n: number) => highlightedNumber === n ? highlightColor : defaultColor;
 
   return (
     <>
@@ -81,14 +82,14 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       {/* 1: Bust line */}
       <line x1={cx - pos.bustWidth / 2 - 10} y1={pos.bustY} x2={cx + pos.bustWidth / 2 + 10} y2={pos.bustY} stroke="hsl(var(--primary))" strokeWidth="2.5" strokeDasharray="4,2" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
-        <circle cx={cx - pos.bustWidth / 2 - 18} cy={pos.bustY} r="10" fill={getCircleFill(1, "hsl(var(--primary))")} />
+        <circle cx={cx - pos.bustWidth / 2 - 18} cy={pos.bustY} r="10" fill={getCircleFill(1)} />
         <text x={cx - pos.bustWidth / 2 - 18} y={pos.bustY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2: Neckline circumference */}
       <ellipse cx={cx} cy={pos.neckBaseY} rx={12} ry={6} fill="none" stroke="hsl(var(--chart-2))" strokeWidth="2.5" strokeDasharray="3,2" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
-        <circle cx={cx + 20} cy={pos.neckBaseY} r="10" fill={getCircleFill(2, "hsl(var(--chart-2))")} />
+        <circle cx={cx + 20} cy={pos.neckBaseY} r="10" fill={getCircleFill(2)} />
         <text x={cx + 20} y={pos.neckBaseY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">2</text>
       </g>
 
@@ -97,7 +98,7 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       <circle cx={pos.leftShoulderX} cy={pos.shoulderY} r="4" fill="hsl(var(--chart-3))" />
       <circle cx={cx - 8} cy={pos.neckBaseY} r="4" fill="hsl(var(--chart-3))" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
-        <circle cx={(cx - 8 + pos.leftShoulderX) / 2} cy={(pos.neckBaseY + pos.shoulderY) / 2} r="10" fill={getCircleFill(3, "hsl(var(--chart-3))")} />
+        <circle cx={(cx - 8 + pos.leftShoulderX) / 2} cy={(pos.neckBaseY + pos.shoulderY) / 2} r="10" fill={getCircleFill(3)} />
         <text x={(cx - 8 + pos.leftShoulderX) / 2} y={(pos.neckBaseY + pos.shoulderY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">3</text>
       </g>
 
@@ -106,7 +107,7 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY - 5} x2={cx - pos.bustWidth / 2 + 8} y2={pos.backWidthY + 5} stroke="hsl(var(--chart-4))" strokeWidth="2" />
       <line x1={cx + pos.bustWidth / 2 - 8} y1={pos.backWidthY - 5} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY + 5} stroke="hsl(var(--chart-4))" strokeWidth="2" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
-        <circle cx={cx} cy={pos.backWidthY - 12} r="10" fill={getCircleFill(4, "hsl(var(--chart-4))")} />
+        <circle cx={cx} cy={pos.backWidthY - 12} r="10" fill={getCircleFill(4)} />
         <text x={cx} y={pos.backWidthY - 8} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">4</text>
       </g>
 
@@ -115,7 +116,7 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       <line x1={cx + 10} y1={pos.neckBaseY - 5} x2={cx + 20} y2={pos.neckBaseY - 5} stroke="hsl(var(--chart-5))" strokeWidth="2" />
       <line x1={cx + 10} y1={pos.waistY} x2={cx + 20} y2={pos.waistY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
       <g onClick={() => onNumberClick(5)} className="cursor-pointer">
-        <circle cx={cx + 30} cy={(pos.neckBaseY + pos.waistY) / 2} r="10" fill={getCircleFill(5, "hsl(var(--chart-5))")} />
+        <circle cx={cx + 30} cy={(pos.neckBaseY + pos.waistY) / 2} r="10" fill={getCircleFill(5)} />
         <text x={cx + 30} y={(pos.neckBaseY + pos.waistY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">5</text>
       </g>
 
@@ -134,11 +135,11 @@ interface MeasurementInstructionProps {
   highlighted?: boolean;
 }
 
-function MeasurementInstruction({ number, name, color, description, highlighted }: MeasurementInstructionProps) {
+function MeasurementInstruction({ number, name, description, highlighted }: MeasurementInstructionProps) {
   const highlightColor = "#f97316";
   return (
     <div className={`flex gap-3 rounded-lg p-2 transition-colors ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : ''}`}>
-      <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: highlighted ? highlightColor : color }}>
+      <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground bg-foreground" style={highlighted ? { backgroundColor: highlightColor } : undefined}>
         {number}
       </div>
       <div>
