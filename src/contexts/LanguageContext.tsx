@@ -94,6 +94,19 @@ const translations: Record<string, Record<Language, string>> = {
   'hint.backLength': { en: 'From neck base to waist', fr: 'De la base du cou à la taille' },
   'hint.waistToHip': { en: 'Distance between waist and hip', fr: 'Distance entre la taille et les hanches' },
   'hint.skirtLength': { en: 'From waist to hem', fr: 'De la taille à l\'ourlet' },
+  // Unified hints - Pants
+  'hint.thigh': { en: 'Measure at fullest part of thigh', fr: 'Mesurer à l\'endroit le plus large de la cuisse' },
+  'hint.knee': { en: 'Measure around the knee', fr: 'Mesurer autour du genou' },
+  'hint.ankle': { en: 'Measure around the ankle', fr: 'Mesurer autour de la cheville' },
+  'hint.crotchDepth': { en: 'Waist to seat while sitting', fr: 'Taille à l\'assise en position assise' },
+  'hint.outseamLength': { en: 'Waist to floor along outside leg', fr: 'Taille au sol le long de la jambe extérieure' },
+  'hint.inseamLength': { en: 'Crotch to floor along inside leg', fr: 'Entrejambe au sol le long de la jambe intérieure' },
+  // Unified hints - Sleeve
+  'hint.upperArm': { en: 'Measure around bicep at fullest point', fr: 'Mesurer autour du biceps au point le plus large' },
+  'hint.wrist': { en: 'Measure around the wrist', fr: 'Mesurer autour du poignet' },
+  'hint.sleeveLength': { en: 'Shoulder to wrist', fr: 'De l\'épaule au poignet' },
+  'hint.elbowLength': { en: 'Shoulder to elbow', fr: 'De l\'épaule au coude' },
+  'hint.armholeDepth': { en: 'Sleeve cap height', fr: 'Hauteur de tête de manche' },
 
   // Measurement hints - Bodice
   'hint.tourDePoitrine': { en: 'Full bust circumference', fr: 'Tour de poitrine' },
