@@ -354,6 +354,54 @@ const translations: Record<string, Record<Language, string>> = {
   'adj.sl2.problem': { en: 'The sleeve feels restrictive around the bicep, limiting arm movement.', fr: 'La manche est trop ajustée au niveau du biceps, limitant les mouvements du bras.' },
   'adj.sl2.solution': { en: 'Increase the upper arm circumference measurement by 1–2 cm. This will widen the sleeve at the bicep level without affecting the sleeve cap shape.', fr: 'Augmentez la mesure du tour de bras de 1 à 2 cm. Cela élargira la manche au niveau du biceps sans modifier la forme de la tête de manche.' },
   'adj.sl2.tip': { en: 'Measure the upper arm with the arm relaxed and again with the arm flexed—use the larger measurement plus ease.', fr: 'Mesurez le tour de bras avec le bras détendu puis avec le bras fléchi — utilisez la mesure la plus grande plus l\'aisance.' },
+
+  // Pricing page
+  'pricing.title': { en: 'Choose Your Plan', fr: 'Choisissez votre formule' },
+  'pricing.subtitle': { en: 'Create professional sewing patterns with our sloper generator. Choose a subscription or purchase individual patterns.', fr: 'Créez des patrons de couture professionnels avec notre générateur de bases. Choisissez un abonnement ou achetez des patrons individuels.' },
+  'pricing.currentPlan': { en: 'Current Plan', fr: 'Formule actuelle' },
+  'pricing.mostPopular': { en: 'Most Popular', fr: 'Le plus populaire' },
+  'pricing.youreOn': { en: "You're currently on the", fr: 'Vous êtes actuellement sur la formule' },
+  'pricing.plan': { en: 'plan', fr: '' },
+  'pricing.patternsUsed': { en: 'patterns used this month', fr: 'patrons utilisés ce mois-ci' },
+  'pricing.manageSubscription': { en: 'Manage Subscription', fr: 'Gérer l\'abonnement' },
+  'pricing.backToApp': { en: 'Back to App', fr: 'Retour à l\'application' },
+  'pricing.subscribe': { en: 'Subscribe', fr: 'S\'abonner' },
+  'pricing.loading': { en: 'Loading...', fr: 'Chargement...' },
+  'pricing.perPattern': { en: '/pattern', fr: '/patron' },
+  'pricing.perMonth': { en: '/month', fr: '/mois' },
+  
+  // Single purchase card
+  'pricing.single.title': { en: 'Single Pattern', fr: 'Patron unique' },
+  'pricing.single.desc': { en: 'One-time purchase', fr: 'Achat à l\'unité' },
+  'pricing.single.f1': { en: 'Access to one pattern type', fr: 'Accès à un type de patron' },
+  'pricing.single.f2': { en: 'Lifetime access', fr: 'Accès à vie' },
+  'pricing.single.f3': { en: 'PDF export included', fr: 'Export PDF inclus' },
+  'pricing.single.note': { en: 'Purchase individual patterns from the app', fr: 'Achetez des patrons individuels depuis l\'application' },
+
+  // Basic card
+  'pricing.basic.title': { en: 'Basic', fr: 'Basique' },
+  'pricing.basic.desc': { en: 'For hobbyists', fr: 'Pour les amateurs' },
+  'pricing.basic.f1': { en: '5 patterns per month', fr: '5 patrons par mois' },
+  'pricing.basic.f2': { en: 'All pattern types', fr: 'Tous les types de patrons' },
+  'pricing.basic.f3': { en: 'Save measurements', fr: 'Sauvegarde des mesures' },
+  'pricing.basic.f4': { en: 'PDF export', fr: 'Export PDF' },
+
+  // Pro card
+  'pricing.pro.title': { en: 'Pro', fr: 'Pro' },
+  'pricing.pro.desc': { en: 'For professionals', fr: 'Pour les professionnels' },
+  'pricing.pro.f1': { en: 'Unlimited patterns', fr: 'Patrons illimités' },
+  'pricing.pro.f2': { en: 'All pattern types', fr: 'Tous les types de patrons' },
+  'pricing.pro.f3': { en: 'Save unlimited measurements', fr: 'Mesures illimitées' },
+  'pricing.pro.f4': { en: 'Priority support', fr: 'Support prioritaire' },
+
+  // FAQ
+  'pricing.faq.title': { en: 'Frequently Asked Questions', fr: 'Questions fréquentes' },
+  'pricing.faq.q1': { en: 'What patterns are included?', fr: 'Quels patrons sont inclus ?' },
+  'pricing.faq.a1': { en: 'Currently we offer skirt slopers, with bodice, dress, pants, and sleeve patterns coming soon. All subscribers get access to new patterns as they\'re released.', fr: 'Nous proposons actuellement des bases de jupes, avec les corsages, robes, pantalons et manches à venir. Tous les abonnés ont accès aux nouveaux patrons dès leur sortie.' },
+  'pricing.faq.q2': { en: 'Can I cancel anytime?', fr: 'Puis-je annuler à tout moment ?' },
+  'pricing.faq.a2': { en: 'Yes! You can cancel your subscription at any time. You\'ll continue to have access until the end of your billing period.', fr: 'Oui ! Vous pouvez annuler votre abonnement à tout moment. Vous conservez l\'accès jusqu\'à la fin de votre période de facturation.' },
+  'pricing.faq.q3': { en: 'Do single purchases expire?', fr: 'Les achats à l\'unité expirent-ils ?' },
+  'pricing.faq.a3': { en: 'No, single pattern purchases give you lifetime access to that pattern type.', fr: 'Non, l\'achat d\'un patron vous donne un accès à vie à ce type de patron.' },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
