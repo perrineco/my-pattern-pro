@@ -81,7 +81,7 @@ export function Header() {
                         <DropdownMenuSeparator />
                         {(subscription.tier === 'basic' || subscription.tier === 'pro') && (
                           <DropdownMenuItem onClick={() => {
-                            navigate('/?mode=profiles');
+                            navigate('/app?mode=profiles');
                           }}>
                             <User className="w-4 h-4 mr-2" />
                             {t('action.manageProfiles')}
