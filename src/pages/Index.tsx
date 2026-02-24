@@ -198,33 +198,33 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setSearchParams({})}
+                onClick={() => navigate('/app')}
                 className="gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back to Patterns
+                {t('action.backToPatterns')}
               </Button>
             </div>
 
             <div className="text-center mb-8">
               <h1 className="font-serif text-2xl font-semibold text-foreground mb-2">
-                Manage Profiles
+                {t('profile.manageTitle')}
               </h1>
               <p className="text-muted-foreground">
-                Save and manage your measurement profiles
+                {t('profile.manageDesc')}
               </p>
             </div>
 
             <div className="flex items-center justify-center gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-muted-foreground block">
-                  Category
+                  {t('label.category')}
                 </label>
                 <CategorySelector selected={category} onSelect={handleCategoryChange} />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-muted-foreground block">
-                  Units
+                  {t('label.units')}
                 </label>
                 <UnitToggle unit={measurementUnit} onChange={handleUnitChange} />
               </div>
