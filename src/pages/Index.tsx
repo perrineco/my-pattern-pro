@@ -156,7 +156,7 @@ const Index = () => {
 
   const handlePatternPurchase = async (type: PatternType) => {
     if (!user) {
-      toast.error('Please sign in to purchase patterns');
+      toast.error(t('toast.signInToPurchase'));
       navigate('/auth');
       return;
     }
@@ -173,7 +173,7 @@ const Index = () => {
       }
     } catch (err) {
       console.error('Purchase error:', err);
-      toast.error('Failed to start checkout');
+      toast.error(t('toast.checkoutFailed'));
     }
   };
 
@@ -183,7 +183,7 @@ const Index = () => {
     const measurements = getCurrentMeasurements();
     // Both dartless and regular bodice now use the same BodiceMeasurements type
     generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, measurementUnit);
-    toast.success('PDF downloaded!');
+    toast.success(t('toast.pdfDownloaded'));
   };
 
   return (
@@ -420,20 +420,20 @@ const Index = () => {
                     <div className="text-center p-6">
                       <Lock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                       <h3 className="font-serif text-xl font-semibold mb-2">
-                        Pattern Locked
+                        {t('locked.title')}
                       </h3>
                       <p className="text-sm text-muted-foreground mb-4 max-w-xs">
-                        Subscribe to access this pattern, or purchase it individually for ${STRIPE_CONFIG.singlePurchase.price}.
+                        {t('locked.description')}
                       </p>
                       <div className="flex gap-3 justify-center">
                         <Button onClick={() => navigate('/pricing')}>
-                          View Plans
+                          {t('action.viewPlans')}
                         </Button>
                         <Button
                           variant="outline"
                           onClick={() => handlePatternPurchase(patternType)}
                         >
-                          Buy for ${STRIPE_CONFIG.singlePurchase.price}
+                          {t('locked.buyFor')}
                         </Button>
                       </div>
                     </div>
