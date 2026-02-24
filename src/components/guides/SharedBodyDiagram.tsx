@@ -36,7 +36,7 @@ function getPositions(category: Category): BodyPositions {
       shoulderY: 115,
       bustY: 145,
       backWidthY: 130,
-      waistY: 180,
+      waistY: 130,
       hipY: 218,
       hemY: 298,
       ankleY: 318,
