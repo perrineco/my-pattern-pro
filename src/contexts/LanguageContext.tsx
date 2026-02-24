@@ -402,6 +402,16 @@ const translations: Record<string, Record<Language, string>> = {
   'pricing.faq.a2': { en: 'Yes! You can cancel your subscription at any time. You\'ll continue to have access until the end of your billing period.', fr: 'Oui ! Vous pouvez annuler votre abonnement à tout moment. Vous conservez l\'accès jusqu\'à la fin de votre période de facturation.' },
   'pricing.faq.q3': { en: 'Do single purchases expire?', fr: 'Les achats à l\'unité expirent-ils ?' },
   'pricing.faq.a3': { en: 'No, single pattern purchases give you lifetime access to that pattern type.', fr: 'Non, l\'achat d\'un patron vous donne un accès à vie à ce type de patron.' },
+
+  // Pattern Locked
+  'locked.title': { en: 'Pattern Locked', fr: 'Patron verrouillé' },
+  'locked.description': { en: 'Subscribe to access this pattern, or purchase it individually for $4.99.', fr: 'Abonnez-vous pour accéder à ce patron, ou achetez-le individuellement pour 4,99 $.' },
+  'locked.buyFor': { en: 'Buy for $4.99', fr: 'Acheter pour 4,99 $' },
+
+  // Toasts
+  'toast.signInToPurchase': { en: 'Please sign in to purchase patterns', fr: 'Veuillez vous connecter pour acheter des patrons' },
+  'toast.checkoutFailed': { en: 'Failed to start checkout', fr: 'Échec du lancement du paiement' },
+  'toast.pdfDownloaded': { en: 'PDF downloaded!', fr: 'PDF téléchargé !' },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
