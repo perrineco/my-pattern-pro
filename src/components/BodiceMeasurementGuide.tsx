@@ -77,44 +77,44 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
   return (
     <>
       {/* Nape point */}
-      <circle cx={cx} cy={pos.neckBaseY - 5} r="3" fill="hsl(var(--chart-5))" />
+      <circle cx={cx} cy={pos.neckBaseY - 5} r="3" fill="hsl(var(--foreground))" />
 
       {/* 1: Bust line */}
-      <line x1={cx - pos.bustWidth / 2 - 10} y1={pos.bustY} x2={cx + pos.bustWidth / 2 + 10} y2={pos.bustY} stroke="hsl(var(--primary))" strokeWidth="2.5" strokeDasharray="4,2" />
+      <line x1={cx - pos.bustWidth / 2 - 10} y1={pos.bustY} x2={cx + pos.bustWidth / 2 + 10} y2={pos.bustY} stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="4,2" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
         <circle cx={cx - pos.bustWidth / 2 - 18} cy={pos.bustY} r="10" fill={getCircleFill(1)} />
         <text x={cx - pos.bustWidth / 2 - 18} y={pos.bustY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2: Neckline circumference */}
-      <ellipse cx={cx} cy={pos.neckBaseY} rx={12} ry={6} fill="none" stroke="hsl(var(--chart-2))" strokeWidth="2.5" strokeDasharray="3,2" />
+      <ellipse cx={cx} cy={pos.neckBaseY} rx={12} ry={6} fill="none" stroke="hsl(var(--foreground))" strokeWidth="2" strokeDasharray="3,2" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
         <circle cx={cx + 20} cy={pos.neckBaseY} r="10" fill={getCircleFill(2)} />
         <text x={cx + 20} y={pos.neckBaseY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">2</text>
       </g>
 
       {/* 3: Shoulder length */}
-      <line x1={cx - 8} y1={pos.neckBaseY} x2={pos.leftShoulderX} y2={pos.shoulderY} stroke="hsl(var(--chart-3))" strokeWidth="3" />
-      <circle cx={pos.leftShoulderX} cy={pos.shoulderY} r="4" fill="hsl(var(--chart-3))" />
-      <circle cx={cx - 8} cy={pos.neckBaseY} r="4" fill="hsl(var(--chart-3))" />
+      <line x1={cx - 8} y1={pos.neckBaseY} x2={pos.leftShoulderX} y2={pos.shoulderY} stroke="hsl(var(--foreground))" strokeWidth="2" />
+      <circle cx={pos.leftShoulderX} cy={pos.shoulderY} r="4" fill="hsl(var(--foreground))" />
+      <circle cx={cx - 8} cy={pos.neckBaseY} r="4" fill="hsl(var(--foreground))" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
         <circle cx={(cx - 8 + pos.leftShoulderX) / 2} cy={(pos.neckBaseY + pos.shoulderY) / 2} r="10" fill={getCircleFill(3)} />
         <text x={(cx - 8 + pos.leftShoulderX) / 2} y={(pos.neckBaseY + pos.shoulderY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">3</text>
       </g>
 
       {/* 4: Back width */}
-      <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY} stroke="hsl(var(--chart-4))" strokeWidth="3" />
-      <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY - 5} x2={cx - pos.bustWidth / 2 + 8} y2={pos.backWidthY + 5} stroke="hsl(var(--chart-4))" strokeWidth="2" />
-      <line x1={cx + pos.bustWidth / 2 - 8} y1={pos.backWidthY - 5} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY + 5} stroke="hsl(var(--chart-4))" strokeWidth="2" />
+      <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY} stroke="hsl(var(--foreground))" strokeWidth="2" />
+      <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY - 5} x2={cx - pos.bustWidth / 2 + 8} y2={pos.backWidthY + 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
+      <line x1={cx + pos.bustWidth / 2 - 8} y1={pos.backWidthY - 5} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY + 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
         <circle cx={cx} cy={pos.backWidthY - 12} r="10" fill={getCircleFill(4)} />
         <text x={cx} y={pos.backWidthY - 8} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">4</text>
       </g>
 
       {/* 5: Back length (nape to waist) */}
-      <line x1={cx + 15} y1={pos.neckBaseY - 5} x2={cx + 15} y2={pos.waistY} stroke="hsl(var(--chart-5))" strokeWidth="3" />
-      <line x1={cx + 10} y1={pos.neckBaseY - 5} x2={cx + 20} y2={pos.neckBaseY - 5} stroke="hsl(var(--chart-5))" strokeWidth="2" />
-      <line x1={cx + 10} y1={pos.waistY} x2={cx + 20} y2={pos.waistY} stroke="hsl(var(--chart-5))" strokeWidth="2" />
+      <line x1={cx + 15} y1={pos.neckBaseY - 5} x2={cx + 15} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
+      <line x1={cx + 10} y1={pos.neckBaseY - 5} x2={cx + 20} y2={pos.neckBaseY - 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
+      <line x1={cx + 10} y1={pos.waistY} x2={cx + 20} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(5)} className="cursor-pointer">
         <circle cx={cx + 30} cy={(pos.neckBaseY + pos.waistY) / 2} r="10" fill={getCircleFill(5)} />
         <text x={cx + 30} y={(pos.neckBaseY + pos.waistY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">5</text>
