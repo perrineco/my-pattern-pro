@@ -66,21 +66,22 @@ export function MeasurementGuide({ category }: MeasurementGuideProps) {
 function SkirtOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyPositions; t: (key: string) => string; highlightedNumber: number | null; onNumberClick: (n: number) => void }) {
   const cx = pos.centerX;
   const highlightColor = "#f97316";
-  const getCircleFill = (n: number, defaultColor: string) => highlightedNumber === n ? highlightColor : defaultColor;
+  const defaultColor = "hsl(var(--foreground))";
+  const getCircleFill = (n: number) => highlightedNumber === n ? highlightColor : defaultColor;
 
   return (
     <>
       {/* 1. Waist line */}
       <line x1={cx - pos.waistWidth / 2 - 15} y1={pos.waistY} x2={cx + pos.waistWidth / 2 + 15} y2={pos.waistY} stroke="hsl(var(--primary))" strokeWidth="2" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
-        <circle cx={cx - pos.waistWidth / 2 - 20} cy={pos.waistY} r="10" fill={getCircleFill(1, "hsl(var(--primary))")} />
+        <circle cx={cx - pos.waistWidth / 2 - 20} cy={pos.waistY} r="10" fill={getCircleFill(1)} />
         <text x={cx - pos.waistWidth / 2 - 20} y={pos.waistY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2. Hip line */}
       <line x1={cx - pos.hipWidth / 2 - 15} y1={pos.hipY} x2={cx + pos.hipWidth / 2 + 15} y2={pos.hipY} stroke="hsl(var(--destructive))" strokeWidth="2" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
-        <circle cx={cx + pos.hipWidth / 2 + 20} cy={pos.hipY} r="10" fill={getCircleFill(2, "hsl(var(--destructive))")} />
+        <circle cx={cx + pos.hipWidth / 2 + 20} cy={pos.hipY} r="10" fill={getCircleFill(2)} />
         <text x={cx + pos.hipWidth / 2 + 20} y={pos.hipY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">2</text>
       </g>
 
@@ -89,7 +90,7 @@ function SkirtOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       <line x1={cx + pos.hipWidth / 2 + 30} y1={pos.waistY} x2={cx + pos.hipWidth / 2 + 40} y2={pos.waistY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
       <line x1={cx + pos.hipWidth / 2 + 30} y1={pos.hipY} x2={cx + pos.hipWidth / 2 + 40} y2={pos.hipY} stroke="hsl(var(--chart-3))" strokeWidth="2" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
-        <circle cx={cx + pos.hipWidth / 2 + 35} cy={(pos.waistY + pos.hipY) / 2} r="10" fill={getCircleFill(3, "hsl(var(--chart-3))")} />
+        <circle cx={cx + pos.hipWidth / 2 + 35} cy={(pos.waistY + pos.hipY) / 2} r="10" fill={getCircleFill(3)} />
         <text x={cx + pos.hipWidth / 2 + 35} y={(pos.waistY + pos.hipY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">3</text>
       </g>
 
@@ -98,7 +99,7 @@ function SkirtOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       <line x1={cx - pos.hipWidth / 2 - 40} y1={pos.waistY} x2={cx - pos.hipWidth / 2 - 30} y2={pos.waistY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
       <line x1={cx - pos.hipWidth / 2 - 40} y1={pos.hemY} x2={cx - pos.hipWidth / 2 - 30} y2={pos.hemY} stroke="hsl(var(--chart-4))" strokeWidth="2" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
-        <circle cx={cx - pos.hipWidth / 2 - 35} cy={(pos.waistY + pos.hemY) / 2} r="10" fill={getCircleFill(4, "hsl(var(--chart-4))")} />
+        <circle cx={cx - pos.hipWidth / 2 - 35} cy={(pos.waistY + pos.hemY) / 2} r="10" fill={getCircleFill(4)} />
         <text x={cx - pos.hipWidth / 2 - 35} y={(pos.waistY + pos.hemY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">4</text>
       </g>
 
@@ -117,11 +118,11 @@ interface MeasurementInstructionProps {
   highlighted?: boolean;
 }
 
-function MeasurementInstruction({ number, name, color, description, highlighted }: MeasurementInstructionProps) {
+function MeasurementInstruction({ number, name, description, highlighted }: MeasurementInstructionProps) {
   const highlightColor = "#f97316";
   return (
     <div className={`flex gap-3 rounded-lg p-2 transition-colors ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : ''}`}>
-      <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: highlighted ? highlightColor : color }}>
+      <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground bg-foreground" style={highlighted ? { backgroundColor: highlightColor } : undefined}>
         {number}
       </div>
       <div>
