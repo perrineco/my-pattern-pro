@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Plus, Trash2, Check, Loader2, Edit2 } from 'lucide-react';
+import { User, Plus, Trash2, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -23,6 +23,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Category, UnifiedMeasurements } from '@/types/sloper';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 
 interface SavedProfile {
@@ -49,17 +50,16 @@ export function ProfileManagerSimple({
   selectedProfileId,
   onSelectProfile,
 }: ProfileManagerSimpleProps) {
+  const { t } = useLanguage();
   const [profiles, setProfiles] = useState<SavedProfile[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Dialog states
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [profileToDelete, setProfileToDelete] = useState<string | null>(null);
   const [newProfileName, setNewProfileName] = useState('');
 
-  // Fetch all profiles for this category (without pattern_type filter)
   useEffect(() => {
     fetchProfiles();
   }, [userId, category]);
@@ -67,7 +67,6 @@ export function ProfileManagerSimple({
   const fetchProfiles = async () => {
     setLoading(true);
     try {
-      // Fetch profiles without pattern_type filter - get all for this user/category
       const { data, error } = await supabase
         .from('saved_measurements')
         .select('id, name, measurements, created_at')
@@ -77,7 +76,6 @@ export function ProfileManagerSimple({
 
       if (error) throw error;
 
-      // Deduplicate by name (keep the most recent)
       const uniqueProfiles = new Map<string, SavedProfile>();
       (data || []).forEach((item) => {
         if (!uniqueProfiles.has(item.name)) {
@@ -93,7 +91,6 @@ export function ProfileManagerSimple({
       const parsed = Array.from(uniqueProfiles.values());
       setProfiles(parsed);
 
-      // Auto-select first profile if none selected
       if (parsed.length > 0 && !selectedProfileId) {
         onSelectProfile(parsed[0].id);
         onLoadProfile(parsed[0].measurements);
@@ -108,12 +105,12 @@ export function ProfileManagerSimple({
   const handleProfileClick = (profile: SavedProfile) => {
     onSelectProfile(profile.id);
     onLoadProfile(profile.measurements);
-    toast.success(`Loaded "${profile.name}"`);
+    toast.success(`${t('profile.loaded')} "${profile.name}"`);
   };
 
   const handleSaveNew = async () => {
     if (!newProfileName.trim()) {
-      toast.error('Please enter a profile name');
+      toast.error(t('profile.enterName'));
       return;
     }
 
@@ -121,15 +118,13 @@ export function ProfileManagerSimple({
     try {
       const { data, error } = await supabase
         .from('saved_measurements')
-        .insert([
-          {
-            user_id: userId,
-            category,
-            pattern_type: 'skirt', // Default, but we won't filter by this
-            name: newProfileName.trim(),
-            measurements: JSON.parse(JSON.stringify(currentMeasurements)),
-          },
-        ])
+        .insert([{
+          user_id: userId,
+          category,
+          pattern_type: 'skirt',
+          name: newProfileName.trim(),
+          measurements: JSON.parse(JSON.stringify(currentMeasurements)),
+        }])
         .select('id, name, measurements, created_at')
         .single();
 
@@ -146,10 +141,10 @@ export function ProfileManagerSimple({
       onSelectProfile(newProfile.id);
       setSaveDialogOpen(false);
       setNewProfileName('');
-      toast.success(`Profile "${newProfile.name}" saved!`);
+      toast.success(`"${newProfile.name}" ${t('profile.saved')}`);
     } catch (err) {
       console.error('Save error:', err);
-      toast.error('Failed to save profile');
+      toast.error(t('profile.failedSave'));
     } finally {
       setSaving(false);
     }
@@ -157,7 +152,6 @@ export function ProfileManagerSimple({
 
   const handleUpdateCurrent = async () => {
     if (!selectedProfileId) return;
-
     const profile = profiles.find((p) => p.id === selectedProfileId);
     if (!profile) return;
 
@@ -165,25 +159,21 @@ export function ProfileManagerSimple({
     try {
       const { error } = await supabase
         .from('saved_measurements')
-        .update({
-          measurements: JSON.parse(JSON.stringify(currentMeasurements)),
-        })
+        .update({ measurements: JSON.parse(JSON.stringify(currentMeasurements)) })
         .eq('id', selectedProfileId);
 
       if (error) throw error;
 
       setProfiles((prev) =>
         prev.map((p) =>
-          p.id === selectedProfileId
-            ? { ...p, measurements: currentMeasurements }
-            : p
+          p.id === selectedProfileId ? { ...p, measurements: currentMeasurements } : p
         )
       );
 
-      toast.success(`Profile "${profile.name}" updated!`);
+      toast.success(`"${profile.name}" ${t('profile.updated')}`);
     } catch (err) {
       console.error('Update error:', err);
-      toast.error('Failed to update profile');
+      toast.error(t('profile.failedUpdate'));
     } finally {
       setSaving(false);
     }
@@ -197,7 +187,6 @@ export function ProfileManagerSimple({
 
   const handleDelete = async () => {
     if (!profileToDelete) return;
-
     const profile = profiles.find((p) => p.id === profileToDelete);
     if (!profile) return;
 
@@ -223,10 +212,10 @@ export function ProfileManagerSimple({
 
       setDeleteDialogOpen(false);
       setProfileToDelete(null);
-      toast.success(`Profile "${profile.name}" deleted`);
+      toast.success(`"${profile.name}" ${t('profile.deleted')}`);
     } catch (err) {
       console.error('Delete error:', err);
-      toast.error('Failed to delete profile');
+      toast.error(t('profile.failedDelete'));
     }
   };
 
@@ -235,7 +224,7 @@ export function ProfileManagerSimple({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <User className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-medium text-foreground">Profiles</span>
+          <span className="text-sm font-medium text-foreground">{t('profile.profiles')}</span>
         </div>
         <Button
           variant="outline"
@@ -244,7 +233,7 @@ export function ProfileManagerSimple({
           className="gap-2"
         >
           <Plus className="w-4 h-4" />
-          New Profile
+          {t('profile.newProfile')}
         </Button>
       </div>
 
@@ -255,7 +244,7 @@ export function ProfileManagerSimple({
       ) : profiles.length === 0 ? (
         <Card className="p-6 text-center">
           <p className="text-sm text-muted-foreground mb-3">
-            No saved profiles yet. Create your first profile to save your measurements.
+            {t('profile.noSavedDesc')}
           </p>
           <Button
             variant="outline"
@@ -264,7 +253,7 @@ export function ProfileManagerSimple({
             className="gap-2"
           >
             <Plus className="w-4 h-4" />
-            Create Profile
+            {t('profile.createProfile')}
           </Button>
         </Card>
       ) : (
@@ -283,8 +272,8 @@ export function ProfileManagerSimple({
                   <div className="flex items-center gap-3">
                     <div className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center",
-                      selectedProfileId === profile.id 
-                        ? "bg-primary text-primary-foreground" 
+                      selectedProfileId === profile.id
+                        ? "bg-primary text-primary-foreground"
                         : "bg-muted"
                     )}>
                       <User className="w-4 h-4" />
@@ -301,7 +290,6 @@ export function ProfileManagerSimple({
                     size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive"
                     onClick={(e) => handleDeleteClick(profile.id, e)}
-                    title="Delete profile"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -309,8 +297,7 @@ export function ProfileManagerSimple({
               </Card>
             ))}
           </div>
-          
-          {/* Update button - visible when profile selected */}
+
           {selectedProfileId && (
             <Button
               variant="secondary"
@@ -323,7 +310,7 @@ export function ProfileManagerSimple({
               ) : (
                 <Check className="w-4 h-4" />
               )}
-              Update Profile with Current Measurements
+              {t('profile.updateWithCurrent')}
             </Button>
           )}
         </div>
@@ -333,29 +320,23 @@ export function ProfileManagerSimple({
       <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Save New Profile</DialogTitle>
+            <DialogTitle>{t('profile.saveNewTitle')}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <Input
-              placeholder="Profile name (e.g., 'My measurements', 'Client A')"
+              placeholder={t('profile.namePlaceholder')}
               value={newProfileName}
               onChange={(e) => setNewProfileName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSaveNew()}
             />
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setSaveDialogOpen(false)}
-              disabled={saving}
-            >
-              Cancel
+            <Button variant="outline" onClick={() => setSaveDialogOpen(false)} disabled={saving}>
+              {t('action.cancel')}
             </Button>
             <Button onClick={handleSaveNew} disabled={saving}>
-              {saving ? (
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
-              ) : null}
-              Save Profile
+              {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              {t('action.saveProfile')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -365,20 +346,18 @@ export function ProfileManagerSimple({
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Profile?</AlertDialogTitle>
+            <AlertDialogTitle>{t('profile.deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete "
-              {profiles.find((p) => p.id === profileToDelete)?.name}". This
-              action cannot be undone.
+              {t('profile.deleteDescription')} "{profiles.find((p) => p.id === profileToDelete)?.name}". {t('profile.cannotBeUndone')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('action.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {t('action.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
