@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
@@ -14,10 +14,17 @@ interface MeasurementGuideProps {
 export function MeasurementGuide({ category }: MeasurementGuideProps) {
   const { t } = useLanguage();
   const [highlightedNumber, setHighlightedNumber] = useState<number | null>(null);
+  const instructionRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   const handleNumberClick = (n: number) => {
     setHighlightedNumber(prev => prev === n ? null : n);
   };
+
+  useEffect(() => {
+    if (highlightedNumber && instructionRefs.current[highlightedNumber]) {
+      instructionRefs.current[highlightedNumber]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [highlightedNumber]);
 
   return (
     <Dialog>
@@ -40,10 +47,10 @@ export function MeasurementGuide({ category }: MeasurementGuideProps) {
               />
             </div>
             <div className="space-y-4">
-              <MeasurementInstruction number={1} name={t('guide.waist')} color="hsl(var(--primary))" description={t('guide.desc.waist')} highlighted={highlightedNumber === 1} />
-              <MeasurementInstruction number={2} name={t('guide.hip')} color="hsl(var(--destructive))" description={t('guide.desc.hip')} highlighted={highlightedNumber === 2} />
-              <MeasurementInstruction number={3} name={t('guide.waistToHip')} color="hsl(var(--chart-3))" description={t('guide.desc.waistToHip')} highlighted={highlightedNumber === 3} />
-              <MeasurementInstruction number={4} name={t('guide.skirtLength')} color="hsl(var(--chart-4))" description={t('guide.desc.skirtLength')} highlighted={highlightedNumber === 4} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[1] = el; }} number={1} name={t('guide.waist')} color="hsl(var(--primary))" description={t('guide.desc.waist')} highlighted={highlightedNumber === 1} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[2] = el; }} number={2} name={t('guide.hip')} color="hsl(var(--destructive))" description={t('guide.desc.hip')} highlighted={highlightedNumber === 2} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[3] = el; }} number={3} name={t('guide.waistToHip')} color="hsl(var(--chart-3))" description={t('guide.desc.waistToHip')} highlighted={highlightedNumber === 3} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[4] = el; }} number={4} name={t('guide.skirtLength')} color="hsl(var(--chart-4))" description={t('guide.desc.skirtLength')} highlighted={highlightedNumber === 4} />
             </div>
           </div>
 
@@ -110,6 +117,8 @@ function SkirtOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
   );
 }
 
+import React from "react";
+
 interface MeasurementInstructionProps {
   number: number;
   name: string;
@@ -118,10 +127,10 @@ interface MeasurementInstructionProps {
   highlighted?: boolean;
 }
 
-function MeasurementInstruction({ number, name, description, highlighted }: MeasurementInstructionProps) {
+const MeasurementInstruction = React.forwardRef<HTMLDivElement, MeasurementInstructionProps>(({ number, name, description, highlighted }, ref) => {
   const highlightColor = "#f97316";
   return (
-    <div className={`flex gap-3 rounded-lg p-2 transition-colors ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : ''}`}>
+    <div ref={ref} className={`flex gap-3 rounded-lg p-2 transition-colors ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : ''}`}>
       <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground bg-foreground" style={highlighted ? { backgroundColor: highlightColor } : undefined}>
         {number}
       </div>
@@ -131,4 +140,4 @@ function MeasurementInstruction({ number, name, description, highlighted }: Meas
       </div>
     </div>
   );
-}
+});
