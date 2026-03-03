@@ -14,92 +14,137 @@ export function PantsFrontPanel({
   scale,
 }: PantsFrontPanelProps) {
   const { waist, hip, thigh, knee, ankle, crotchDepth, outseamLength, inseamLength } = measurements;
+  const ease = measurements.ease ?? 2;
 
   const s = (v: number) => v * scale;
 
-  // Pattern calculations - quarter measurements for half panel
-  const waistQuarter = waist / 4;
+  // === COSTRUZIONE DAVANTI (Italian Method) ===
+
+  // Rectangle ABCD
+  // A-B = 1/4 hip circumference
   const hipQuarter = hip / 4;
-  const thighHalf = thigh / 2;
-  const kneeHalf = knee / 2;
-  const ankleHalf = ankle / 2;
+  // A-C = total pants length
+  const totalLength = outseamLength;
 
-  // Front dart (one dart at waist)
-  const dartWidth = (hip - waist) / 8; // Front takes less dart than back
-  const dartLength = crotchDepth * 0.4;
+  // A(0,0) B(hipQuarter,0) C(0,totalLength) D(hipQuarter,totalLength)
 
-  // Ease from measurements (default to 2 if not provided)
-  const ease = measurements.ease ?? 2;
+  // E on center front at crotch depth: A-E = crotchDepth
+  // F on side at crotch depth: B-F = A-E
 
-  // Key positions (scaled)
-  const waistWidth = s(waistQuarter + dartWidth + ease);
-  const hipWidth = s(hipQuarter + ease);
-  const thighWidth = s(thighHalf * 0.48 + ease); // Front takes ~48% of thigh
-  const kneeWidth = s(kneeHalf * 0.48 + ease);
-  const ankleWidth = s(ankleHalf * 0.48 + ease);
+  // E-E1: crotch extension = 1/16 hip circumference - 1cm
+  const crotchExtension = hip / 16 - 1;
 
-  const crotchY = s(crotchDepth);
-  const kneeY = s(crotchDepth + (inseamLength * 0.5));
-  const hemY = s(outseamLength);
-  const hipY = s(crotchDepth * 0.65); // Hip line at ~65% of crotch depth
+  // A-G: hip height (Altezza Fianco) — derived ~74% of crotch depth
+  const hipHeight = crotchDepth * 0.74;
 
-  // Crotch extension (front is shorter than back)
-  const crotchExtension = s(hipQuarter * 0.1);
+  // I-L line: E-I = 2/3 A-E going down from E (thigh reference)
+  const iLineY = crotchDepth + (2 / 3) * crotchDepth;
 
-  // Build the front panel path
+  // X = midpoint of E1-F on crotch line
+  const xCenter = (-crotchExtension + hipQuarter) / 2;
+
+  // M-N: vertical grain line through X (LINEA PIEGA / DRITTO FILO)
+  // M at top, N at bottom
+
+  // M-O: knee height — approximate from measurements
+  const kneeY = crotchDepth + inseamLength * 0.4;
+
+  // B-B1 = 2cm (scarto vita — waist reduction at side)
+  const waistReduction = 2;
+
+  // X1-L1 = 1/4 thigh circumference + 0.5 (each side of center)
+  const thighHalfSpread = thigh / 4 + 0.5;
+
+  // Hem: N-C1 = N-D1 ≈ ankle/4 + 0.5 each side (or custom)
+  const hemHalfWidth = ankle / 4 + 0.5;
+
+  // Knee width: interpolated between thigh and ankle
+  const kneeHalfSpread = knee / 4 + 0.5;
+
+  // === Scaled screen coordinates ===
+  const ox = offsetX;
+  const oy = offsetY;
+
+  // Waist points
+  const a1X = ox;
+  const a1Y = oy;
+  const b1X = ox + s(hipQuarter - waistReduction);
+  const b1Y = oy;
+
+  // Hip level
+  const hipSideX = ox + s(hipQuarter);
+  const hipY = oy + s(hipHeight);
+
+  // Crotch level
+  const crotchY = oy + s(crotchDepth);
+  const e1X = ox - s(crotchExtension);
+
+  // Center line X position
+  const centerX = ox + s(xCenter);
+
+  // Thigh level (I-L line)
+  const iY = oy + s(iLineY);
+  const thighSideX = centerX + s(thighHalfSpread);
+  const thighInnerX = centerX - s(thighHalfSpread);
+
+  // Knee level
+  const kneeYPos = oy + s(kneeY);
+  const kneeSideX = centerX + s(kneeHalfSpread);
+  const kneeInnerX = centerX - s(kneeHalfSpread);
+
+  // Hem level
+  const hemY = oy + s(totalLength);
+  const hemSideX = centerX + s(hemHalfWidth);
+  const hemInnerX = centerX - s(hemHalfWidth);
+
+  // Build the front panel outline
   const buildPath = () => {
-    const points: string[] = [];
+    let path = "";
 
-    // Start at waist center front
-    points.push(`M ${offsetX} ${offsetY}`);
+    // Start at A1 — center front, waist
+    path += `M ${a1X} ${a1Y}`;
 
-    // Waist to dart
-    const dartX = offsetX + waistWidth * 0.4;
-    points.push(`L ${dartX - s(dartWidth / 2)} ${offsetY}`);
+    // Waist: A1 → B1 (con garbo — slight curve for waist shaping)
+    path += ` L ${b1X} ${b1Y}`;
 
-    // Dart
-    points.push(`L ${dartX} ${offsetY + s(dartLength)}`);
-    points.push(`L ${dartX + s(dartWidth / 2)} ${offsetY}`);
+    // Side seam: B1 → H (hip, side) with curve
+    path += ` Q ${ox + s(hipQuarter + 0.5)} ${oy + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
 
-    // Continue waist to side
-    points.push(`L ${offsetX + waistWidth} ${offsetY}`);
+    // Side seam: H → thigh level (L1)
+    path += ` L ${thighSideX} ${iY}`;
 
-    // Side seam: waist to hip curve
-    const hipX = offsetX + hipWidth;
-    points.push(`Q ${offsetX + hipWidth + s(1)} ${offsetY + hipY * 0.5} ${hipX} ${offsetY + hipY}`);
+    // Side seam: thigh → knee
+    path += ` L ${kneeSideX} ${kneeYPos}`;
 
-    // Side seam: hip to crotch level
-    points.push(`L ${hipX} ${offsetY + crotchY}`);
+    // Side seam: knee → hem (D1)
+    path += ` L ${hemSideX} ${hemY}`;
 
-    // Side seam: crotch to knee
-    points.push(`L ${offsetX + kneeWidth} ${offsetY + kneeY}`);
+    // Hem line: D1 → C1
+    path += ` L ${hemInnerX} ${hemY}`;
 
-    // Side seam: knee to hem
-    points.push(`L ${offsetX + ankleWidth} ${offsetY + hemY}`);
+    // Inseam: C1 → knee inner
+    path += ` L ${kneeInnerX} ${kneeYPos}`;
 
-    // Hem line
-    points.push(`L ${offsetX} ${offsetY + hemY}`);
+    // Inseam: knee → thigh inner (I1)
+    path += ` L ${thighInnerX} ${iY}`;
 
-    // Inseam: hem to knee
-    points.push(`L ${offsetX} ${offsetY + kneeY}`);
+    // Inseam: thigh → crotch (center front at crotch depth)
+    path += ` L ${ox} ${crotchY}`;
 
-    // Inseam: knee to crotch
-    points.push(`L ${offsetX} ${offsetY + crotchY}`);
+    // Crotch curve: center front → E1 (extension)
+    path += ` Q ${e1X + s(0.5)} ${crotchY + s(0.5)} ${e1X} ${crotchY - s(1.5)}`;
 
-    // Crotch curve
-    points.push(`Q ${offsetX - crotchExtension} ${offsetY + crotchY} ${offsetX - crotchExtension} ${offsetY + crotchY - s(2)}`);
-    points.push(`Q ${offsetX - crotchExtension} ${offsetY + hipY} ${offsetX} ${offsetY + hipY * 0.7}`);
+    // Crotch curve: E1 → G (hip level center) → A1 (waist) — "con linea curva"
+    path += ` Q ${e1X} ${hipY} ${ox} ${oy + s(hipHeight * 0.5)}`;
 
-    // Center front to waist
-    points.push(`L ${offsetX} ${offsetY}`);
+    // Center front back to waist
+    path += ` L ${a1X} ${a1Y}`;
 
-    points.push(`Z`);
-
-    return points.join(" ");
+    path += ` Z`;
+    return path;
   };
 
-  const panelWidth = Math.max(waistWidth, hipWidth);
-  const panelHeight = hemY;
+  const panelHeight = s(totalLength);
 
   return (
     <g>
@@ -111,12 +156,10 @@ export function PantsFrontPanel({
         strokeWidth="2"
       />
 
-      {/* Hip line (reference) */}
+      {/* Hip line — BACINO (reference) */}
       <line
-        x1={offsetX - crotchExtension}
-        y1={offsetY + hipY}
-        x2={offsetX + hipWidth}
-        y2={offsetY + hipY}
+        x1={e1X} y1={hipY}
+        x2={hipSideX} y2={hipY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
@@ -124,32 +167,35 @@ export function PantsFrontPanel({
 
       {/* Crotch line (reference) */}
       <line
-        x1={offsetX - crotchExtension}
-        y1={offsetY + crotchY}
-        x2={offsetX + hipWidth}
-        y2={offsetY + crotchY}
+        x1={e1X} y1={crotchY}
+        x2={thighSideX} y2={crotchY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
+      />
+
+      {/* I-L line — thigh reference */}
+      <line
+        x1={thighInnerX} y1={iY}
+        x2={thighSideX} y2={iY}
+        stroke="hsl(var(--muted-foreground))"
+        strokeWidth="1"
+        strokeDasharray="2,4"
       />
 
       {/* Knee line (reference) */}
       <line
-        x1={offsetX}
-        y1={offsetY + kneeY}
-        x2={offsetX + kneeWidth}
-        y2={offsetY + kneeY}
+        x1={kneeInnerX} y1={kneeYPos}
+        x2={kneeSideX} y2={kneeYPos}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
       />
 
-      {/* Grain line */}
+      {/* Grain line — DRITTO FILO / LINEA PIEGA */}
       <line
-        x1={offsetX + panelWidth * 0.4}
-        y1={offsetY + panelHeight * 0.15}
-        x2={offsetX + panelWidth * 0.4}
-        y2={offsetY + panelHeight * 0.85}
+        x1={centerX} y1={oy + s(3)}
+        x2={centerX} y2={hemY - s(3)}
         stroke="hsl(var(--pattern-stroke))"
         strokeWidth="1.5"
         markerEnd="url(#pantsArrow)"
@@ -157,16 +203,16 @@ export function PantsFrontPanel({
 
       {/* Labels */}
       <text
-        x={offsetX + panelWidth * 0.4}
-        y={offsetY + panelHeight * 0.45}
+        x={centerX}
+        y={oy + panelHeight * 0.45}
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
       >
         FRONT
       </text>
       <text
-        x={offsetX + panelWidth * 0.4}
-        y={offsetY + panelHeight * 0.45 + 16}
+        x={centerX}
+        y={oy + panelHeight * 0.45 + 16}
         textAnchor="middle"
         className="fill-muted-foreground text-xs"
       >
@@ -174,25 +220,16 @@ export function PantsFrontPanel({
       </text>
 
       {/* Measurement labels */}
-      <text
-        x={offsetX + hipWidth + 5}
-        y={offsetY + hipY + 4}
-        className="fill-muted-foreground text-[9px]"
-      >
+      <text x={hipSideX + 5} y={hipY + 4} className="fill-muted-foreground text-[9px]">
         Hip
       </text>
-      <text
-        x={offsetX + hipWidth + 5}
-        y={offsetY + crotchY + 4}
-        className="fill-muted-foreground text-[9px]"
-      >
+      <text x={thighSideX + 5} y={crotchY + 4} className="fill-muted-foreground text-[9px]">
         Crotch
       </text>
-      <text
-        x={offsetX + kneeWidth + 5}
-        y={offsetY + kneeY + 4}
-        className="fill-muted-foreground text-[9px]"
-      >
+      <text x={thighSideX + 5} y={iY + 4} className="fill-muted-foreground text-[9px]">
+        Thigh
+      </text>
+      <text x={kneeSideX + 5} y={kneeYPos + 4} className="fill-muted-foreground text-[9px]">
         Knee
       </text>
     </g>
