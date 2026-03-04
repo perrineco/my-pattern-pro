@@ -44,7 +44,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: Pants
   // M-O: knee height — approximate from measurements
   const kneeY = crotchDepth + inseamLength * 0.4;
 
-  // B-B1 = 2cm (scarto vita — waist reduction at side)
+  // B-B1 = 2cm (waist reduction at side)
   const waistReduction = 2;
 
   // X1-L1 = 1/4 thigh circumference + 0.5 (each side of center)
@@ -61,18 +61,18 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: Pants
   const oy = offsetY;
 
   // Waist points
-  const a1X = ox;
-  const a1Y = oy;
-  const b1X = ox + s(hipQuarter - waistReduction);
-  const b1Y = oy;
+  const a1X = offsetX;
+  const a1Y = offsetY;
+  const b1X = offsetX + s(hipQuarter - waistReduction);
+  const b1Y = offsetY;
 
   // Hip level
-  const hipSideX = ox + s(hipQuarter);
-  const hipY = oy + s(hipHeight);
+  const hipSideX = offsetX + s(hipQuarter);
+  const hipY = offsetY + s(hipHeight);
 
   // Crotch level
-  const crotchY = oy + s(crotchDepth);
-  const e1X = ox - s(crotchExtension);
+  const crotchY = offsetY + s(crotchDepth);
+  const e1X = offsetX - s(crotchExtension);
 
   // Center line X position
   const centerX = ox + s(xCenter);
