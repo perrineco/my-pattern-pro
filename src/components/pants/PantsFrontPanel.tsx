@@ -75,20 +75,20 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: Pants
   const e1X = offsetX - s(crotchExtension);
 
   // Center line X position
-  const centerX = ox + s(xCenter);
+  const centerX = offsetX + s(xCenter);
 
   // Thigh level (I-L line)
-  const iY = oy + s(iLineY);
+  const iY = offsetY + s(iLineY);
   const thighSideX = centerX + s(thighHalfSpread);
   const thighInnerX = centerX - s(thighHalfSpread);
 
   // Knee level
-  const kneeYPos = oy + s(kneeY);
+  const kneeYPos = offsetY + s(kneeY);
   const kneeSideX = centerX + s(kneeHalfSpread);
   const kneeInnerX = centerX - s(kneeHalfSpread);
 
   // Hem level
-  const hemY = oy + s(totalLength);
+  const hemY = offsetY + s(totalLength);
   const hemSideX = centerX + s(hemHalfWidth);
   const hemInnerX = centerX - s(hemHalfWidth);
 
@@ -103,7 +103,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: Pants
     path += ` L ${b1X} ${b1Y}`;
 
     // Side seam: B1 → H (hip, side) with curve
-    path += ` Q ${ox + s(hipQuarter + 0.5)} ${oy + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
+    path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
 
     // Side seam: H → thigh level (L1)
     path += ` L ${thighSideX} ${iY}`;
@@ -124,13 +124,13 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: Pants
     path += ` L ${thighInnerX} ${iY}`;
 
     // Inseam: thigh → crotch (center front at crotch depth)
-    path += ` L ${ox} ${crotchY}`;
+    path += ` L ${offsetX} ${crotchY}`;
 
     // Crotch curve: center front → E1 (extension)
     path += ` Q ${e1X + s(0.5)} ${crotchY + s(0.5)} ${e1X} ${crotchY - s(1.5)}`;
 
     // Crotch curve: E1 → G (hip level center) → A1 (waist) — "con linea curva"
-    path += ` Q ${e1X} ${hipY} ${ox} ${oy + s(hipHeight * 0.5)}`;
+    path += ` Q ${e1X} ${hipY} ${offsetX} ${offsetY + s(hipHeight * 0.5)}`;
 
     // Center front back to waist
     path += ` L ${a1X} ${a1Y}`;
