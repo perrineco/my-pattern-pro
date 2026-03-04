@@ -51,14 +51,11 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   const thighHalfSpread = thigh / 4 + 0.5;
 
   // Hem: N-C1 = N-D1 ≈ ankle/4 + 0.5 each side (or custom)
-  const hemHalfWidth = ankle / 4 + 0.5;
+  //  const hemHalfWidth = ankle / 4 + 0.5;
+  const hemHalfWidth = thighHalfSpread - 1;
 
   // Knee width: interpolated between thigh and ankle
   const kneeHalfSpread = knee / 4 + 0.5;
-
-  // === Scaled screen coordinates ===
-  const ox = offsetX;
-  const oy = offsetY;
 
   // Waist points
   const a1X = offsetX;
@@ -198,7 +195,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
       {/* Grain line — DRITTO FILO / LINEA PIEGA */}
       <line
         x1={centerX}
-        y1={oy + s(3)}
+        y1={offsetY + s(3)}
         x2={centerX}
         y2={hemY - s(3)}
         stroke="hsl(var(--pattern-stroke))"
@@ -207,10 +204,20 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
       />
 
       {/* Labels */}
-      <text x={centerX} y={oy + panelHeight * 0.45} textAnchor="middle" className="fill-foreground font-serif text-sm">
+      <text
+        x={centerX}
+        y={offsetY + panelHeight * 0.45}
+        textAnchor="middle"
+        className="fill-foreground font-serif text-sm"
+      >
         FRONT
       </text>
-      <text x={centerX} y={oy + panelHeight * 0.45 + 16} textAnchor="middle" className="fill-muted-foreground text-xs">
+      <text
+        x={centerX}
+        y={offsetY + panelHeight * 0.45 + 16}
+        textAnchor="middle"
+        className="fill-muted-foreground text-xs"
+      >
         Cut 2
       </text>
 
