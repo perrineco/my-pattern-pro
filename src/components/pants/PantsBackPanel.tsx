@@ -13,7 +13,7 @@ export function PantsBackPanel({
   offsetY,
   scale,
 }: PantsBackPanelProps) {
-  const { waist, hip, thigh, knee, ankle, crotchDepth, outseamLength, inseamLength } = measurements;
+  const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
 
   const s = (v: number) => v * scale;
 
@@ -25,17 +25,13 @@ export function PantsBackPanel({
   const rectWidth = hipQuarter + 2;
   const totalLength = outseamLength;
 
-  // A-E = crotch depth
-  // B-F = A-E
-
   // E-E1 = 1/16 hip + 3 (back crotch extension, larger than front)
   const crotchExtension = hip / 16 + 3;
 
   // E1-E2 = 1cm (crotch point raised)
   const e2Rise = 1;
 
-  // A-G = hip height (Altezza Fianco)
-  const hipHeight = crotchDepth * 0.74;
+  // A-G = hip height (Altezza Fianco) — from measurements
 
   // E-I = A-E (same as crotch depth going down from E)
   // I-L line at 2/3 A-E below E

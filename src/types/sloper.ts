@@ -26,6 +26,7 @@ export interface PantsMeasurements {
   thigh: number;             // Tour de cuisse
   knee: number;              // Tour de genou
   ankle: number;             // Tour de cheville
+  hipHeight: number;         // Distance taille bassin (Altezza Fianco)
   crotchDepth: number;       // Hauteur d'entrejambe (rise)
   outseamLength: number;     // Longueur extérieure
   inseamLength: number;      // Longueur intérieure
@@ -58,6 +59,7 @@ export interface UnifiedMeasurements {
   thigh: number;
   knee: number;
   ankle: number;
+  hipHeight: number;
   crotchDepth: number;
   outseamLength: number;
   inseamLength: number;
@@ -123,6 +125,7 @@ export function toPantsMeasurements(u: UnifiedMeasurements): PantsMeasurements {
     thigh: u.thigh,
     knee: u.knee,
     ankle: u.ankle,
+    hipHeight: u.hipHeight,
     crotchDepth: u.crotchDepth,
     outseamLength: u.outseamLength,
     inseamLength: u.inseamLength,

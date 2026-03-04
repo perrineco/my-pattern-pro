@@ -8,7 +8,7 @@ interface PantsFrontPanelProps {
 }
 
 export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: PantsFrontPanelProps) {
-  const { waist, hip, thigh, knee, ankle, crotchDepth, outseamLength, inseamLength } = measurements;
+  const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
   const ease = measurements.ease ?? 2;
 
   const s = (v: number) => v * scale;
@@ -21,16 +21,10 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: Pants
   // A-C = total pants length
   const totalLength = outseamLength;
 
-  // A(0,0) B(hipQuarter,0) C(0,totalLength) D(hipQuarter,totalLength)
-
-  // E on center front at crotch depth: A-E = crotchDepth
-  // F on side at crotch depth: B-F = A-E
-
   // E-E1: crotch extension = 1/16 hip circumference - 1cm
   const crotchExtension = hip / 16 - 1;
 
-  // A-G: hip height (Altezza Fianco) — derived ~74% of crotch depth
-  const hipHeight = crotchDepth * 0.74;
+  // A-G: hip height (Altezza Fianco) — from measurements
 
   // I-L line: E-I = 2/3 A-E going down from E (thigh reference)
   const iLineY = crotchDepth + (2 / 3) * crotchDepth;

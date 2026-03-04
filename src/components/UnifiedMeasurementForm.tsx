@@ -15,19 +15,19 @@ export const defaultUnifiedMeasurements: Record<Category, UnifiedMeasurements> =
   women: {
     waist: 70, hip: 98, waistToHip: 20, skirtLength: 60,
     bust: 92, neckCircumference: 36, shoulderLength: 13, backWidth: 36, backLength: 42,
-    thigh: 58, knee: 38, ankle: 24, crotchDepth: 26, outseamLength: 105, inseamLength: 80,
+    thigh: 58, knee: 38, ankle: 24, hipHeight: 20, crotchDepth: 26, outseamLength: 105, inseamLength: 80,
     upperArm: 28, wrist: 16, sleeveLength: 58, elbowLength: 33, armholeDepth: 14,
   },
   men: {
     waist: 88, hip: 100, waistToHip: 22, skirtLength: 65,
     bust: 102, neckCircumference: 40, shoulderLength: 15, backWidth: 42, backLength: 46,
-    thigh: 60, knee: 42, ankle: 26, crotchDepth: 28, outseamLength: 110, inseamLength: 82,
+    thigh: 60, knee: 42, ankle: 26, hipHeight: 22, crotchDepth: 28, outseamLength: 110, inseamLength: 82,
     upperArm: 32, wrist: 18, sleeveLength: 64, elbowLength: 36, armholeDepth: 16,
   },
   kids: {
     waist: 58, hip: 72, waistToHip: 14, skirtLength: 35,
     bust: 68, neckCircumference: 30, shoulderLength: 10, backWidth: 28, backLength: 30,
-    thigh: 40, knee: 28, ankle: 20, crotchDepth: 18, outseamLength: 65, inseamLength: 48,
+    thigh: 40, knee: 28, ankle: 20, hipHeight: 16.2, crotchDepth: 18, outseamLength: 65, inseamLength: 48,
     upperArm: 20, wrist: 13, sleeveLength: 42, elbowLength: 24, armholeDepth: 10,
   },
 };
