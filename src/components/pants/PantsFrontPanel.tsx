@@ -28,9 +28,9 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   // A-G: hip height — from measurements
   // A-E: crotch height — from measurements
 
-  // I-L line: E-I = 2/3 A-E going down from E (thigh reference)
+  // I-L line:  (thigh reference)
   //  const iLineY = crotchDepth + (2 / 3) * crotchDepth;
-  const iLineY = crotchDepth;
+  const iLineY = crotchDepth * 2;
 
   // X = midpoint of E1-F on crotch line
   const xCenter = (-crotchExtension + hipQuarter) / 2;
@@ -123,7 +123,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
     path += ` L ${hemInnerX} ${hemY}`;
 
     // Inseam: C1 → knee inner
-    path += ` L ${kneeInnerX} ${kneeYPos}`;
+    //  path += ` L ${kneeInnerX} ${kneeYPos}`;
 
     // Inseam: knee → thigh inner (I1)
     path += ` L ${thighInnerX} ${iY}`;
