@@ -126,7 +126,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
     path += ` L ${thighInnerX} ${iY}`;
 
     // Inseam: thigh → crotch (center front at crotch depth)
-    path += ` L ${e1X} ${crotchY}`;
+    path += ` L ${-e1X} ${crotchY}`;
 
     // Crotch curve: center front → E1 (extension)
     path += ` Q ${e1X + s(0.5)} ${crotchY + s(0.5)} ${e1X} ${crotchY - s(1.5)}`;
@@ -228,9 +228,9 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
       <text x={thighSideX + 5} y={crotchY + 4} className="fill-muted-foreground text-[9px]">
         Crotch
       </text>
-    <!--  <text x={thighSideX + 5} y={iY + 4} className="fill-muted-foreground text-[9px]">-->
-     <!--   Thigh-->
-  <!--    </text>-->
+      {/*  <text x={thighSideX + 5} y={iY + 4} className="fill-muted-foreground text-[9px]">
+        Thigh-->
+      </text>*/}
       <text x={kneeSideX + 5} y={kneeYPos + 4} className="fill-muted-foreground text-[9px]">
         Knee
       </text>
