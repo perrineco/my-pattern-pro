@@ -13,9 +13,9 @@ interface PantsMeasurementFormProps {
 }
 
 const defaultMeasurements: Record<Category, PantsMeasurements> = {
-  women: { waist: 70, hip: 98, thigh: 58, knee: 38, ankle: 24, crotchDepth: 26, outseamLength: 105, inseamLength: 80, ease: 2 },
-  men: { waist: 84, hip: 100, thigh: 60, knee: 42, ankle: 26, crotchDepth: 28, outseamLength: 110, inseamLength: 82, ease: 3 },
-  kids: { waist: 54, hip: 68, thigh: 40, knee: 28, ankle: 20, crotchDepth: 18, outseamLength: 65, inseamLength: 48, ease: 1.5 },
+  women: { waist: 70, hip: 98, thigh: 58, knee: 38, ankle: 24, hipHeight: 20, crotchDepth: 26, outseamLength: 105, inseamLength: 80, ease: 2 },
+  men: { waist: 84, hip: 100, thigh: 60, knee: 42, ankle: 26, hipHeight: 22, crotchDepth: 28, outseamLength: 110, inseamLength: 82, ease: 3 },
+  kids: { waist: 54, hip: 68, thigh: 40, knee: 28, ankle: 20, hipHeight: 16.2, crotchDepth: 18, outseamLength: 65, inseamLength: 48, ease: 1.5 },
 };
 
 export function PantsMeasurementForm({
@@ -64,6 +64,7 @@ export function PantsMeasurementForm({
           {t('section.lengths')}
         </div>
 
+        <MeasurementInput label={t('meas.hipHeight')} value={measurements.hipHeight} onChange={handleChange('hipHeight')} hint={t('hint.hipHeight')} min={10} max={30} unit={unit} />
         <MeasurementInput label={t('meas.crotchDepth')} value={measurements.crotchDepth} onChange={handleChange('crotchDepth')} hint={t('hint.waistToSeat')} min={18} max={40} unit={unit} />
         <MeasurementInput label={t('meas.outseamLength')} value={measurements.outseamLength} onChange={handleChange('outseamLength')} hint={t('hint.waistToFloor')} min={50} max={130} unit={unit} />
         <MeasurementInput label={t('meas.inseamLength')} value={measurements.inseamLength} onChange={handleChange('inseamLength')} hint={t('hint.crotchToFloor')} min={40} max={100} unit={unit} />
