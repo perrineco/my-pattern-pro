@@ -201,6 +201,8 @@ const translations: Record<string, Record<Language, string>> = {
    'guide.hip': { en: 'Hip', fr: 'Hanches' },
    'guide.waistToHip': { en: 'Waist to Hip', fr: 'Taille aux hanches' },
    'guide.skirtLength': { en: 'Skirt Length', fr: 'Longueur de jupe' },
+   'guide.pantsLength': { en: 'Pants Length', fr: 'Longueur de pantalon' },
+   'guide.crotchDepth': { en: 'Crotch Depth', fr: 'Hauteur d\'entrejambe' },
    'guide.upperArm': { en: 'Upper Arm', fr: 'Tour de bras' },
    'guide.wrist': { en: 'Wrist', fr: 'Poignet' },
    'guide.sleeveLength': { en: 'Sleeve Length', fr: 'Longueur de manche' },
@@ -219,6 +221,8 @@ const translations: Record<string, Record<Language, string>> = {
    'guide.desc.hip': { en: 'Measure around the fullest part of your hips and buttocks. Stand with feet together and keep the tape level all the way around.', fr: 'Mesurez autour de la partie la plus large des hanches et des fesses. Tenez-vous debout, pieds joints, et gardez le ruban bien horizontal.' },
    'guide.desc.waistToHip': { en: 'Measure straight down from your natural waistline to the fullest part of your hip. This is typically 18-23cm for adults.', fr: 'Mesurez en ligne droite de la taille naturelle jusqu\'à la partie la plus large des hanches. C\'est généralement 18 à 23 cm pour les adultes.' },
    'guide.desc.skirtLength': { en: 'Measure from your natural waistline down to where you want the skirt to end. Stand straight and have someone help for accuracy.', fr: 'Mesurez de la taille naturelle jusqu\'à l\'endroit où vous souhaitez que la jupe s\'arrête. Restez debout et faites-vous aider pour plus de précision.' },
+   'guide.desc.pantsLength': { en: 'Measure from your natural waistline down to the desired pants length (usually to the ankle). Stand straight and have someone help for accuracy.', fr: 'Mesurez de la taille naturelle jusqu\'à la longueur souhaitée du pantalon (généralement jusqu\'à la cheville). Restez debout et faites-vous aider pour plus de précision.' },
+   'guide.desc.crotchDepth': { en: 'Sit on a flat, hard surface. Measure from your natural waistline straight down to the seat surface. This gives you the crotch depth.', fr: 'Asseyez-vous sur une surface plane et dure. Mesurez de la taille naturelle jusqu\'à la surface du siège. Cela donne la hauteur d\'entrejambe.' },
 
    // Guide descriptions - Sleeve
    'guide.desc.upperArm': { en: 'Measure around the fullest part of your upper arm (bicep). Keep the tape snug but not tight, with your arm relaxed at your side.', fr: 'Mesurez autour de la partie la plus large du bras (biceps). Le ruban doit être ajusté mais pas serré, bras détendu le long du corps.' },

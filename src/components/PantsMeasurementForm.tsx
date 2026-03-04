@@ -39,7 +39,7 @@ export function PantsMeasurementForm({
       <div className="flex items-center justify-between">
         <h3 className="font-serif text-xl font-semibold text-foreground">{t('label.measurements')}</h3>
         <div className="flex items-center gap-2">
-          <MeasurementGuide category={category} />
+          <MeasurementGuide category={category} patternType="pants" />
           <button
             onClick={handleReset}
             className="text-sm text-muted-foreground hover:text-primary transition-colors"
