@@ -26,6 +26,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   const crotchExtension = hip / 16 - 1;
 
   // A-G: hip height — from measurements
+  // A-E: crotch height — from measurements
 
   // I-L line: E-I = 2/3 A-E going down from E (thigh reference)
   const iLineY = crotchDepth + (2 / 3) * crotchDepth;
@@ -43,7 +44,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   const waistReduction = 2;
 
   // B1 raised by 1cm for women only
-  const b1Rise = category === 'women' ? 1 : 0;
+  const b1Rise = category === "women" ? 1 : 0;
 
   // X1-L1 = 1/4 thigh circumference + 0.5 (each side of center)
   const thighHalfSpread = thigh / 4 + 0.5;
@@ -104,7 +105,11 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
     // Side seam: B1 → H (hip, side) with curve
     path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
     //`C ${pB1.x} ${pB1.y + 20}, ${pHip.x} ${pHip.y - 20}, ${pHip.x} ${pHip.y}`,
-    // Side seam: H → thigh level (L1)
+
+    // Side seam: H → F
+    path += ` L ${hipSideX} ${crotchY}`;
+
+    // Side seam: F → thigh level (L1)
     path += ` L ${thighSideX} ${iY}`;
 
     // Side seam: thigh → knee
