@@ -17,92 +17,144 @@ export function PantsBackPanel({
 
   const s = (v: number) => v * scale;
 
-  // Pattern calculations - quarter measurements for half panel
-  const waistQuarter = waist / 4;
+  // === COSTRUZIONE DIETRO (Italian Method) ===
+
+  // Rectangle ABCD
+  // A-B = 1/4 hip + 2
   const hipQuarter = hip / 4;
-  const thighHalf = thigh / 2;
-  const kneeHalf = knee / 2;
-  const ankleHalf = ankle / 2;
+  const rectWidth = hipQuarter + 2;
+  const totalLength = outseamLength;
 
-  // Back dart (larger than front - takes more of the waist reduction)
-  const dartWidth = (hip - waist) / 6; // Back takes more dart
-  const dartLength = crotchDepth * 0.5;
+  // A-E = crotch depth
+  // B-F = A-E
 
-  // Ease from measurements (default to 2 if not provided)
-  const ease = measurements.ease ?? 2;
+  // E-E1 = 1/16 hip + 3 (back crotch extension, larger than front)
+  const crotchExtension = hip / 16 + 3;
 
-  // Key positions (scaled) - back takes slightly more width
-  const waistWidth = s(waistQuarter + dartWidth + ease);
-  const hipWidth = s(hipQuarter + ease + 0.5); // Back slightly wider at hip
-  const thighWidth = s(thighHalf * 0.52 + ease); // Back takes ~52% of thigh
-  const kneeWidth = s(kneeHalf * 0.52 + ease);
-  const ankleWidth = s(ankleHalf * 0.52 + ease);
+  // E1-E2 = 1cm (crotch point raised)
+  const e2Rise = 1;
 
-  const crotchY = s(crotchDepth);
-  const kneeY = s(crotchDepth + (inseamLength * 0.5));
-  const hemY = s(outseamLength);
-  const hipY = s(crotchDepth * 0.65);
+  // A-G = hip height (Altezza Fianco)
+  const hipHeight = crotchDepth * 0.74;
 
-  // Crotch extension (back is longer than front)
-  const crotchExtension = s(hipQuarter * 0.18);
+  // E-I = A-E (same as crotch depth going down from E)
+  // I-L line at 2/3 A-E below E
+  const iLineY = crotchDepth + (2 / 3) * crotchDepth;
 
-  // Back rise adjustment (back waist sits slightly higher)
-  const backRise = s(1.5);
+  // E1-X = midpoint of E1-F
+  // E1 is at -crotchExtension, F is at rectWidth
+  const xCenter = (-crotchExtension + rectWidth) / 2;
 
-  // Build the back panel path
+  // M-O = knee height
+  const kneeY = crotchDepth + inseamLength * 0.4;
+
+  // A-A1 = 2cm, A1-A2 = 2cm (center back shifts)
+  const a1Shift = 2; // A-A1 horizontal
+  const a2Shift = 2; // A1-A2 vertical (raised waist)
+
+  // B-B1 = 2cm (waist reduction at side)
+  const waistReduction = 2;
+
+  // X1-L1 = 1/4 thigh + 2 (back is wider)
+  const thighHalfSpread = thigh / 4 + 2;
+
+  // Hem: N-C1 = 10cm, N-D1 = 10cm (or custom)
+  const hemHalfWidth = ankle / 4 + 1;
+
+  // Knee width
+  const kneeHalfSpread = knee / 4 + 1;
+
+  // N-N1 = 1cm (hem center shift)
+  const hemShift = 1;
+
+  // === Scaled screen coordinates ===
+  const ox = offsetX;
+  const oy = offsetY;
+
+  // A2 — center back waist (shifted and raised)
+  const a2X = ox + s(a1Shift);
+  const a2Y = oy - s(a2Shift);
+
+  // B1 — side waist
+  const b1X = ox + s(rectWidth - waistReduction);
+  const b1Y = oy;
+
+  // Hip level
+  const hipSideX = ox + s(rectWidth);
+  const hipY = oy + s(hipHeight);
+
+  // Crotch level
+  const crotchY = oy + s(crotchDepth);
+  const e1X = ox - s(crotchExtension);
+  const e2X = e1X;
+  const e2Y = crotchY - s(e2Rise);
+
+  // Center line X
+  const centerX = ox + s(xCenter);
+
+  // Thigh level (I-L)
+  const iY = oy + s(iLineY);
+  const thighSideX = centerX + s(thighHalfSpread);
+  const thighInnerX = centerX - s(thighHalfSpread);
+
+  // Knee level
+  const kneeYPos = oy + s(kneeY);
+  const kneeSideX = centerX + s(kneeHalfSpread);
+  const kneeInnerX = centerX - s(kneeHalfSpread);
+
+  // Hem level
+  const hemY = oy + s(totalLength);
+  const hemCenterX = centerX - s(hemShift); // N-N1 shift
+  const hemSideX = hemCenterX + s(hemHalfWidth);
+  const hemInnerX = hemCenterX - s(hemHalfWidth);
+
+  // F point (side at crotch level)
+  const fX = ox + s(rectWidth);
+  const fY = crotchY;
+
+  // Build the back panel outline
   const buildPath = () => {
-    const points: string[] = [];
+    let path = "";
 
-    // Start at waist center back (raised slightly)
-    points.push(`M ${offsetX} ${offsetY - backRise}`);
+    // Start at A2 — center back waist (shifted)
+    path += `M ${a2X} ${a2Y}`;
 
-    // Waist to dart
-    const dartX = offsetX + waistWidth * 0.35;
-    points.push(`L ${dartX - s(dartWidth / 2)} ${offsetY}`);
+    // Waist: A2 → B1 with garbo (slight curve)
+    path += ` Q ${ox + s(rectWidth * 0.5)} ${oy - s(0.5)} ${b1X} ${b1Y}`;
 
-    // Dart (deeper than front)
-    points.push(`L ${dartX} ${offsetY + s(dartLength)}`);
-    points.push(`L ${dartX + s(dartWidth / 2)} ${offsetY}`);
+    // Side seam: B1 → H (hip) with garbo
+    path += ` Q ${ox + s(rectWidth + 0.5)} ${oy + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
 
-    // Continue waist to side
-    points.push(`L ${offsetX + waistWidth} ${offsetY}`);
+    // Side seam: H → F (crotch level)
+    path += ` L ${fX} ${fY}`;
 
-    // Side seam: waist to hip curve
-    const hipX = offsetX + hipWidth;
-    points.push(`Q ${offsetX + hipWidth + s(1.5)} ${offsetY + hipY * 0.5} ${hipX} ${offsetY + hipY}`);
+    // Side seam: F → L1 (thigh)
+    path += ` L ${thighSideX} ${iY}`;
 
-    // Side seam: hip to crotch level
-    points.push(`L ${hipX} ${offsetY + crotchY}`);
+    // Side seam: L1 → knee → D1 (hem) with garbo
+    path += ` L ${kneeSideX} ${kneeYPos}`;
+    path += ` L ${hemSideX} ${hemY}`;
 
-    // Side seam: crotch to knee
-    points.push(`L ${offsetX + kneeWidth} ${offsetY + kneeY}`);
+    // Hem: D1 → N1 → C1
+    path += ` Q ${hemCenterX} ${hemY + s(0.5)} ${hemInnerX} ${hemY}`;
 
-    // Side seam: knee to hem
-    points.push(`L ${offsetX + ankleWidth} ${offsetY + hemY}`);
+    // Inseam: C1 → I1 (thigh inner) with garbo
+    path += ` L ${kneeInnerX} ${kneeYPos}`;
+    path += ` L ${thighInnerX} ${iY}`;
 
-    // Hem line
-    points.push(`L ${offsetX} ${offsetY + hemY}`);
+    // Inseam: I1 → E2 with garbo
+    path += ` Q ${ox - s(crotchExtension * 0.3)} ${iY - s(2)} ${e2X} ${e2Y}`;
 
-    // Inseam: hem to knee
-    points.push(`L ${offsetX} ${offsetY + kneeY}`);
+    // Crotch curve: E2 → G → A2 with curved line
+    path += ` Q ${e1X} ${hipY} ${ox + s(a1Shift * 0.5)} ${oy + s(hipHeight * 0.4)}`;
+    path += ` L ${a2X} ${a2Y}`;
 
-    // Inseam: knee to crotch
-    points.push(`L ${offsetX} ${offsetY + crotchY}`);
-
-    // Crotch curve (deeper for back)
-    points.push(`Q ${offsetX - crotchExtension * 0.8} ${offsetY + crotchY + s(1)} ${offsetX - crotchExtension} ${offsetY + crotchY - s(1)}`);
-    points.push(`Q ${offsetX - crotchExtension} ${offsetY + hipY * 0.8} ${offsetX} ${offsetY + hipY * 0.5}`);
-
-    // Center back to waist
-    points.push(`L ${offsetX} ${offsetY - backRise}`);
-
-    points.push(`Z`);
-
-    return points.join(" ");
+    path += ` Z`;
+    return path;
   };
 
-  const panelWidth = Math.max(waistWidth, hipWidth);
-  const panelHeight = hemY;
+  const panelWidth = Math.max(s(rectWidth), thighSideX - e1X);
+  const panelHeight = hemY - oy;
 
   return (
     <g>
@@ -114,12 +166,10 @@ export function PantsBackPanel({
         strokeWidth="2"
       />
 
-      {/* Hip line (reference) */}
+      {/* Hip line — BACINO (G-H reference) */}
       <line
-        x1={offsetX - crotchExtension}
-        y1={offsetY + hipY}
-        x2={offsetX + hipWidth}
-        y2={offsetY + hipY}
+        x1={e1X} y1={hipY}
+        x2={hipSideX} y2={hipY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
@@ -127,32 +177,35 @@ export function PantsBackPanel({
 
       {/* Crotch line (reference) */}
       <line
-        x1={offsetX - crotchExtension}
-        y1={offsetY + crotchY}
-        x2={offsetX + hipWidth}
-        y2={offsetY + crotchY}
+        x1={e1X} y1={crotchY}
+        x2={fX} y2={crotchY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
+      />
+
+      {/* I-L line — thigh reference */}
+      <line
+        x1={thighInnerX} y1={iY}
+        x2={thighSideX} y2={iY}
+        stroke="hsl(var(--muted-foreground))"
+        strokeWidth="1"
+        strokeDasharray="2,4"
       />
 
       {/* Knee line (reference) */}
       <line
-        x1={offsetX}
-        y1={offsetY + kneeY}
-        x2={offsetX + kneeWidth}
-        y2={offsetY + kneeY}
+        x1={kneeInnerX} y1={kneeYPos}
+        x2={kneeSideX} y2={kneeYPos}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
       />
 
-      {/* Grain line */}
+      {/* Grain line — DRITTO FILO / LINEA PIEGA */}
       <line
-        x1={offsetX + panelWidth * 0.4}
-        y1={offsetY + panelHeight * 0.15}
-        x2={offsetX + panelWidth * 0.4}
-        y2={offsetY + panelHeight * 0.85}
+        x1={centerX} y1={oy + s(3)}
+        x2={centerX} y2={hemY - s(3)}
         stroke="hsl(var(--pattern-stroke))"
         strokeWidth="1.5"
         markerEnd="url(#pantsArrow)"
@@ -160,16 +213,16 @@ export function PantsBackPanel({
 
       {/* Labels */}
       <text
-        x={offsetX + panelWidth * 0.4}
-        y={offsetY + panelHeight * 0.45}
+        x={centerX}
+        y={oy + panelHeight * 0.45}
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
       >
         BACK
       </text>
       <text
-        x={offsetX + panelWidth * 0.4}
-        y={offsetY + panelHeight * 0.45 + 16}
+        x={centerX}
+        y={oy + panelHeight * 0.45 + 16}
         textAnchor="middle"
         className="fill-muted-foreground text-xs"
       >
@@ -177,25 +230,16 @@ export function PantsBackPanel({
       </text>
 
       {/* Measurement labels */}
-      <text
-        x={offsetX + hipWidth + 5}
-        y={offsetY + hipY + 4}
-        className="fill-muted-foreground text-[9px]"
-      >
+      <text x={hipSideX + 5} y={hipY + 4} className="fill-muted-foreground text-[9px]">
         Hip
       </text>
-      <text
-        x={offsetX + hipWidth + 5}
-        y={offsetY + crotchY + 4}
-        className="fill-muted-foreground text-[9px]"
-      >
+      <text x={fX + 5} y={crotchY + 4} className="fill-muted-foreground text-[9px]">
         Crotch
       </text>
-      <text
-        x={offsetX + kneeWidth + 5}
-        y={offsetY + kneeY + 4}
-        className="fill-muted-foreground text-[9px]"
-      >
+      <text x={thighSideX + 5} y={iY + 4} className="fill-muted-foreground text-[9px]">
+        Thigh
+      </text>
+      <text x={kneeSideX + 5} y={kneeYPos + 4} className="fill-muted-foreground text-[9px]">
         Knee
       </text>
     </g>

@@ -30,9 +30,10 @@ export function PantsPatternPreview({ measurements }: PantsPatternPreviewProps) 
   // Pattern dimensions for single panel
   const hipQuarter = hip / 4;
   const frontCrotchExt = hip / 16 - 1; // Italian method: 1/16 hip - 1
-  const backCrotchExt = hipQuarter * 0.18; // Back has larger extension
+  const backCrotchExt = hip / 16 + 3; // Back: 1/16 hip + 3
+  const backRectWidth = hipQuarter + 2; // Back rectangle is wider
   const crotchExtension = Math.max(frontCrotchExt, backCrotchExt);
-  const singlePatternWidth = hipQuarter + crotchExtension + 10;
+  const singlePatternWidth = Math.max(hipQuarter, backRectWidth) + crotchExtension + 10;
   const patternHeight = outseamLength + 10;
 
   // Calculate scale to fit both panels side by side
