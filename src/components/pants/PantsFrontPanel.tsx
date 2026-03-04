@@ -1,13 +1,14 @@
-import { PantsMeasurements } from "@/types/sloper";
+import { PantsMeasurements, Category } from "@/types/sloper";
 
 interface PantsFrontPanelProps {
   measurements: PantsMeasurements;
   offsetX: number;
   offsetY: number;
   scale: number;
+  category: Category;
 }
 
-export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: PantsFrontPanelProps) {
+export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, category }: PantsFrontPanelProps) {
   const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
   const ease = measurements.ease ?? 2;
 
@@ -41,6 +42,9 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: Pants
   // B-B1 = 2cm (waist reduction at side)
   const waistReduction = 2;
 
+  // B1 raised by 1cm for women only
+  const b1Rise = category === 'women' ? 1 : 0;
+
   // X1-L1 = 1/4 thigh circumference + 0.5 (each side of center)
   const thighHalfSpread = thigh / 4 + 0.5;
 
@@ -58,7 +62,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: Pants
   const a1X = offsetX;
   const a1Y = offsetY;
   const b1X = offsetX + s(hipQuarter - waistReduction);
-  const b1Y = offsetY;
+  const b1Y = offsetY - s(b1Rise);
 
   // Hip level
   const hipSideX = offsetX + s(hipQuarter);
