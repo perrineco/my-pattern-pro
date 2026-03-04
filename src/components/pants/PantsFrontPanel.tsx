@@ -22,8 +22,8 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   // A-C = total pants length
   const totalLength = outseamLength;
 
-  // E-E1: crotch extension = 1/16 hip circumference - 1cm
-  const crotchExtension = hip / 16 - 1;
+  // E-E1: crotch extension
+  const crotchExtension = category === "women" ? hip / 20 : hip / 16 - 1;
 
   // A-G: hip height — from measurements
   // A-E: crotch height — from measurements
@@ -35,7 +35,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   // X = midpoint of E1-F on crotch line
   const xCenter = (-crotchExtension + hipQuarter) / 2;
 
-  // M-N: vertical grain line through X (LINEA PIEGA / DRITTO FILO)
+  // M-N: vertical grain line through X
   // M at top, N at bottom
 
   // M-O: knee height — approximate from measurements
