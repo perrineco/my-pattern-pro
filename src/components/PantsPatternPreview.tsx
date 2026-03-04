@@ -1,14 +1,15 @@
 import { useRef, useState, useEffect } from "react";
-import { PantsMeasurements } from "@/types/sloper";
+import { PantsMeasurements, Category } from "@/types/sloper";
 import { PantsFrontPanel } from "./pants/PantsFrontPanel";
 import { PantsBackPanel } from "./pants/PantsBackPanel";
 import { PantsLegend } from "./pants/PantsLegend";
 
 interface PantsPatternPreviewProps {
   measurements: PantsMeasurements;
+  category: Category;
 }
 
-export function PantsPatternPreview({ measurements }: PantsPatternPreviewProps) {
+export function PantsPatternPreview({ measurements, category }: PantsPatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
@@ -81,6 +82,7 @@ export function PantsPatternPreview({ measurements }: PantsPatternPreviewProps) 
           offsetX={frontOffsetX}
           offsetY={offsetY}
           scale={scale}
+          category={category}
         />
 
         {/* Back Panel */}
@@ -89,6 +91,7 @@ export function PantsPatternPreview({ measurements }: PantsPatternPreviewProps) 
           offsetX={backOffsetX}
           offsetY={offsetY}
           scale={scale}
+          category={category}
         />
       </svg>
 
