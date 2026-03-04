@@ -7,12 +7,7 @@ interface PantsFrontPanelProps {
   scale: number;
 }
 
-export function PantsFrontPanel({
-  measurements,
-  offsetX,
-  offsetY,
-  scale,
-}: PantsFrontPanelProps) {
+export function PantsFrontPanel({ measurements, offsetX, offsetY, scale }: PantsFrontPanelProps) {
   const { waist, hip, thigh, knee, ankle, crotchDepth, outseamLength, inseamLength } = measurements;
   const ease = measurements.ease ?? 2;
 
@@ -22,7 +17,7 @@ export function PantsFrontPanel({
 
   // Rectangle ABCD
   // A-B = 1/4 hip circumference
-  const hipQuarter = hip / 4;
+  const hipQuarter = hip / 4 + ease;
   // A-C = total pants length
   const totalLength = outseamLength;
 
@@ -104,7 +99,7 @@ export function PantsFrontPanel({
     // Start at A1 — center front, waist
     path += `M ${a1X} ${a1Y}`;
 
-    // Waist: A1 → B1 (con garbo — slight curve for waist shaping)
+    // Waist: A1 → B1 (slight curve for waist shaping)
     path += ` L ${b1X} ${b1Y}`;
 
     // Side seam: B1 → H (hip, side) with curve
@@ -149,17 +144,14 @@ export function PantsFrontPanel({
   return (
     <g>
       {/* Main pattern piece */}
-      <path
-        d={buildPath()}
-        fill="hsl(var(--pattern-fill))"
-        stroke="hsl(var(--pattern-stroke))"
-        strokeWidth="2"
-      />
+      <path d={buildPath()} fill="hsl(var(--pattern-fill))" stroke="hsl(var(--pattern-stroke))" strokeWidth="2" />
 
       {/* Hip line — BACINO (reference) */}
       <line
-        x1={e1X} y1={hipY}
-        x2={hipSideX} y2={hipY}
+        x1={e1X}
+        y1={hipY}
+        x2={hipSideX}
+        y2={hipY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
@@ -167,8 +159,10 @@ export function PantsFrontPanel({
 
       {/* Crotch line (reference) */}
       <line
-        x1={e1X} y1={crotchY}
-        x2={thighSideX} y2={crotchY}
+        x1={e1X}
+        y1={crotchY}
+        x2={thighSideX}
+        y2={crotchY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
@@ -176,8 +170,10 @@ export function PantsFrontPanel({
 
       {/* I-L line — thigh reference */}
       <line
-        x1={thighInnerX} y1={iY}
-        x2={thighSideX} y2={iY}
+        x1={thighInnerX}
+        y1={iY}
+        x2={thighSideX}
+        y2={iY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="2,4"
@@ -185,8 +181,10 @@ export function PantsFrontPanel({
 
       {/* Knee line (reference) */}
       <line
-        x1={kneeInnerX} y1={kneeYPos}
-        x2={kneeSideX} y2={kneeYPos}
+        x1={kneeInnerX}
+        y1={kneeYPos}
+        x2={kneeSideX}
+        y2={kneeYPos}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
@@ -194,28 +192,20 @@ export function PantsFrontPanel({
 
       {/* Grain line — DRITTO FILO / LINEA PIEGA */}
       <line
-        x1={centerX} y1={oy + s(3)}
-        x2={centerX} y2={hemY - s(3)}
+        x1={centerX}
+        y1={oy + s(3)}
+        x2={centerX}
+        y2={hemY - s(3)}
         stroke="hsl(var(--pattern-stroke))"
         strokeWidth="1.5"
         markerEnd="url(#pantsArrow)"
       />
 
       {/* Labels */}
-      <text
-        x={centerX}
-        y={oy + panelHeight * 0.45}
-        textAnchor="middle"
-        className="fill-foreground font-serif text-sm"
-      >
+      <text x={centerX} y={oy + panelHeight * 0.45} textAnchor="middle" className="fill-foreground font-serif text-sm">
         FRONT
       </text>
-      <text
-        x={centerX}
-        y={oy + panelHeight * 0.45 + 16}
-        textAnchor="middle"
-        className="fill-muted-foreground text-xs"
-      >
+      <text x={centerX} y={oy + panelHeight * 0.45 + 16} textAnchor="middle" className="fill-muted-foreground text-xs">
         Cut 2
       </text>
 
