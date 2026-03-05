@@ -97,6 +97,7 @@ export function BodicePatternPreview({ measurements, panel = "front" }: BodicePa
   };
 
   return (
+    <ZoomablePatternWrapper minHeight="400px">
     <svg ref={svgRef} viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full min-h-[400px]">
       {/* Grid background */}
       <defs>
