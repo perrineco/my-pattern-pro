@@ -132,7 +132,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
 
     // Crotch curve: E1 → G (hip level center) → A1 (waist) — "con linea curva"
     //path += ` Q ${e1X} ${hipY} ${offsetX} ${offsetY + s(hipHeight * 0.5)}`;
-    path += ` C ${e1X / 2} ${crotchY}, ${a1X} ${crotchY - s(hipHeight) / 4}, ${a1X} ${s(hipHeight)}`;
+    path += ` C ${e1X} ${crotchY - s(5)}, ${a1X} ${hipY + s(5)}, ${a1X} ${hipY}`;
     // Center front back to waist G-A
     path += ` L ${a1X} ${a1Y}`;
 
@@ -228,7 +228,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
         Crotch
       </text>
       {/*  <text x={thighSideX + 5} y={iY + 4} className="fill-muted-foreground text-[9px]">
-        Thigh-->
+        Thigh
       </text>*/}
       <text x={kneeSideX + 5} y={kneeYPos + 4} className="fill-muted-foreground text-[9px]">
         Knee
