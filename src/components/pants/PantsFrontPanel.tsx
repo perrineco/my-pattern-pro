@@ -14,7 +14,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
 
   const s = (v: number) => v * scale;
 
-  // === COSTRUZIONE DAVANTI (Italian Method) ===
+  // === CONSTRUCTION FRONT ===
 
   // Rectangle ABCD
   // A-B = 1/4 hip circumference
@@ -132,7 +132,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
 
     // Crotch curve: E1 → G (hip level center) → A1 (waist) — "con linea curva"
     //path += ` Q ${e1X} ${hipY} ${offsetX} ${offsetY + s(hipHeight * 0.5)}`;
-    path += ` `C ${pE1.x} ${pE1.y - 40}, ${offsetX} ${hipY}, ${a1X} ${s(hipHeight)}`,
+    path += ` `C ${e1X/2} ${crotchY}, ${a1X} ${crotchY-s(hipHeight)/4}, ${a1X} ${s(hipHeight)}`,
     
     // Center front back to waist G-A
     path += ` L ${a1X} ${a1Y}`;
