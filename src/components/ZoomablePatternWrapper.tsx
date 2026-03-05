@@ -79,6 +79,7 @@ export function ZoomablePatternWrapper({ children, className = "", minHeight = "
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onDoubleClick={handleDoubleClick}
     >
       <div
         style={{
