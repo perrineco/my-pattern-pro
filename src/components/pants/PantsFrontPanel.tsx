@@ -90,53 +90,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   const hemInnerX = centerX - s(hemHalfWidth);
 
   // Build the front panel outline
-  const buildPath = () => {
-    let path = "";
-
-    // Start at A1 — center front, waist
-    path += `M ${a1X} ${a1Y}`;
-
-    // Waist: A1 → B1 (slight curve for waist shaping)
-    //  path += ` L ${b1X} ${b1Y}`;
-    path += ` Q ${(a1X + b1X) / 2} ${a1Y + 5}, ${b1X} ${b1Y}`;
-
-    // Side seam: B1 → H (hip, side) with curve
-    path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
-    //`C ${pB1.x} ${pB1.y + 20}, ${pHip.x} ${pHip.y - 20}, ${pHip.x} ${pHip.y}`,
-
-    // Side seam: H → F
-    path += ` L ${hipSideX} ${crotchY}`;
-
-    // Side seam: F → thigh level (L1)
-    path += ` L ${thighSideX} ${iY}`;
-
-    // Side seam: thigh → knee
-    //   path += ` L ${kneeSideX} ${kneeYPos}`;
-
-    // Side seam: knee → hem (D1)
-    path += ` L ${hemSideX} ${hemY}`;
-
-    // Hem line: D1 → C1
-    path += ` L ${hemInnerX} ${hemY}`;
-
-    // Inseam: C1 → knee inner
-    //  path += ` L ${kneeInnerX} ${kneeYPos}`;
-
-    // Inseam: knee → thigh inner (C-I1)
-    path += ` L ${thighInnerX} ${iY}`;
-
-    // Inseam: thigh → crotch (I1-E1)
-    path += ` Q ${thighInnerX + s(1)} ${crotchY + s(0.5)} ${e1X} ${crotchY}`;
-
-    //   path += ` Q ${e1X + s(0.5)} ${crotchY + s(0.5)} ${e1X} ${crotchY - s(1.5)}`;
-
-    // Crotch curve: E1 → G (hip level center) → A1 (waist) — "con linea curva"
-    //path += ` Q ${e1X} ${hipY} ${offsetX} ${offsetY + s(hipHeight * 0.5)}`;
-    path += ` C ${e1X} ${crotchY - s(5)}, ${a1X} ${hipY + s(5)}, ${a1X} ${hipY}`;
-    // Center front back to waist G-A
-    path += ` L ${a1X} ${a1Y}`;
-
-    path += ` Z`;
+  
     return `M ${offsetX} ${offsetY} L ${offsetX + s(hipQuarter)} ${offsetY} L ${offsetX + s(hipQuarter)} ${offsetY + s(totalLength)} L ${offsetX} ${offsetY + s(totalLength)} Z`;
     //    return path;
   };
