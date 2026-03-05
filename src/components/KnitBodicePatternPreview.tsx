@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { BodiceMeasurements, Category } from "@/types/sloper";
 import { KnitBodicePanel } from "./knit-bodice/KnitBodicePanel";
 import { KnitBodiceLegend } from "./knit-bodice/KnitBodiceLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface KnitBodicePatternPreviewProps {
   measurements: BodiceMeasurements;

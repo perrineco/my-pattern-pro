@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { BodiceMeasurements, Category } from "@/types/sloper";
 import { DartlessBodicePanel } from "./dartless-bodice/DartlessBodicePanel";
 import { DartlessBodiceLegend } from "./dartless-bodice/DartlessBodiceLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface DartlessBodicePatternPreviewProps {
   measurements: BodiceMeasurements;
