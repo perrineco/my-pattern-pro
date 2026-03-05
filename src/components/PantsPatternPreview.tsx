@@ -52,7 +52,7 @@ export function PantsPatternPreview({ measurements, category }: PantsPatternPrev
   const backOffsetX = dimensions.width / 2 + padding / 2 + crotchExtensionScaled;
 
   return (
-    <div className="w-full h-full min-h-[600px] bg-pattern-grid/30 rounded-lg relative overflow-hidden">
+    <ZoomablePatternWrapper className="w-full h-full bg-pattern-grid/30 rounded-lg" minHeight="600px">
       {/* Grid pattern background */}
       <div
         className="absolute inset-0 opacity-30"
