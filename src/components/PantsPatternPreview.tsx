@@ -31,9 +31,9 @@ export function PantsPatternPreview({ measurements, category }: PantsPatternPrev
 
   // Pattern dimensions for single panel
   const hipQuarter = hip / 4;
-  const frontCrotchExt = hip / 16 - 1; // Italian method: 1/16 hip - 1
-  const backCrotchExt = hip / 16 + 3; // Back: 1/16 hip + 3
-  const backRectWidth = hipQuarter + 2; // Back rectangle is wider
+  const frontCrotchExt = hip / 16 - 1;
+  const backCrotchExt = hip / 16 + 3;
+  const backRectWidth = hipQuarter + 2;
   const crotchExtension = Math.max(frontCrotchExt, backCrotchExt);
   const singlePatternWidth = Math.max(hipQuarter, backRectWidth) + crotchExtension + 10;
   const patternHeight = outseamLength + 10;
@@ -47,9 +47,16 @@ export function PantsPatternPreview({ measurements, category }: PantsPatternPrev
   // Panel offsets - account for crotch extension
   const crotchExtensionScaled = crotchExtension * scale;
   const frontOffsetX = padding + crotchExtensionScaled;
-  const offsetY = padding + 10; // Extra space for back rise
+  const offsetY = padding + 10;
 
-  const backOffsetX = dimensions.width / 2 + padding / 2 + crotchExtensionScaled;
+  // Back panel closer to front
+  const frontPanelRight = frontOffsetX + hipQuarter * scale;
+  const backOffsetX = frontPanelRight + 30 + crotchExtensionScaled;
+
+  // Mirror transform for back panel
+  const backLeftEdge = backOffsetX - backCrotchExt * scale;
+  const backRightEdge = backOffsetX + backRectWidth * scale;
+  const backMirrorX = backLeftEdge + backRightEdge;
 
   return (
     <ZoomablePatternWrapper className="w-full h-full bg-pattern-grid/30 rounded-lg" minHeight="600px">
@@ -86,14 +93,17 @@ export function PantsPatternPreview({ measurements, category }: PantsPatternPrev
           category={category}
         />
 
-        {/* Back Panel */}
-        <PantsBackPanel
-          measurements={measurements}
-          offsetX={backOffsetX}
-          offsetY={offsetY}
-          scale={scale}
-          category={category}
-        />
+        {/* Back Panel - mirrored */}
+        <g transform={`translate(${backMirrorX}, 0) scale(-1, 1)`}>
+          <PantsBackPanel
+            measurements={measurements}
+            offsetX={backOffsetX}
+            offsetY={offsetY}
+            scale={scale}
+            category={category}
+            mirrored
+          />
+        </g>
       </svg>
 
       {/* Legend */}

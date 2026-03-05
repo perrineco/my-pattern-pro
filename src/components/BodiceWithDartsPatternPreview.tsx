@@ -36,7 +36,7 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
 
   // Calculate scale to fit both panels side by side
   const padding = 60;
-  const gap = 40;
+  const gap = 20;
   const availableWidth = dimensions.width - padding * 2 - gap;
   const availableHeight = dimensions.height - padding * 2;
   const scale = Math.min(availableWidth / (patternWidth * 2), availableHeight / patternHeight, 8);
@@ -51,6 +51,7 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
 
   const frontOffsetX = startX;
   const backOffsetX = startX + scaledWidth + gap;
+  const backMirrorX = 2 * backOffsetX + scaledWidth;
 
   return (
     <ZoomablePatternWrapper minHeight="400px">
@@ -75,15 +76,18 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
         category={category}
       />
 
-      {/* Back panel */}
-      <BodiceDartsPanel
-        measurements={measurements}
-        offsetX={backOffsetX}
-        offsetY={offsetY}
-        scale={scale}
-        panel="back"
-        category={category}
-      />
+      {/* Back panel - mirrored */}
+      <g transform={`translate(${backMirrorX}, 0) scale(-1, 1)`}>
+        <BodiceDartsPanel
+          measurements={measurements}
+          offsetX={backOffsetX}
+          offsetY={offsetY}
+          scale={scale}
+          panel="back"
+          category={category}
+          mirrored
+        />
+      </g>
 
       {/* Measurement annotations */}
       <g className="text-[10px]">

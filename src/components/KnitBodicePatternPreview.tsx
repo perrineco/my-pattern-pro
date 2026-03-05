@@ -28,7 +28,7 @@ export function KnitBodicePatternPreview({ measurements, category }: KnitBodiceP
 
   const { bust, backWidth, backLength } = measurements;
 
-  const ease = 0; // Knit has zero or negative ease
+  const ease = 0;
   const bustQuarter = bust / 4;
   const backWidthHalf = backWidth / 2;
 
@@ -42,12 +42,15 @@ export function KnitBodicePatternPreview({ measurements, category }: KnitBodiceP
   const availableHeight = dimensions.height - padding * 2;
   const scale = Math.min(availableWidth / singlePatternWidth, availableHeight / patternHeight, 8);
 
+  const backPanelWidth = singlePatternWidth * scale;
+
   // Front panel offset (left side)
   const frontOffsetX = padding;
   const offsetY = padding;
 
-  // Back panel offset (right side)
-  const backOffsetX = dimensions.width / 2 + padding / 2;
+  // Back panel offset (right side) - closer to front, mirrored
+  const backOffsetX = frontOffsetX + backPanelWidth + 25;
+  const backMirrorX = 2 * backOffsetX + backPanelWidth;
 
   return (
     <ZoomablePatternWrapper className="w-full h-full bg-pattern-grid/30 rounded-lg" minHeight="500px">
@@ -85,15 +88,18 @@ export function KnitBodicePatternPreview({ measurements, category }: KnitBodiceP
           category={category}
         />
 
-        {/* Back Panel */}
-        <KnitBodicePanel
-          measurements={measurements}
-          offsetX={backOffsetX}
-          offsetY={offsetY}
-          scale={scale}
-          panel="back"
-          category={category}
-        />
+        {/* Back Panel - mirrored */}
+        <g transform={`translate(${backMirrorX}, 0) scale(-1, 1)`}>
+          <KnitBodicePanel
+            measurements={measurements}
+            offsetX={backOffsetX}
+            offsetY={offsetY}
+            scale={scale}
+            panel="back"
+            category={category}
+            mirrored
+          />
+        </g>
       </svg>
 
       {/* Legend */}

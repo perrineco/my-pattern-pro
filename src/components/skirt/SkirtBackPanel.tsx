@@ -20,6 +20,7 @@ interface SkirtBackPanelProps {
   offsetY: number;
   category: Category;
   centerToDartScaled: number;
+  mirrored?: boolean;
 }
 
 export function SkirtBackPanel({
@@ -38,10 +39,12 @@ export function SkirtBackPanel({
   offsetX,
   offsetY,
   centerToDartScaled,
+  mirrored,
 }: SkirtBackPanelProps) {
-  // Back panel dart values are now passed in directly (already calculated differently from front)
+  const tm: React.CSSProperties | undefined = mirrored
+    ? { transform: 'scaleX(-1)', transformBox: 'fill-box' as const, transformOrigin: 'center' }
+    : undefined;
 
-  // Create the path for the back panel (using direct dart values)
   const panelPath = `
     M ${offsetX} ${offsetY}
     L ${offsetX + centerToDartScaled} ${offsetY}
@@ -113,6 +116,7 @@ export function SkirtBackPanel({
           y={offsetY - 22}
           textAnchor="middle"
           className="fill-primary text-xs font-sans"
+          style={tm}
         >
           ¼ waist = {(waistQuarter + dartWidth + ease).toFixed(1)}cm
         </text>
@@ -134,6 +138,7 @@ export function SkirtBackPanel({
           textAnchor="start"
           className="fill-primary text-xs font-sans"
           transform={`rotate(90, ${offsetX + patternWidth + 25}, ${offsetY + waistToHipScaled + (patternHeight - waistToHipScaled) / 2})`}
+          style={tm}
         >
           {(skirtLength - waistToHip).toFixed(1)}cm
         </text>
@@ -145,6 +150,7 @@ export function SkirtBackPanel({
         y={offsetY + patternHeight / 2}
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
+        style={tm}
       >
         BACK
       </text>
@@ -153,6 +159,7 @@ export function SkirtBackPanel({
         y={offsetY + patternHeight / 2 + 18}
         textAnchor="middle"
         className="fill-muted-foreground text-xs font-sans"
+        style={tm}
       >
         Cut 1 on fold
       </text>
