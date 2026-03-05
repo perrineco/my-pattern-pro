@@ -99,4 +99,5 @@ export function PantsPatternPreview({ measurements, category }: PantsPatternPrev
       {/* Legend */}
       <PantsLegend />
     </ZoomablePatternWrapper>
+  );
 }
