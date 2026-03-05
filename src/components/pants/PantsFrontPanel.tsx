@@ -137,7 +137,8 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
     path += ` L ${a1X} ${a1Y}`;
 
     path += ` Z`;
-    return path;
+    return `M ${offsetX} ${offsetY} L ${offsetX + s(hipQuarter)} ${offsetY} L ${offsetX + s(hipQuarter)} ${offsetY + s(totalLength)} L ${offsetX} ${offsetY + s(totalLength)} Z`;
+    //    return path;
   };
 
   const panelHeight = s(totalLength);
