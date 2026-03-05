@@ -8,18 +8,12 @@ interface PantsBackPanelProps {
   category: Category;
 }
 
-export function PantsBackPanel({
-  measurements,
-  offsetX,
-  offsetY,
-  scale,
-  category,
-}: PantsBackPanelProps) {
+export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category }: PantsBackPanelProps) {
   const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
 
   const s = (v: number) => v * scale;
 
-  // === COSTRUZIONE DIETRO (Italian Method) ===
+  // === CONSTRUCTION BACK ===
 
   // Rectangle ABCD
   // A-B = 1/4 hip + 2
@@ -54,7 +48,7 @@ export function PantsBackPanel({
   const waistReduction = 2;
 
   // B1 raised by 1cm for women only
-  const b1Rise = category === 'women' ? 1 : 0;
+  const b1Rise = category === "women" ? 1 : 0;
 
   // X1-L1 = 1/4 thigh + 2 (back is wider)
   const thighHalfSpread = thigh / 4 + 2;
@@ -73,44 +67,44 @@ export function PantsBackPanel({
   const oy = offsetY;
 
   // A2 — center back waist (shifted and raised)
-  const a2X = ox + s(a1Shift);
-  const a2Y = oy - s(a2Shift);
+  const a2X = offsetX + s(a1Shift);
+  const a2Y = offsetY - s(a2Shift);
 
   // B1 — side waist (raised 1cm for women)
-  const b1X = ox + s(rectWidth - waistReduction);
-  const b1Y = oy - s(b1Rise);
+  const b1X = offsetX + s(rectWidth - waistReduction);
+  const b1Y = offsetY - s(b1Rise);
 
   // Hip level
-  const hipSideX = ox + s(rectWidth);
-  const hipY = oy + s(hipHeight);
+  const hipSideX = offsetX + s(rectWidth);
+  const hipY = offsetY + s(hipHeight);
 
   // Crotch level
-  const crotchY = oy + s(crotchDepth);
-  const e1X = ox - s(crotchExtension);
+  const crotchY = offsetY + s(crotchDepth);
+  const e1X = offsetX - s(crotchExtension);
   const e2X = e1X;
   const e2Y = crotchY - s(e2Rise);
 
   // Center line X
-  const centerX = ox + s(xCenter);
+  const centerX = offsetX + s(xCenter);
 
   // Thigh level (I-L)
-  const iY = oy + s(iLineY);
+  const iY = offsetY + s(iLineY);
   const thighSideX = centerX + s(thighHalfSpread);
   const thighInnerX = centerX - s(thighHalfSpread);
 
   // Knee level
-  const kneeYPos = oy + s(kneeY);
+  const kneeYPos = offsetY + s(kneeY);
   const kneeSideX = centerX + s(kneeHalfSpread);
   const kneeInnerX = centerX - s(kneeHalfSpread);
 
   // Hem level
-  const hemY = oy + s(totalLength);
+  const hemY = offsetY + s(totalLength);
   const hemCenterX = centerX - s(hemShift); // N-N1 shift
   const hemSideX = hemCenterX + s(hemHalfWidth);
   const hemInnerX = hemCenterX - s(hemHalfWidth);
 
   // F point (side at crotch level)
-  const fX = ox + s(rectWidth);
+  const fX = offsetX + s(rectWidth);
   const fY = crotchY;
 
   // Build the back panel outline
@@ -121,10 +115,10 @@ export function PantsBackPanel({
     path += `M ${a2X} ${a2Y}`;
 
     // Waist: A2 → B1 with garbo (slight curve)
-    path += ` Q ${ox + s(rectWidth * 0.5)} ${oy - s(0.5)} ${b1X} ${b1Y}`;
+    path += ` Q ${offsetX + s(rectWidth * 0.5)} ${offsetY - s(0.5)} ${b1X} ${b1Y}`;
 
     // Side seam: B1 → H (hip) with garbo
-    path += ` Q ${ox + s(rectWidth + 0.5)} ${oy + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
+    path += ` Q ${offsetX + s(rectWidth + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
 
     // Side seam: H → F (crotch level)
     path += ` L ${fX} ${fY}`;
@@ -144,10 +138,10 @@ export function PantsBackPanel({
     path += ` L ${thighInnerX} ${iY}`;
 
     // Inseam: I1 → E2 with garbo
-    path += ` Q ${ox - s(crotchExtension * 0.3)} ${iY - s(2)} ${e2X} ${e2Y}`;
+    path += ` Q ${offsetX - s(crotchExtension * 0.3)} ${iY - s(2)} ${e2X} ${e2Y}`;
 
     // Crotch curve: E2 → G → A2 with curved line
-    path += ` Q ${e1X} ${hipY} ${ox + s(a1Shift * 0.5)} ${oy + s(hipHeight * 0.4)}`;
+    path += ` Q ${e1X} ${hipY} ${offsetX + s(a1Shift * 0.5)} ${offsetY + s(hipHeight * 0.4)}`;
     path += ` L ${a2X} ${a2Y}`;
 
     path += ` Z`;
@@ -155,22 +149,19 @@ export function PantsBackPanel({
   };
 
   const panelWidth = Math.max(s(rectWidth), thighSideX - e1X);
-  const panelHeight = hemY - oy;
+  const panelHeight = hemY - offsetY;
 
   return (
     <g>
       {/* Main pattern piece */}
-      <path
-        d={buildPath()}
-        fill="hsl(var(--pattern-fill))"
-        stroke="hsl(var(--pattern-stroke))"
-        strokeWidth="2"
-      />
+      <path d={buildPath()} fill="hsl(var(--pattern-fill))" stroke="hsl(var(--pattern-stroke))" strokeWidth="2" />
 
       {/* Hip line — BACINO (G-H reference) */}
       <line
-        x1={e1X} y1={hipY}
-        x2={hipSideX} y2={hipY}
+        x1={e1X}
+        y1={hipY}
+        x2={hipSideX}
+        y2={hipY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
@@ -178,8 +169,10 @@ export function PantsBackPanel({
 
       {/* Crotch line (reference) */}
       <line
-        x1={e1X} y1={crotchY}
-        x2={fX} y2={crotchY}
+        x1={e1X}
+        y1={crotchY}
+        x2={fX}
+        y2={crotchY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
@@ -187,8 +180,10 @@ export function PantsBackPanel({
 
       {/* I-L line — thigh reference */}
       <line
-        x1={thighInnerX} y1={iY}
-        x2={thighSideX} y2={iY}
+        x1={thighInnerX}
+        y1={iY}
+        x2={thighSideX}
+        y2={iY}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="2,4"
@@ -196,8 +191,10 @@ export function PantsBackPanel({
 
       {/* Knee line (reference) */}
       <line
-        x1={kneeInnerX} y1={kneeYPos}
-        x2={kneeSideX} y2={kneeYPos}
+        x1={kneeInnerX}
+        y1={kneeYPos}
+        x2={kneeSideX}
+        y2={kneeYPos}
         stroke="hsl(var(--muted-foreground))"
         strokeWidth="1"
         strokeDasharray="3,3"
@@ -205,28 +202,20 @@ export function PantsBackPanel({
 
       {/* Grain line — DRITTO FILO / LINEA PIEGA */}
       <line
-        x1={centerX} y1={oy + s(3)}
-        x2={centerX} y2={hemY - s(3)}
+        x1={centerX}
+        y1={oy + s(3)}
+        x2={centerX}
+        y2={hemY - s(3)}
         stroke="hsl(var(--pattern-stroke))"
         strokeWidth="1.5"
         markerEnd="url(#pantsArrow)"
       />
 
       {/* Labels */}
-      <text
-        x={centerX}
-        y={oy + panelHeight * 0.45}
-        textAnchor="middle"
-        className="fill-foreground font-serif text-sm"
-      >
+      <text x={centerX} y={oy + panelHeight * 0.45} textAnchor="middle" className="fill-foreground font-serif text-sm">
         BACK
       </text>
-      <text
-        x={centerX}
-        y={oy + panelHeight * 0.45 + 16}
-        textAnchor="middle"
-        className="fill-muted-foreground text-xs"
-      >
+      <text x={centerX} y={oy + panelHeight * 0.45 + 16} textAnchor="middle" className="fill-muted-foreground text-xs">
         Cut 2
       </text>
 
