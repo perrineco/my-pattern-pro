@@ -117,8 +117,8 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       <line x1={pos.leftShoulderX - 25} y1={shoulderPtY} x2={pos.leftShoulderX - 15} y2={shoulderPtY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={pos.leftShoulderX - 25} y1={wristArmY} x2={pos.leftShoulderX - 15} y2={wristArmY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
-        <circle cx={pos.leftShoulderX - 20} cy={(shoulderPtY + wristArmY) / 2} r="10" fill={getCircleFill(3)} />
-        <text x={pos.leftShoulderX - 20} y={(shoulderPtY + wristArmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">3</text>
+        <circle cx={pos.leftShoulderX - 20} cy={(shoulderPtY + wristArmY) / 2} r="7" fill={getCircleFill(3)} />
+        <text x={pos.leftShoulderX - 20} y={(shoulderPtY + wristArmY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">3</text>
       </g>
 
       {/* 4. Elbow Length */}
