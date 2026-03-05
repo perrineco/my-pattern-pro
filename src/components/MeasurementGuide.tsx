@@ -193,12 +193,13 @@ interface MeasurementInstructionProps {
   color: string;
   description: string;
   highlighted?: boolean;
+  onClick?: () => void;
 }
 
-const MeasurementInstruction = React.forwardRef<HTMLDivElement, MeasurementInstructionProps>(({ number, name, description, highlighted }, ref) => {
+const MeasurementInstruction = React.forwardRef<HTMLDivElement, MeasurementInstructionProps>(({ number, name, description, highlighted, onClick }, ref) => {
   const highlightColor = "#f97316";
   return (
-    <div ref={ref} className={`flex gap-3 rounded-lg p-2 transition-colors ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : ''}`}>
+    <div ref={ref} onClick={onClick} className={`flex gap-3 rounded-lg p-2 transition-colors cursor-pointer ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : 'hover:bg-muted/50'}`}>
       <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground bg-foreground" style={highlighted ? { backgroundColor: highlightColor } : undefined}>
         {number}
       </div>
