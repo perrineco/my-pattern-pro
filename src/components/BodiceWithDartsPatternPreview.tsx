@@ -107,5 +107,6 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
       {/* Legend */}
       <BodiceDartsLegend x={dimensions.width - 135} y={dimensions.height - 70} />
     </svg>
+    </ZoomablePatternWrapper>
   );
 }

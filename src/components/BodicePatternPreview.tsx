@@ -199,5 +199,6 @@ export function BodicePatternPreview({ measurements, panel = "front" }: BodicePa
         </text>
       </g>
     </svg>
+    </ZoomablePatternWrapper>
   );
 }
