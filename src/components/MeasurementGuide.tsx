@@ -53,12 +53,12 @@ export function MeasurementGuide({ category, patternType = 'skirt' }: Measuremen
               />
             </div>
             <div className="space-y-4">
-              <MeasurementInstruction ref={el => { instructionRefs.current[1] = el; }} number={1} name={t('guide.waist')} color="hsl(var(--primary))" description={t('guide.desc.waist')} highlighted={highlightedNumber === 1} />
-              <MeasurementInstruction ref={el => { instructionRefs.current[2] = el; }} number={2} name={t('guide.hip')} color="hsl(var(--destructive))" description={t('guide.desc.hip')} highlighted={highlightedNumber === 2} />
-              <MeasurementInstruction ref={el => { instructionRefs.current[3] = el; }} number={3} name={t('guide.waistToHip')} color="hsl(var(--chart-3))" description={t('guide.desc.waistToHip')} highlighted={highlightedNumber === 3} />
-              <MeasurementInstruction ref={el => { instructionRefs.current[4] = el; }} number={4} name={isPants ? t('guide.pantsLength') : t('guide.skirtLength')} color="hsl(var(--chart-4))" description={isPants ? t('guide.desc.pantsLength') : t('guide.desc.skirtLength')} highlighted={highlightedNumber === 4} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[1] = el; }} number={1} name={t('guide.waist')} color="hsl(var(--primary))" description={t('guide.desc.waist')} highlighted={highlightedNumber === 1} onClick={() => handleNumberClick(1)} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[2] = el; }} number={2} name={t('guide.hip')} color="hsl(var(--destructive))" description={t('guide.desc.hip')} highlighted={highlightedNumber === 2} onClick={() => handleNumberClick(2)} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[3] = el; }} number={3} name={t('guide.waistToHip')} color="hsl(var(--chart-3))" description={t('guide.desc.waistToHip')} highlighted={highlightedNumber === 3} onClick={() => handleNumberClick(3)} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[4] = el; }} number={4} name={isPants ? t('guide.pantsLength') : t('guide.skirtLength')} color="hsl(var(--chart-4))" description={isPants ? t('guide.desc.pantsLength') : t('guide.desc.skirtLength')} highlighted={highlightedNumber === 4} onClick={() => handleNumberClick(4)} />
               {isPants && (
-                <MeasurementInstruction ref={el => { instructionRefs.current[5] = el; }} number={5} name={t('guide.crotchDepth')} color="hsl(var(--chart-5, var(--primary)))" description={t('guide.desc.crotchDepth')} highlighted={highlightedNumber === 5} />
+                <MeasurementInstruction ref={el => { instructionRefs.current[5] = el; }} number={5} name={t('guide.crotchDepth')} color="hsl(var(--chart-5, var(--primary)))" description={t('guide.desc.crotchDepth')} highlighted={highlightedNumber === 5} onClick={() => handleNumberClick(5)} />
               )}
             </div>
           </div>
@@ -193,12 +193,13 @@ interface MeasurementInstructionProps {
   color: string;
   description: string;
   highlighted?: boolean;
+  onClick?: () => void;
 }
 
-const MeasurementInstruction = React.forwardRef<HTMLDivElement, MeasurementInstructionProps>(({ number, name, description, highlighted }, ref) => {
+const MeasurementInstruction = React.forwardRef<HTMLDivElement, MeasurementInstructionProps>(({ number, name, description, highlighted, onClick }, ref) => {
   const highlightColor = "#f97316";
   return (
-    <div ref={ref} className={`flex gap-3 rounded-lg p-2 transition-colors ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : ''}`}>
+    <div ref={ref} onClick={onClick} className={`flex gap-3 rounded-lg p-2 transition-colors cursor-pointer ${highlighted ? 'bg-orange-50 dark:bg-orange-950/30 ring-1 ring-orange-400' : 'hover:bg-muted/50'}`}>
       <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground bg-foreground" style={highlighted ? { backgroundColor: highlightColor } : undefined}>
         {number}
       </div>
