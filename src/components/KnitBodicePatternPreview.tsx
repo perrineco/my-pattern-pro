@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { BodiceMeasurements, Category } from "@/types/sloper";
 import { KnitBodicePanel } from "./knit-bodice/KnitBodicePanel";
 import { KnitBodiceLegend } from "./knit-bodice/KnitBodiceLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface KnitBodicePatternPreviewProps {
   measurements: BodiceMeasurements;
@@ -49,7 +50,7 @@ export function KnitBodicePatternPreview({ measurements, category }: KnitBodiceP
   const backOffsetX = dimensions.width / 2 + padding / 2;
 
   return (
-    <div className="w-full h-full min-h-[500px] bg-pattern-grid/30 rounded-lg relative overflow-hidden">
+    <ZoomablePatternWrapper className="w-full h-full bg-pattern-grid/30 rounded-lg" minHeight="500px">
       {/* Grid pattern background */}
       <div
         className="absolute inset-0 opacity-30"
@@ -97,6 +98,6 @@ export function KnitBodicePatternPreview({ measurements, category }: KnitBodiceP
 
       {/* Legend */}
       <KnitBodiceLegend />
-    </div>
+    </ZoomablePatternWrapper>
   );
 }

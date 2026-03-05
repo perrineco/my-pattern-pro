@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { BodiceMeasurements, Category } from "@/types/sloper";
 import { BodiceDartsPanel } from "./bodice-darts/BodiceDartsPanel";
 import { BodiceDartsLegend } from "./bodice-darts/BodiceDartsLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface BodiceWithDartsPatternPreviewProps {
   measurements: BodiceMeasurements;
@@ -52,6 +53,7 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
   const backOffsetX = startX + scaledWidth + gap;
 
   return (
+    <ZoomablePatternWrapper minHeight="400px">
     <svg ref={svgRef} viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full min-h-[400px]">
       {/* Grid background */}
       <defs>
@@ -105,5 +107,6 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
       {/* Legend */}
       <BodiceDartsLegend x={dimensions.width - 135} y={dimensions.height - 70} />
     </svg>
+    </ZoomablePatternWrapper>
   );
 }

@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { BodiceMeasurements } from "@/types/sloper";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface BodicePatternPreviewProps {
   measurements: BodiceMeasurements;
@@ -96,6 +97,7 @@ export function BodicePatternPreview({ measurements, panel = "front" }: BodicePa
   };
 
   return (
+    <ZoomablePatternWrapper minHeight="400px">
     <svg ref={svgRef} viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full min-h-[400px]">
       {/* Grid background */}
       <defs>
@@ -197,5 +199,6 @@ export function BodicePatternPreview({ measurements, panel = "front" }: BodicePa
         </text>
       </g>
     </svg>
+    </ZoomablePatternWrapper>
   );
 }

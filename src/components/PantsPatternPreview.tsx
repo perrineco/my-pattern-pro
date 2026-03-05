@@ -3,6 +3,7 @@ import { PantsMeasurements, Category } from "@/types/sloper";
 import { PantsFrontPanel } from "./pants/PantsFrontPanel";
 import { PantsBackPanel } from "./pants/PantsBackPanel";
 import { PantsLegend } from "./pants/PantsLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface PantsPatternPreviewProps {
   measurements: PantsMeasurements;
@@ -51,7 +52,7 @@ export function PantsPatternPreview({ measurements, category }: PantsPatternPrev
   const backOffsetX = dimensions.width / 2 + padding / 2 + crotchExtensionScaled;
 
   return (
-    <div className="w-full h-full min-h-[600px] bg-pattern-grid/30 rounded-lg relative overflow-hidden">
+    <ZoomablePatternWrapper className="w-full h-full bg-pattern-grid/30 rounded-lg" minHeight="600px">
       {/* Grid pattern background */}
       <div
         className="absolute inset-0 opacity-30"
@@ -97,6 +98,6 @@ export function PantsPatternPreview({ measurements, category }: PantsPatternPrev
 
       {/* Legend */}
       <PantsLegend />
-    </div>
+    </ZoomablePatternWrapper>
   );
 }

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { SkirtFrontPanel } from "./skirt/SkirtFrontPanel";
 import { SkirtBackPanel } from "./skirt/SkirtBackPanel";
 import { SkirtLegend } from "./skirt/SkirtLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface SkirtPatternPreviewProps {
   measurements: SkirtMeasurements;
@@ -140,7 +141,7 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   };
 
   return (
-    <div className="w-full h-full min-h-[500px] bg-pattern-grid/30 rounded-lg relative overflow-hidden">
+    <ZoomablePatternWrapper className="w-full h-full bg-pattern-grid/30 rounded-lg" minHeight="500px">
       {/* Grid pattern background */}
       <div
         className="absolute inset-0 opacity-30"
@@ -175,6 +176,6 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
 
       {/* Legend */}
       <SkirtLegend />
-    </div>
+    </ZoomablePatternWrapper>
   );
 }

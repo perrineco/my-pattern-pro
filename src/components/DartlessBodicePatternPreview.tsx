@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { BodiceMeasurements, Category } from "@/types/sloper";
 import { DartlessBodicePanel } from "./dartless-bodice/DartlessBodicePanel";
 import { DartlessBodiceLegend } from "./dartless-bodice/DartlessBodiceLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface DartlessBodicePatternPreviewProps {
   measurements: BodiceMeasurements;
@@ -61,7 +62,7 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
   const backOffsetY = padding + heightDifference;
 
   return (
-    <div className="w-full h-full min-h-[500px] bg-pattern-grid/30 rounded-lg relative overflow-hidden">
+    <ZoomablePatternWrapper className="w-full h-full bg-pattern-grid/30 rounded-lg" minHeight="500px">
       {/* Grid pattern background */}
       <div
         className="absolute inset-0 opacity-30"
@@ -109,6 +110,6 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
 
       {/* Legend */}
       <DartlessBodiceLegend />
-    </div>
+    </ZoomablePatternWrapper>
   );
 }
