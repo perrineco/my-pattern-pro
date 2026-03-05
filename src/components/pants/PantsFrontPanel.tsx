@@ -98,7 +98,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
 
     // Waist: A1 → B1 (slight curve for waist shaping)
     //  path += ` L ${b1X} ${b1Y}`;
-    path += ` Q ${(a1X + b1X) / 2} ${a1Y + 5}, ${b1X} ${b1Y}`;
+    path += ` C ${(a1X} ${a1Y},${(a1X + b1X) / 2} ${a1Y+b1Y/2} ${b1X} ${b1Y}`;
 
     // Side seam: B1 → H (hip, side) with curve
     path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
