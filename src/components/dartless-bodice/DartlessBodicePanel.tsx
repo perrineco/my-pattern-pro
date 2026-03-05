@@ -8,6 +8,7 @@ interface DartlessBodicePanelProps {
   scale: number;
   panel: "front" | "back";
   category: Category;
+  mirrored?: boolean;
 }
 
 export function DartlessBodicePanel({
@@ -17,6 +18,7 @@ export function DartlessBodicePanel({
   scale,
   panel,
   category,
+  mirrored,
 }: DartlessBodicePanelProps) {
   const { bust, backWidth, backLength } = measurements;
 
@@ -30,6 +32,9 @@ export function DartlessBodicePanel({
   });
 
   const isFront = panel === "front";
+  const tm: React.CSSProperties | undefined = mirrored
+    ? { transform: 'scaleX(-1)', transformBox: 'fill-box' as const, transformOrigin: 'center' }
+    : undefined;
 
   return (
     <g>
@@ -80,6 +85,7 @@ export function DartlessBodicePanel({
         y={offsetY + backLengthScaled / 2}
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
+        style={tm}
       >
         {isFront ? "FRONT" : "BACK"}
       </text>
@@ -88,6 +94,7 @@ export function DartlessBodicePanel({
         y={offsetY + backLengthScaled / 2 + 16}
         textAnchor="middle"
         className="fill-muted-foreground text-xs"
+        style={tm}
       >
         Cut 1 on fold
       </text>
@@ -96,6 +103,7 @@ export function DartlessBodicePanel({
         y={offsetY + backLengthScaled / 2 + 30}
         textAnchor="middle"
         className="fill-primary/70 text-[10px] italic"
+        style={tm}
       >
         Dartless
       </text>
@@ -135,6 +143,7 @@ export function DartlessBodicePanel({
         textAnchor="end"
         className="fill-muted-foreground text-[10px]"
         transform={`rotate(-90 ${offsetX - 8} ${offsetY + backLengthScaled / 2})`}
+        style={tm}
       >
         {backLength}cm
       </text>
@@ -145,6 +154,7 @@ export function DartlessBodicePanel({
         y={offsetY + backLengthScaled / 2}
         className="fill-primary text-[9px]"
         transform={`rotate(-90 ${offsetX + 3} ${offsetY + backLengthScaled / 2})`}
+        style={tm}
       >
         FOLD
       </text>

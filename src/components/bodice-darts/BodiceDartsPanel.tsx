@@ -8,6 +8,7 @@ interface BodiceDartsPanelProps {
   scale: number;
   panel: "front" | "back";
   category: Category;
+  mirrored?: boolean;
 }
 
 export function BodiceDartsPanel({
@@ -17,6 +18,7 @@ export function BodiceDartsPanel({
   scale,
   panel,
   category,
+  mirrored,
 }: BodiceDartsPanelProps) {
   const { path, dartPath, bustQuarterScaled, armholeDepthScaled, backLengthScaled } = useBodiceDartsPath({
     measurements,
@@ -28,6 +30,9 @@ export function BodiceDartsPanel({
   });
 
   const isFront = panel === "front";
+  const tm: React.CSSProperties | undefined = mirrored
+    ? { transform: 'scaleX(-1)', transformBox: 'fill-box' as const, transformOrigin: 'center' }
+    : undefined;
 
   return (
     <g>
@@ -89,6 +94,7 @@ export function BodiceDartsPanel({
         y={offsetY + backLengthScaled / 2 - 10}
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
+        style={tm}
       >
         {isFront ? "FRONT" : "BACK"}
       </text>
@@ -97,6 +103,7 @@ export function BodiceDartsPanel({
         y={offsetY + backLengthScaled / 2 + 6}
         textAnchor="middle"
         className="fill-muted-foreground text-xs"
+        style={tm}
       >
         Cut 1 on fold
       </text>
@@ -105,6 +112,7 @@ export function BodiceDartsPanel({
         y={offsetY + backLengthScaled / 2 + 20}
         textAnchor="middle"
         className="fill-primary text-[10px] font-medium"
+        style={tm}
       >
         (with darts)
       </text>

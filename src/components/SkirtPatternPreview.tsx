@@ -17,33 +17,25 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   // Calculate pattern pieces
   const { waist, hip, waistToHip, skirtLength, ease: customEase } = measurements;
 
-  // Category-specific calculations
-  // Kids: smaller default ease, narrower darts, shorter dart length
-  // Women: standard default ease, standard darts
   const isKids = category === "kids";
 
-  // Pattern calculations (shared between front and back)
   const waistQuarter = waist / 4;
   const hipQuarter = hip / 4;
-  const ease = customEase ?? (isKids ? 0.5 : 1); // Use custom ease or category default
+  const ease = customEase ?? (isKids ? 0.5 : 1);
 
   // Front dart calculations
-  const frontDartWidth = isKids
-    ? ((hip - waist) * 25) / 240 // Narrower darts for kids
-    : ((hip - waist) * 25) / 240;
-  const frontDartLength = isKids
-    ? waistToHip * 0.4 // Shorter darts for kids
-    : waistToHip * 0.5;
+  const frontDartWidth = ((hip - waist) * 25) / 240;
+  const frontDartLength = isKids ? waistToHip * 0.4 : waistToHip * 0.5;
 
-  // Back dart calculations (larger than front)
+  // Back dart calculations
   const backDartWidth = isKids
-    ? ((hip - waist) * 22) / 240 // Kids: 1.1x front
-    : ((hip - waist) * 35) / 240; // Women: 1.2x front
+    ? ((hip - waist) * 22) / 240
+    : ((hip - waist) * 35) / 240;
   const backDartLength = isKids
-    ? frontDartLength + 1 // Kids: 1.05x front
-    : frontDartLength + 2; // Women: 1.1x front
+    ? frontDartLength + 1
+    : frontDartLength + 2;
 
-  // Scale factor to fit both panels
+  // Scale factor
   const scale = Math.min(
     (dimensions.width / 2 - 80) / (hipQuarter + ease + 10),
     (dimensions.height - 80) / (skirtLength + 10),
@@ -70,9 +62,10 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   const frontOffsetX = 40;
   const offsetY = 40;
 
-  // Back panel offset (right side) - 3 grid squares (60px) gap from front panel
-  const gap = 60; // 3 squares × 20px
+  // Back panel offset - closer gap, mirrored
+  const gap = 30;
   const backOffsetX = frontOffsetX + patternWidthFront + gap;
+  const backMirrorX = 2 * backOffsetX + patternWidthBack;
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -87,8 +80,6 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
   }, []);
 
   // Category-specific dart positions
-  const frontDartPositionRatio = isKids ? 0.42 : 0.4;
-  const backDartPositionRatio = isKids ? 0.38 : 0.35;
   const frontcenterToDartScaled = isKids
     ? (hip * scale) / 10 - frontDartWidthScaled / 2
     : (frontWaistWidthScaled - frontDartWidthScaled) / 2;
@@ -170,8 +161,10 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
         {/* Front Panel */}
         <SkirtFrontPanel {...frontProps} offsetX={frontOffsetX} />
 
-        {/* Back Panel */}
-        <SkirtBackPanel {...backProps} offsetX={backOffsetX} />
+        {/* Back Panel - mirrored */}
+        <g transform={`translate(${backMirrorX}, 0) scale(-1, 1)`}>
+          <SkirtBackPanel {...backProps} offsetX={backOffsetX} mirrored />
+        </g>
       </svg>
 
       {/* Legend */}

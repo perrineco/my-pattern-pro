@@ -36,9 +36,6 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
   const frontNeckDepthDivisor = category === "men" ? 5 : category === "kids" ? 6 : 6;
   const frontNeckDepthAdd = category === "men" ? 0 : category === "kids" ? 0.2 : 2;
   const frontExtraHeight = neckCircumference / 12 - (neckCircumference / frontNeckDepthDivisor + frontNeckDepthAdd);
-  const neckHeightFront = neckCircumference / frontNeckDepthDivisor + frontNeckDepthAdd;
-  const neckHeightBack = category === "men" ? 2 : category === "kids" ? 1.4 : neckCircumference / 16;
-  const maxNeckHeight = Math.max(neckHeightFront, neckHeightBack);
 
   // Pattern dimensions for single panel
   const singlePatternWidth = Math.max(bustQuarter + ease, backWidthHalf) + 5;
@@ -52,14 +49,17 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
   const availableHeight = dimensions.height - padding * 2;
   const scale = Math.min(availableWidth / singlePatternWidth, availableHeight / maxPatternHeight, 8);
 
+  const backPanelWidth = singlePatternWidth * scale;
+
   // Front panel offset (left side)
   const frontOffsetX = padding;
   const frontOffsetY = padding;
 
-  // Back panel offset (right side) - aligned at bottom with front
-  const backOffsetX = dimensions.width / 2 + padding / 2;
+  // Back panel offset (right side) - closer to front, mirrored
+  const backOffsetX = frontOffsetX + backPanelWidth + 25;
   const heightDifference = (frontPatternHeight - backPatternHeight) * scale;
   const backOffsetY = padding + heightDifference;
+  const backMirrorX = 2 * backOffsetX + backPanelWidth;
 
   return (
     <ZoomablePatternWrapper className="w-full h-full bg-pattern-grid/30 rounded-lg" minHeight="500px">
@@ -97,15 +97,18 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
           category={category}
         />
 
-        {/* Back Panel */}
-        <DartlessBodicePanel
-          measurements={measurements}
-          offsetX={backOffsetX}
-          offsetY={backOffsetY}
-          scale={scale}
-          panel="back"
-          category={category}
-        />
+        {/* Back Panel - mirrored */}
+        <g transform={`translate(${backMirrorX}, 0) scale(-1, 1)`}>
+          <DartlessBodicePanel
+            measurements={measurements}
+            offsetX={backOffsetX}
+            offsetY={backOffsetY}
+            scale={scale}
+            panel="back"
+            category={category}
+            mirrored
+          />
+        </g>
       </svg>
 
       {/* Legend */}
