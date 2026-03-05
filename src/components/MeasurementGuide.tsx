@@ -90,8 +90,8 @@ function SkirtOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       {/* 1. Waist line */}
       <line x1={cx - pos.waistWidth / 2 - 15} y1={pos.waistY} x2={cx + pos.waistWidth / 2 + 15} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
-        <circle cx={cx - pos.waistWidth / 2 - 20} cy={pos.waistY} r="10" fill={getCircleFill(1)} />
-        <text x={cx - pos.waistWidth / 2 - 20} y={pos.waistY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">1</text>
+        <circle cx={cx - pos.waistWidth / 2 - 20} cy={pos.waistY} r="7" fill={getCircleFill(1)} />
+        <text x={cx - pos.waistWidth / 2 - 20} y={pos.waistY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2. Hip line */}
