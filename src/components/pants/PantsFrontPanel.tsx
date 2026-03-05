@@ -97,11 +97,11 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
     path += `M ${a1X} ${a1Y}`;
 
     // Waist: A1 → B1 (slight curve for waist shaping)
-    path += ` C ${(a1X} ${a1Y}, ${(a1X + b1X) / 2} ${a1Y+b1Y/2}, ${b1X} ${b1Y}`;
+    //  path += ` C ${(a1X} ${a1Y}, ${(a1X + b1X) / 2} ${a1Y+b1Y/2}, ${b1X} ${b1Y}`;
+    path += ` L ${b1X} ${b1Y}`;
 
     // Side seam: B1 → H (hip, side) with curve
     path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
-    //`C ${pB1.x} ${pB1.y + 20}, ${pHip.x} ${pHip.y - 20}, ${pHip.x} ${pHip.y}`,
 
     // Side seam: H → F
     path += ` L ${hipSideX} ${crotchY}`;
@@ -127,9 +127,10 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
     // Inseam: I1-E1
     path += ` L ${e1X} ${crotchY}`;
 
-    // Crotch curve: E1 → G (hip level center) → A1 (waist) — "con linea curva"
-    path += ` C ${e1X/2} ${crotchY}, ${a1X} ${hipY + s(5)}, ${a1X} ${hipY}`;
-    
+    // Crotch curve: E1 → G
+    //    path += ` C ${e1X/2} ${crotchY}, ${a1X} ${hipY + s(5)}, ${a1X} ${hipY}`;
+    path += ` L ${a1X} ${hipY}`;
+
     // Center front back to waist G-A
     path += ` L ${a1X} ${a1Y}`;
 
