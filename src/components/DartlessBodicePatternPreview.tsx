@@ -109,6 +109,5 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
 
       {/* Legend */}
       <DartlessBodiceLegend />
-    </div>
-  );
+    </ZoomablePatternWrapper>
 }

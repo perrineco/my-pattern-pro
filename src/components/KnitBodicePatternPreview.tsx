@@ -97,6 +97,5 @@ export function KnitBodicePatternPreview({ measurements, category }: KnitBodiceP
 
       {/* Legend */}
       <KnitBodiceLegend />
-    </div>
-  );
+    </ZoomablePatternWrapper>
 }

@@ -177,6 +177,5 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
 
       {/* Legend */}
       <SkirtLegend />
-    </div>
-  );
+    </ZoomablePatternWrapper>
 }
