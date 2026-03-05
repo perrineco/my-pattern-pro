@@ -96,8 +96,8 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       {/* 2: Neckline circumference */}
       <ellipse cx={cx} cy={pos.neckBaseY} rx={12} ry={6} fill="none" stroke="hsl(var(--foreground))" strokeWidth="2" strokeDasharray="3,2" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
-        <circle cx={cx + 20} cy={pos.neckBaseY} r="10" fill={getCircleFill(2)} />
-        <text x={cx + 20} y={pos.neckBaseY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">2</text>
+        <circle cx={cx + 20} cy={pos.neckBaseY} r="7" fill={getCircleFill(2)} />
+        <text x={cx + 20} y={pos.neckBaseY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">2</text>
       </g>
 
       {/* 3: Shoulder length */}
