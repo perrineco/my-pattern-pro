@@ -101,15 +101,15 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       {/* 1. Upper Arm circumference */}
       <ellipse cx={armCx} cy={bicepY} rx={pos.armWidth / 2 + 8} ry={5} fill="none" stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
-        <circle cx={armCx + pos.armWidth / 2 + 15} cy={bicepY} r="10" fill={getCircleFill(1)} />
-        <text x={armCx + pos.armWidth / 2 + 15} y={bicepY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">1</text>
+        <circle cx={armCx + pos.armWidth / 2 + 15} cy={bicepY} r="7" fill={getCircleFill(1)} />
+        <text x={armCx + pos.armWidth / 2 + 15} y={bicepY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2. Wrist circumference */}
       <ellipse cx={pos.rightShoulderX + 5 - pos.wristWidth / 2} cy={wristArmY - 3} rx={pos.wristWidth / 2 + 4} ry={4} fill="none" stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
-        <circle cx={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} cy={wristArmY - 3} r="10" fill={getCircleFill(2)} />
-        <text x={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} y={wristArmY + 1} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">2</text>
+        <circle cx={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} cy={wristArmY - 3} r="7" fill={getCircleFill(2)} />
+        <text x={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} y={wristArmY} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">2</text>
       </g>
 
       {/* 3. Sleeve Length */}
@@ -117,8 +117,8 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       <line x1={pos.leftShoulderX - 25} y1={shoulderPtY} x2={pos.leftShoulderX - 15} y2={shoulderPtY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={pos.leftShoulderX - 25} y1={wristArmY} x2={pos.leftShoulderX - 15} y2={wristArmY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
-        <circle cx={pos.leftShoulderX - 20} cy={(shoulderPtY + wristArmY) / 2} r="10" fill={getCircleFill(3)} />
-        <text x={pos.leftShoulderX - 20} y={(shoulderPtY + wristArmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">3</text>
+        <circle cx={pos.leftShoulderX - 20} cy={(shoulderPtY + wristArmY) / 2} r="7" fill={getCircleFill(3)} />
+        <text x={pos.leftShoulderX - 20} y={(shoulderPtY + wristArmY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">3</text>
       </g>
 
       {/* 4. Elbow Length */}
@@ -126,8 +126,8 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       <line x1={dimX - 5} y1={shoulderPtY} x2={dimX + 5} y2={shoulderPtY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={dimX - 5} y1={elbowY} x2={dimX + 5} y2={elbowY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
-        <circle cx={dimX} cy={(shoulderPtY + elbowY) / 2} r="10" fill={getCircleFill(4)} />
-        <text x={dimX} y={(shoulderPtY + elbowY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">4</text>
+        <circle cx={dimX} cy={(shoulderPtY + elbowY) / 2} r="7" fill={getCircleFill(4)} />
+        <text x={dimX} y={(shoulderPtY + elbowY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">4</text>
       </g>
 
       {/* 5. Armhole Depth */}
@@ -135,8 +135,8 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       <line x1={dimX2 - 5} y1={shoulderPtY} x2={dimX2 + 5} y2={shoulderPtY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={dimX2 - 5} y1={pos.underarmY} x2={dimX2 + 5} y2={pos.underarmY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(5)} className="cursor-pointer">
-        <circle cx={dimX2} cy={(shoulderPtY + pos.underarmY) / 2} r="10" fill={getCircleFill(5)} />
-        <text x={dimX2} y={(shoulderPtY + pos.underarmY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">5</text>
+        <circle cx={dimX2} cy={(shoulderPtY + pos.underarmY) / 2} r="7" fill={getCircleFill(5)} />
+        <text x={dimX2} y={(shoulderPtY + pos.underarmY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">5</text>
       </g>
     </>
   );

@@ -89,15 +89,15 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       {/* 1: Bust line */}
       <line x1={cx - pos.bustWidth / 2 - 10} y1={pos.bustY} x2={cx + pos.bustWidth / 2 + 10} y2={pos.bustY} stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="4,2" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
-        <circle cx={cx - pos.bustWidth / 2 - 18} cy={pos.bustY} r="10" fill={getCircleFill(1)} />
-        <text x={cx - pos.bustWidth / 2 - 18} y={pos.bustY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">1</text>
+        <circle cx={cx - pos.bustWidth / 2 - 18} cy={pos.bustY} r="7" fill={getCircleFill(1)} />
+        <text x={cx - pos.bustWidth / 2 - 18} y={pos.bustY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2: Neckline circumference */}
       <ellipse cx={cx} cy={pos.neckBaseY} rx={12} ry={6} fill="none" stroke="hsl(var(--foreground))" strokeWidth="2" strokeDasharray="3,2" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
-        <circle cx={cx + 20} cy={pos.neckBaseY} r="10" fill={getCircleFill(2)} />
-        <text x={cx + 20} y={pos.neckBaseY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">2</text>
+        <circle cx={cx + 20} cy={pos.neckBaseY} r="7" fill={getCircleFill(2)} />
+        <text x={cx + 20} y={pos.neckBaseY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">2</text>
       </g>
 
       {/* 3: Shoulder length */}
@@ -105,8 +105,8 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       <circle cx={pos.leftShoulderX} cy={pos.shoulderY} r="4" fill="hsl(var(--foreground))" />
       <circle cx={cx - 8} cy={pos.neckBaseY} r="4" fill="hsl(var(--foreground))" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
-        <circle cx={(cx - 8 + pos.leftShoulderX) / 2} cy={(pos.neckBaseY + pos.shoulderY) / 2} r="10" fill={getCircleFill(3)} />
-        <text x={(cx - 8 + pos.leftShoulderX) / 2} y={(pos.neckBaseY + pos.shoulderY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">3</text>
+        <circle cx={(cx - 8 + pos.leftShoulderX) / 2} cy={(pos.neckBaseY + pos.shoulderY) / 2} r="7" fill={getCircleFill(3)} />
+        <text x={(cx - 8 + pos.leftShoulderX) / 2} y={(pos.neckBaseY + pos.shoulderY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">3</text>
       </g>
 
       {/* 4: Back width */}
@@ -114,8 +114,8 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY - 5} x2={cx - pos.bustWidth / 2 + 8} y2={pos.backWidthY + 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx + pos.bustWidth / 2 - 8} y1={pos.backWidthY - 5} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY + 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
-        <circle cx={cx} cy={pos.backWidthY - 12} r="10" fill={getCircleFill(4)} />
-        <text x={cx} y={pos.backWidthY - 8} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">4</text>
+        <circle cx={cx} cy={pos.backWidthY - 12} r="7" fill={getCircleFill(4)} />
+        <text x={cx} y={pos.backWidthY - 9} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">4</text>
       </g>
 
       {/* 5: Back length (nape to waist) */}
@@ -123,8 +123,8 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       <line x1={cx + 10} y1={pos.neckBaseY - 5} x2={cx + 20} y2={pos.neckBaseY - 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx + 10} y1={pos.waistY} x2={cx + 20} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(5)} className="cursor-pointer">
-        <circle cx={cx + 30} cy={(pos.neckBaseY + pos.waistY) / 2} r="10" fill={getCircleFill(5)} />
-        <text x={cx + 30} y={(pos.neckBaseY + pos.waistY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">5</text>
+        <circle cx={cx + 30} cy={(pos.neckBaseY + pos.waistY) / 2} r="7" fill={getCircleFill(5)} />
+        <text x={cx + 30} y={(pos.neckBaseY + pos.waistY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">5</text>
       </g>
 
       {/* Waist reference line */}

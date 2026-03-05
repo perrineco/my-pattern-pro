@@ -90,15 +90,15 @@ function SkirtOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       {/* 1. Waist line */}
       <line x1={cx - pos.waistWidth / 2 - 15} y1={pos.waistY} x2={cx + pos.waistWidth / 2 + 15} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
-        <circle cx={cx - pos.waistWidth / 2 - 20} cy={pos.waistY} r="10" fill={getCircleFill(1)} />
-        <text x={cx - pos.waistWidth / 2 - 20} y={pos.waistY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">1</text>
+        <circle cx={cx - pos.waistWidth / 2 - 20} cy={pos.waistY} r="7" fill={getCircleFill(1)} />
+        <text x={cx - pos.waistWidth / 2 - 20} y={pos.waistY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2. Hip line */}
       <line x1={cx - pos.hipWidth / 2 - 15} y1={pos.hipY} x2={cx + pos.hipWidth / 2 + 15} y2={pos.hipY} stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
-        <circle cx={cx + pos.hipWidth / 2 + 20} cy={pos.hipY} r="10" fill={getCircleFill(2)} />
-        <text x={cx + pos.hipWidth / 2 + 20} y={pos.hipY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">2</text>
+        <circle cx={cx + pos.hipWidth / 2 + 20} cy={pos.hipY} r="7" fill={getCircleFill(2)} />
+        <text x={cx + pos.hipWidth / 2 + 20} y={pos.hipY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">2</text>
       </g>
 
       {/* 3. Waist to Hip vertical */}
@@ -106,8 +106,8 @@ function SkirtOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       <line x1={cx + pos.hipWidth / 2 + 30} y1={pos.waistY} x2={cx + pos.hipWidth / 2 + 40} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx + pos.hipWidth / 2 + 30} y1={pos.hipY} x2={cx + pos.hipWidth / 2 + 40} y2={pos.hipY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
-        <circle cx={cx + pos.hipWidth / 2 + 35} cy={(pos.waistY + pos.hipY) / 2} r="10" fill={getCircleFill(3)} />
-        <text x={cx + pos.hipWidth / 2 + 35} y={(pos.waistY + pos.hipY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">3</text>
+        <circle cx={cx + pos.hipWidth / 2 + 35} cy={(pos.waistY + pos.hipY) / 2} r="7" fill={getCircleFill(3)} />
+        <text x={cx + pos.hipWidth / 2 + 35} y={(pos.waistY + pos.hipY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">3</text>
       </g>
 
       {/* 4. Skirt length vertical */}
@@ -115,8 +115,8 @@ function SkirtOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       <line x1={cx - pos.hipWidth / 2 - 40} y1={pos.waistY} x2={cx - pos.hipWidth / 2 - 30} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx - pos.hipWidth / 2 - 40} y1={pos.hemY} x2={cx - pos.hipWidth / 2 - 30} y2={pos.hemY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
-        <circle cx={cx - pos.hipWidth / 2 - 35} cy={(pos.waistY + pos.hemY) / 2} r="10" fill={getCircleFill(4)} />
-        <text x={cx - pos.hipWidth / 2 - 35} y={(pos.waistY + pos.hemY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">4</text>
+        <circle cx={cx - pos.hipWidth / 2 - 35} cy={(pos.waistY + pos.hemY) / 2} r="7" fill={getCircleFill(4)} />
+        <text x={cx - pos.hipWidth / 2 - 35} y={(pos.waistY + pos.hemY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">4</text>
       </g>
 
       {/* Labels */}
@@ -140,15 +140,15 @@ function PantsOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       {/* 1. Waist line */}
       <line x1={cx - pos.waistWidth / 2 - 15} y1={pos.waistY} x2={cx + pos.waistWidth / 2 + 15} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
-        <circle cx={cx - pos.waistWidth / 2 - 20} cy={pos.waistY} r="10" fill={getCircleFill(1)} />
-        <text x={cx - pos.waistWidth / 2 - 20} y={pos.waistY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">1</text>
+        <circle cx={cx - pos.waistWidth / 2 - 20} cy={pos.waistY} r="7" fill={getCircleFill(1)} />
+        <text x={cx - pos.waistWidth / 2 - 20} y={pos.waistY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2. Hip line */}
       <line x1={cx - pos.hipWidth / 2 - 15} y1={pos.hipY} x2={cx + pos.hipWidth / 2 + 15} y2={pos.hipY} stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
-        <circle cx={cx + pos.hipWidth / 2 + 20} cy={pos.hipY} r="10" fill={getCircleFill(2)} />
-        <text x={cx + pos.hipWidth / 2 + 20} y={pos.hipY + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">2</text>
+        <circle cx={cx + pos.hipWidth / 2 + 20} cy={pos.hipY} r="7" fill={getCircleFill(2)} />
+        <text x={cx + pos.hipWidth / 2 + 20} y={pos.hipY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">2</text>
       </g>
 
       {/* 3. Waist to Hip vertical */}
@@ -156,8 +156,8 @@ function PantsOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       <line x1={cx + pos.hipWidth / 2 + 30} y1={pos.waistY} x2={cx + pos.hipWidth / 2 + 40} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx + pos.hipWidth / 2 + 30} y1={pos.hipY} x2={cx + pos.hipWidth / 2 + 40} y2={pos.hipY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
-        <circle cx={cx + pos.hipWidth / 2 + 35} cy={(pos.waistY + pos.hipY) / 2} r="10" fill={getCircleFill(3)} />
-        <text x={cx + pos.hipWidth / 2 + 35} y={(pos.waistY + pos.hipY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">3</text>
+        <circle cx={cx + pos.hipWidth / 2 + 35} cy={(pos.waistY + pos.hipY) / 2} r="7" fill={getCircleFill(3)} />
+        <text x={cx + pos.hipWidth / 2 + 35} y={(pos.waistY + pos.hipY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">3</text>
       </g>
 
       {/* 4. Pants length vertical (waist to ankle) */}
@@ -165,8 +165,8 @@ function PantsOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       <line x1={cx - pos.hipWidth / 2 - 40} y1={pos.waistY} x2={cx - pos.hipWidth / 2 - 30} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx - pos.hipWidth / 2 - 40} y1={pos.ankleY} x2={cx - pos.hipWidth / 2 - 30} y2={pos.ankleY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
-        <circle cx={cx - pos.hipWidth / 2 - 35} cy={(pos.waistY + pos.ankleY) / 2} r="10" fill={getCircleFill(4)} />
-        <text x={cx - pos.hipWidth / 2 - 35} y={(pos.waistY + pos.ankleY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">4</text>
+        <circle cx={cx - pos.hipWidth / 2 - 35} cy={(pos.waistY + pos.ankleY) / 2} r="7" fill={getCircleFill(4)} />
+        <text x={cx - pos.hipWidth / 2 - 35} y={(pos.waistY + pos.ankleY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">4</text>
       </g>
 
       {/* 5. Crotch depth vertical (waist to crotch) */}
@@ -174,8 +174,8 @@ function PantsOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       <line x1={cx + pos.hipWidth / 2 + 50} y1={pos.waistY} x2={cx + pos.hipWidth / 2 + 60} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx + pos.hipWidth / 2 + 50} y1={crotchY} x2={cx + pos.hipWidth / 2 + 60} y2={crotchY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(5)} className="cursor-pointer">
-        <circle cx={cx + pos.hipWidth / 2 + 55} cy={(pos.waistY + crotchY) / 2} r="10" fill={getCircleFill(5)} />
-        <text x={cx + pos.hipWidth / 2 + 55} y={(pos.waistY + crotchY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">5</text>
+        <circle cx={cx + pos.hipWidth / 2 + 55} cy={(pos.waistY + crotchY) / 2} r="7" fill={getCircleFill(5)} />
+        <text x={cx + pos.hipWidth / 2 + 55} y={(pos.waistY + crotchY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">5</text>
       </g>
 
       {/* Labels */}
