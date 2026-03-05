@@ -55,10 +55,14 @@ export function ZoomablePatternWrapper({ children, className = "", minHeight = "
     setIsPanning(false);
   }, []);
 
-  const resetView = () => {
+  const resetView = useCallback(() => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
-  };
+  }, []);
+
+  const handleDoubleClick = useCallback(() => {
+    resetView();
+  }, [resetView]);
 
   const zoomIn = () => setZoom(prev => clampZoom(prev + 0.25));
   const zoomOut = () => setZoom(prev => clampZoom(prev - 0.25));
