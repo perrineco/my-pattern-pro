@@ -53,12 +53,12 @@ export function MeasurementGuide({ category, patternType = 'skirt' }: Measuremen
               />
             </div>
             <div className="space-y-4">
-              <MeasurementInstruction ref={el => { instructionRefs.current[1] = el; }} number={1} name={t('guide.waist')} color="hsl(var(--primary))" description={t('guide.desc.waist')} highlighted={highlightedNumber === 1} />
-              <MeasurementInstruction ref={el => { instructionRefs.current[2] = el; }} number={2} name={t('guide.hip')} color="hsl(var(--destructive))" description={t('guide.desc.hip')} highlighted={highlightedNumber === 2} />
-              <MeasurementInstruction ref={el => { instructionRefs.current[3] = el; }} number={3} name={t('guide.waistToHip')} color="hsl(var(--chart-3))" description={t('guide.desc.waistToHip')} highlighted={highlightedNumber === 3} />
-              <MeasurementInstruction ref={el => { instructionRefs.current[4] = el; }} number={4} name={isPants ? t('guide.pantsLength') : t('guide.skirtLength')} color="hsl(var(--chart-4))" description={isPants ? t('guide.desc.pantsLength') : t('guide.desc.skirtLength')} highlighted={highlightedNumber === 4} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[1] = el; }} number={1} name={t('guide.waist')} color="hsl(var(--primary))" description={t('guide.desc.waist')} highlighted={highlightedNumber === 1} onClick={() => handleNumberClick(1)} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[2] = el; }} number={2} name={t('guide.hip')} color="hsl(var(--destructive))" description={t('guide.desc.hip')} highlighted={highlightedNumber === 2} onClick={() => handleNumberClick(2)} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[3] = el; }} number={3} name={t('guide.waistToHip')} color="hsl(var(--chart-3))" description={t('guide.desc.waistToHip')} highlighted={highlightedNumber === 3} onClick={() => handleNumberClick(3)} />
+              <MeasurementInstruction ref={el => { instructionRefs.current[4] = el; }} number={4} name={isPants ? t('guide.pantsLength') : t('guide.skirtLength')} color="hsl(var(--chart-4))" description={isPants ? t('guide.desc.pantsLength') : t('guide.desc.skirtLength')} highlighted={highlightedNumber === 4} onClick={() => handleNumberClick(4)} />
               {isPants && (
-                <MeasurementInstruction ref={el => { instructionRefs.current[5] = el; }} number={5} name={t('guide.crotchDepth')} color="hsl(var(--chart-5, var(--primary)))" description={t('guide.desc.crotchDepth')} highlighted={highlightedNumber === 5} />
+                <MeasurementInstruction ref={el => { instructionRefs.current[5] = el; }} number={5} name={t('guide.crotchDepth')} color="hsl(var(--chart-5, var(--primary)))" description={t('guide.desc.crotchDepth')} highlighted={highlightedNumber === 5} onClick={() => handleNumberClick(5)} />
               )}
             </div>
           </div>
