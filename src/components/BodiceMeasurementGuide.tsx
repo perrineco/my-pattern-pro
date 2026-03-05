@@ -89,8 +89,8 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       {/* 1: Bust line */}
       <line x1={cx - pos.bustWidth / 2 - 10} y1={pos.bustY} x2={cx + pos.bustWidth / 2 + 10} y2={pos.bustY} stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="4,2" />
       <g onClick={() => onNumberClick(1)} className="cursor-pointer">
-        <circle cx={cx - pos.bustWidth / 2 - 18} cy={pos.bustY} r="10" fill={getCircleFill(1)} />
-        <text x={cx - pos.bustWidth / 2 - 18} y={pos.bustY + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">1</text>
+        <circle cx={cx - pos.bustWidth / 2 - 18} cy={pos.bustY} r="7" fill={getCircleFill(1)} />
+        <text x={cx - pos.bustWidth / 2 - 18} y={pos.bustY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">1</text>
       </g>
 
       {/* 2: Neckline circumference */}
