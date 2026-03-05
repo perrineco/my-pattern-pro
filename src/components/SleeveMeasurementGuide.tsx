@@ -108,8 +108,8 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       {/* 2. Wrist circumference */}
       <ellipse cx={pos.rightShoulderX + 5 - pos.wristWidth / 2} cy={wristArmY - 3} rx={pos.wristWidth / 2 + 4} ry={4} fill="none" stroke="hsl(var(--foreground))" strokeWidth="1.5" strokeDasharray="6,3" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
-        <circle cx={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} cy={wristArmY - 3} r="10" fill={getCircleFill(2)} />
-        <text x={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} y={wristArmY + 1} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">2</text>
+        <circle cx={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} cy={wristArmY - 3} r="7" fill={getCircleFill(2)} />
+        <text x={pos.rightShoulderX + 5 - pos.wristWidth / 2 + pos.wristWidth / 2 + 10} y={wristArmY} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">2</text>
       </g>
 
       {/* 3. Sleeve Length */}
