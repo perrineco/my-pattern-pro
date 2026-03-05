@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { SkirtFrontPanel } from "./skirt/SkirtFrontPanel";
 import { SkirtBackPanel } from "./skirt/SkirtBackPanel";
 import { SkirtLegend } from "./skirt/SkirtLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
+import { SkirtLegend } from "./skirt/SkirtLegend";
 
 interface SkirtPatternPreviewProps {
   measurements: SkirtMeasurements;
