@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { BodiceMeasurements } from "@/types/sloper";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface BodicePatternPreviewProps {
   measurements: BodiceMeasurements;
