@@ -126,7 +126,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
     path += ` L ${thighInnerX} ${iY}`;
 
     // Inseam: thigh → crotch (I1-E1)
-    path += ` L ${e1X} ${crotchY}`;
+    path += ` Q ${thighInnerX + s(1)} ${crotchY + s(0.5)} ${e1X} ${crotchY}`;
 
  //   path += ` Q ${e1X + s(0.5)} ${crotchY + s(0.5)} ${e1X} ${crotchY - s(1.5)}`;
 
