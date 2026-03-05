@@ -174,8 +174,8 @@ function PantsOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       <line x1={cx + pos.hipWidth / 2 + 50} y1={pos.waistY} x2={cx + pos.hipWidth / 2 + 60} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx + pos.hipWidth / 2 + 50} y1={crotchY} x2={cx + pos.hipWidth / 2 + 60} y2={crotchY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(5)} className="cursor-pointer">
-        <circle cx={cx + pos.hipWidth / 2 + 55} cy={(pos.waistY + crotchY) / 2} r="10" fill={getCircleFill(5)} />
-        <text x={cx + pos.hipWidth / 2 + 55} y={(pos.waistY + crotchY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">5</text>
+        <circle cx={cx + pos.hipWidth / 2 + 55} cy={(pos.waistY + crotchY) / 2} r="7" fill={getCircleFill(5)} />
+        <text x={cx + pos.hipWidth / 2 + 55} y={(pos.waistY + crotchY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">5</text>
       </g>
 
       {/* Labels */}

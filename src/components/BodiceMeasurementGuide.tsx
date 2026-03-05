@@ -123,8 +123,8 @@ function BodiceOverlay({ pos, highlightedNumber, onNumberClick, t }: { pos: Body
       <line x1={cx + 10} y1={pos.neckBaseY - 5} x2={cx + 20} y2={pos.neckBaseY - 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx + 10} y1={pos.waistY} x2={cx + 20} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(5)} className="cursor-pointer">
-        <circle cx={cx + 30} cy={(pos.neckBaseY + pos.waistY) / 2} r="10" fill={getCircleFill(5)} />
-        <text x={cx + 30} y={(pos.neckBaseY + pos.waistY) / 2 + 4} textAnchor="middle" className="fill-white text-[10px] font-bold pointer-events-none">5</text>
+        <circle cx={cx + 30} cy={(pos.neckBaseY + pos.waistY) / 2} r="7" fill={getCircleFill(5)} />
+        <text x={cx + 30} y={(pos.neckBaseY + pos.waistY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">5</text>
       </g>
 
       {/* Waist reference line */}
