@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { BodiceMeasurements, Category } from "@/types/sloper";
 import { BodiceDartsPanel } from "./bodice-darts/BodiceDartsPanel";
 import { BodiceDartsLegend } from "./bodice-darts/BodiceDartsLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface BodiceWithDartsPatternPreviewProps {
   measurements: BodiceMeasurements;
