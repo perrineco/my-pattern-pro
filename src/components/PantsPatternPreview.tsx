@@ -3,6 +3,7 @@ import { PantsMeasurements, Category } from "@/types/sloper";
 import { PantsFrontPanel } from "./pants/PantsFrontPanel";
 import { PantsBackPanel } from "./pants/PantsBackPanel";
 import { PantsLegend } from "./pants/PantsLegend";
+import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
 
 interface PantsPatternPreviewProps {
   measurements: PantsMeasurements;
