@@ -126,8 +126,8 @@ function SleeveOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: Body
       <line x1={dimX - 5} y1={shoulderPtY} x2={dimX + 5} y2={shoulderPtY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={dimX - 5} y1={elbowY} x2={dimX + 5} y2={elbowY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
-        <circle cx={dimX} cy={(shoulderPtY + elbowY) / 2} r="10" fill={getCircleFill(4)} />
-        <text x={dimX} y={(shoulderPtY + elbowY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">4</text>
+        <circle cx={dimX} cy={(shoulderPtY + elbowY) / 2} r="7" fill={getCircleFill(4)} />
+        <text x={dimX} y={(shoulderPtY + elbowY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">4</text>
       </g>
 
       {/* 5. Armhole Depth */}
