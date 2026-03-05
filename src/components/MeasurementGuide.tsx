@@ -115,8 +115,8 @@ function SkirtOverlay({ pos, t, highlightedNumber, onNumberClick }: { pos: BodyP
       <line x1={cx - pos.hipWidth / 2 - 40} y1={pos.waistY} x2={cx - pos.hipWidth / 2 - 30} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <line x1={cx - pos.hipWidth / 2 - 40} y1={pos.hemY} x2={cx - pos.hipWidth / 2 - 30} y2={pos.hemY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
-        <circle cx={cx - pos.hipWidth / 2 - 35} cy={(pos.waistY + pos.hemY) / 2} r="10" fill={getCircleFill(4)} />
-        <text x={cx - pos.hipWidth / 2 - 35} y={(pos.waistY + pos.hemY) / 2 + 4} textAnchor="middle" className="fill-white text-xs font-bold pointer-events-none">4</text>
+        <circle cx={cx - pos.hipWidth / 2 - 35} cy={(pos.waistY + pos.hemY) / 2} r="7" fill={getCircleFill(4)} />
+        <text x={cx - pos.hipWidth / 2 - 35} y={(pos.waistY + pos.hemY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">4</text>
       </g>
 
       {/* Labels */}
