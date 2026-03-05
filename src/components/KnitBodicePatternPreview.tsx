@@ -49,7 +49,7 @@ export function KnitBodicePatternPreview({ measurements, category }: KnitBodiceP
   const backOffsetX = dimensions.width / 2 + padding / 2;
 
   return (
-    <div className="w-full h-full min-h-[500px] bg-pattern-grid/30 rounded-lg relative overflow-hidden">
+    <ZoomablePatternWrapper className="w-full h-full bg-pattern-grid/30 rounded-lg" minHeight="500px">
       {/* Grid pattern background */}
       <div
         className="absolute inset-0 opacity-30"
