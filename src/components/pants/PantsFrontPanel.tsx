@@ -42,7 +42,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   const kneeY = crotchDepth + inseamLength * 0.4;
 
   // B-B1 = 2cm (waist reduction at side)
-  const waistReduction = 2;
+  const waistReduction = hipQuarter - waist / 4 - 5;
 
   // B1 raised by 1cm for women only
   const b1Rise = category === "women" ? 1 : 0;
@@ -59,9 +59,9 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
 
   // Waist points
   const a1X = offsetX;
-  const a1Y = offsetY;
+  const a1Y = offsetY; // en vrai baisser un peu pour la femme
   const b1X = offsetX + s(hipQuarter - waistReduction);
-  const b1Y = offsetY - s(b1Rise);
+  const b1Y = offsetY - s(b1Rise); // en vrai offset Y
 
   // Hip level
   const hipSideX = offsetX + s(hipQuarter);

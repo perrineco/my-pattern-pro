@@ -17,13 +17,13 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
   // === CONSTRUCTION BACK ===
 
   // Rectangle ABCD
-  // A-B = 1/4 hip + 2
-  const hipQuarter = hip / 4;
-  const rectWidth = hipQuarter + 2;
+  // A-B = 1/4 hip + ease
+  const hipQuarter = hip / 4 +e ase;
+  const rectWidth = hipQuarter + ease;
   const totalLength = outseamLength;
 
-  // E-E1 = 1/16 hip + 3 (back crotch extension, larger than front)
-  const crotchExtension = hip / 16 + 3;
+  // E-E1 =  (back crotch extension)
+  const crotchExtension = category === "women" ? hip / 16+3 : hip / 16 - 1;
 
   // E1-E2 = 1cm (crotch point raised)
   const e2Rise = 1;
@@ -36,17 +36,17 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
 
   // E1-X = midpoint of E1-F
   // E1 is at -crotchExtension, F is at rectWidth
-  const xCenter = (-crotchExtension + rectWidth) / 2;
+  const xCenter = (-crotchExtension + hipQuarter) / 2;
 
   // M-O = knee height
   const kneeY = crotchDepth + inseamLength * 0.4;
 
   // A-A1 = 2cm, A1-A2 = 2cm (center back shifts)
-  const a1Shift = 2; // A-A1 horizontal
-  const a2Shift = 2; // A1-A2 vertical (raised waist)
+  const a1Shift = category === "women" ? 3.5 :  2; // A-A1 horizontal
+  const a2Shift = category === "women" ? outseamLength*0.27 :  2; // A1-A2 vertical (raised waist)
 
   // B-B1 = 2cm (waist reduction at side)
-  const waistReduction = 2;
+  const waistReduction = hipQuarter - waist/4 - 5;
 
   // B1 raised by 1cm for women only
   const b1Rise = category === "women" ? 1 : 0;
@@ -68,11 +68,11 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
   const a2Y = offsetY - s(a2Shift);
 
   // B1 — side waist (raised 1cm for women)
-  const b1X = offsetX + s(rectWidth - waistReduction);
-  const b1Y = offsetY - s(b1Rise);
+  const b1X = offsetX + s(hipQuarter - a1Shift - waistReduction);
+  const b1Y = offsetY - s(a2Shift);
 
   // Hip level
-  const hipSideX = offsetX + s(rectWidth);
+  const hipSideX = offsetX + s(hipQuarter);
   const hipY = offsetY + s(hipHeight);
 
   // Crotch level
@@ -101,7 +101,7 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
   const hemInnerX = hemCenterX - s(hemHalfWidth);
 
   // F point (side at crotch level)
-  const fX = offsetX + s(rectWidth);
+  const fX = offsetX + s(hipQuarter);
   const fY = crotchY;
 
   // Build the back panel outline
@@ -112,10 +112,11 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
     path += `M ${a2X} ${a2Y}`;
 
     // Waist: A2 → B1 with garbo (slight curve)
-    path += ` Q ${offsetX + s(rectWidth * 0.5)} ${offsetY - s(0.5)} ${b1X} ${b1Y}`;
+   // path += ` Q ${offsetX + s(hipQuarter * 0.5)} ${offsetY - s(0.5)} ${b1X} ${b1Y}`;
+path += ` L  ${b1X} ${b1Y}`;
 
     // Side seam: B1 → H (hip) with garbo
-    path += ` Q ${offsetX + s(rectWidth + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
+    path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
 
     // Side seam: H → F (crotch level)
     path += ` L ${fX} ${fY}`;
@@ -145,7 +146,7 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
     return path;
   };
 
-  const panelWidth = Math.max(s(rectWidth), thighSideX - e1X);
+  const panelWidth = Math.max(s(hipQuarter), thighSideX - e1X);
   const panelHeight = hemY - offsetY;
 
   return (
