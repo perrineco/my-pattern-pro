@@ -46,8 +46,8 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
   const a1Shift = category === "women" ? 3.5 : 2; // A-A1 horizontal
   const a2Shift = category === "women" ? outseamLength * 0.027 : 2; // A1-A2 vertical (raised waist)
 
-  // B-B1 = 2cm (waist reduction at side)
-  const waistReduction = hipQuarter - waist / 4 - 5;
+  // B-B1 (waist reduction at side)
+  const waistReduction = hipQuarter - waist / 4 - 2;
 
   // B1 raised by 1cm for women only
   const b1Rise = category === "women" ? 1 : 0;
