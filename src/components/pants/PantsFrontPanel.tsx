@@ -124,11 +124,10 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
     path += ` L ${thighInnerX} ${iY}`;
 
     // Inseam: I1-E1
-    path += ` L ${e1X} ${crotchY}`;
+    //    path += ` L ${e1X} ${crotchY}`;
+    path += ` C ${thighInnerX} ${iY + ((crotchY - iY) * 3) / 4}, ${e1X} ${crotchY}, ${e1X} ${crotchY}`;
 
     // Crotch curve: E1 → G
-    //    path += ` C ${e1X/2} ${crotchY}, ${a1X} ${hipY + s(5)}, ${a1X} ${hipY}`;
-
     path += ` C ${e1X + (a1X - e1X) / 2} ${crotchY + (hipY - crotchY) / 20}, ${a1X - s(1)} ${hipY - (hipY - crotchY) / 4}, ${a1X - s(1)} ${hipY}`;
     // Center front back to waist G-A
     path += ` L ${a1X} ${a1Y}`;
