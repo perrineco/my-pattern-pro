@@ -89,9 +89,9 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
   const thighInnerX = centerX - s(thighHalfSpread);
 
   // Knee level
-  // const kneeYPos = offsetY + s(kneeY);
-  // const kneeSideX = centerX + s(kneeHalfSpread);
-  // const kneeInnerX = centerX - s(kneeHalfSpread);
+  const kneeYPos = offsetY + s(kneeY);
+  const kneeSideX = centerX + s(kneeHalfSpread);
+  const kneeInnerX = centerX - s(kneeHalfSpread);
 
   // Hem level
   const hemY = offsetY + s(totalLength);
@@ -130,7 +130,7 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
     path += ` Q ${hemCenterX} ${hemY + s(0.5)} ${hemInnerX} ${hemY}`;
 
     // Inseam: C1 → I1 (thigh inner) with garbo
-    path += ` L ${kneeInnerX} ${kneeYPos}`;
+    // path += ` L ${kneeInnerX} ${kneeYPos}`;
     path += ` L ${thighInnerX} ${iY}`;
 
     // Inseam: I1 → E2 with garbo
@@ -199,7 +199,7 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
       {/* Grain line — DRITTO FILO / LINEA PIEGA */}
       <line
         x1={centerX}
-        y1={oy + s(3)}
+        y1={offsetY + s(3)}
         x2={centerX}
         y2={hemY - s(3)}
         stroke="hsl(var(--pattern-stroke))"
@@ -208,10 +208,20 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
       />
 
       {/* Labels */}
-      <text x={centerX} y={oy + panelHeight * 0.45} textAnchor="middle" className="fill-foreground font-serif text-sm">
+      <text
+        x={centerX}
+        y={offsetY + panelHeight * 0.45}
+        textAnchor="middle"
+        className="fill-foreground font-serif text-sm"
+      >
         BACK
       </text>
-      <text x={centerX} y={oy + panelHeight * 0.45 + 16} textAnchor="middle" className="fill-muted-foreground text-xs">
+      <text
+        x={centerX}
+        y={offsetY + panelHeight * 0.45 + 16}
+        textAnchor="middle"
+        className="fill-muted-foreground text-xs"
+      >
         Cut 2
       </text>
 
