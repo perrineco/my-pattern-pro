@@ -6,6 +6,7 @@ interface PantsBackPanelProps {
   offsetY: number;
   scale: number;
   category: Category;
+  mirrored?: boolean;
 }
 
 export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category }: PantsBackPanelProps) {
