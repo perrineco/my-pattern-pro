@@ -126,22 +126,25 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
     // Side seam: F → L1 (thigh)
     path += ` L ${thighSideX} ${iY}`;
 
-    // Side seam: L1 → knee → D1 (hem) with garbo
+    // Side seam: L1 → knee → D1 (hem)
     //  path += ` L ${kneeSideX} ${kneeYPos}`;
     path += ` L ${hemSideX} ${hemY}`;
 
     // Hem: D1 → N1 → C1
-    path += ` Q ${hemCenterX} ${hemY + s(0.5)} ${hemInnerX} ${hemY}`;
+    //    path += ` Q ${hemCenterX} ${hemY + s(0.5)} ${hemInnerX} ${hemY}`;
+    path += ` L ${hemInnerX} ${hemY}`;
 
-    // Inseam: C1 → I1 (thigh inner) with garbo
+    // Inseam: C1 → I1 (thigh inner)
     // path += ` L ${kneeInnerX} ${kneeYPos}`;
     path += ` L ${thighInnerX} ${iY}`;
 
-    // Inseam: I1 → E2 with garbo
-    path += ` Q ${offsetX - s(crotchExtension * 0.3)} ${iY - s(2)} ${e2X} ${e2Y}`;
+    // Inseam: I1 → E2
+    //    path += ` Q ${offsetX - s(crotchExtension * 0.3)} ${iY - s(2)} ${e2X} ${e2Y}`;
+    path += ` L ${e2X} ${e2Y}`;
 
     // Crotch curve: E2 → G → A2 with curved line
-    path += ` Q ${e1X} ${hipY} ${offsetX + s(a1Shift * 0.5)} ${offsetY + s(hipHeight * 0.4)}`;
+    //    path += ` Q ${e1X} ${hipY} ${offsetX + s(a1Shift * 0.5)} ${offsetY + s(hipHeight * 0.4)}`;
+    path += ` L ${offsetY + s(hipHeight * 0.4)}`;
     path += ` L ${a2X} ${a2Y}`;
 
     path += ` Z`;
