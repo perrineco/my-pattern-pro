@@ -70,7 +70,7 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
 
   // B1 — side waist (raised 1cm for women)
   const b1X = offsetX + s(hipQuarter - a1Shift - waistReduction);
-  const b1Y = offsetY - s(a2Shift);
+  const b1Y = offsetY;
 
   // Hip level
   const hipSideX = offsetX + s(hipQuarter);
