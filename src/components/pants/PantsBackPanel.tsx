@@ -143,7 +143,7 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
 
     // Crotch curve: E2 → G
     //    path += ` Q ${e1X} ${hipY} ${offsetX + s(a1Shift * 0.5)} ${offsetY + s(hipHeight * 0.4)}`;
-    path += ` L ${offsetX} ${offsetY + hipY}`;
+    path += ` L ${offsetX} ${hipY}`;
     path += ` L ${a2X} ${a2Y}`;
 
     path += ` Z`;
