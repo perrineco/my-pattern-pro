@@ -48,11 +48,10 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   const b1Rise = category === "women" ? 1 : 0;
 
   // X1-L1 = 1/4 thigh circumference + 0.5 (each side of center)
-  const thighHalfSpread = thigh / 4 + 0.5;
 
   // Hem: N-C1 = N-D1 ≈ ankle/4 + 0.5 each side (or custom)
-  //  const hemHalfWidth = ankle / 4 + 0.5;
-  const hemHalfWidth = thighHalfSpread - 1;
+  const hemHalfWidth = hip / 10 + 1.5;
+  const thighHalfSpread = hemHalfWidth + 1;
 
   // Knee width: interpolated between thigh and ankle
   const kneeHalfSpread = knee / 4 + 0.5;
