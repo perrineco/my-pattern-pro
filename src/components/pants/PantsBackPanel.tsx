@@ -11,6 +11,7 @@ interface PantsBackPanelProps {
 
 export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category }: PantsBackPanelProps) {
   const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
+  const ease = measurements.ease ?? 2;
 
   const s = (v: number) => v * scale;
 
