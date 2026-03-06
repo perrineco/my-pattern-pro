@@ -111,12 +111,13 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
     // Start at A2 — center back waist (shifted)
     path += `M ${a2X} ${a2Y}`;
 
-    // Waist: A2 → B1 with garbo (slight curve)
+    // Waist: A2 → B1 (slight curve)
    // path += ` Q ${offsetX + s(hipQuarter * 0.5)} ${offsetY - s(0.5)} ${b1X} ${b1Y}`;
 path += ` L  ${b1X} ${b1Y}`;
 
-    // Side seam: B1 → H (hip) with garbo
+    // Side seam: B1 → H (hip) 
     path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
+    path += ` L  ${hipSideX} ${hipY}`;
 
     // Side seam: H → F (crotch level)
     path += ` L ${fX} ${fY}`;
