@@ -55,8 +55,7 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
   // X1-L1 = 1/4 thigh + 2 (back is wider)
 
   // Hem: N-C1 = 10cm, N-D1 = 10cm (or custom)
-  const hemHalfWidth = hip / 10 + 1;
-  5;
+  const hemHalfWidth = hip / 10 + 1.5;
   const thighHalfSpread = hemHalfWidth + 1;
   // Knee width
   const kneeHalfSpread = knee / 4 + 1;
