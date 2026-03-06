@@ -117,7 +117,7 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
     path += ` L  ${b1X} ${b1Y}`;
 
     // Side seam: B1 → H (hip)
-    path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
+    //  path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
     path += ` L  ${hipSideX} ${hipY}`;
 
     // Side seam: H → F (crotch level)
