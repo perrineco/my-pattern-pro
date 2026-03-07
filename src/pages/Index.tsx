@@ -496,7 +496,7 @@ const Index = () => {
                     <div className="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">
                       Scale: {patternType === 'skirt' 
                         ? ((skirtMeasurements.hip / 4 + 1) / 10).toFixed(1)
-                        : patternType === 'pants'
+                        : isPantsVariant || patternType === 'pants'
                         ? ((pantsMeasurements.hip / 4 + 1) / 10).toFixed(1)
                         : patternType === 'sleeve'
                         ? ((sleeveMeasurements.upperArm / 2 + 1) / 10).toFixed(1)
