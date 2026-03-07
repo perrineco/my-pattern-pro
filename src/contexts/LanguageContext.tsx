@@ -263,6 +263,9 @@ const translations: Record<string, Record<Language, string>> = {
    'piece.back': { en: 'BACK', fr: 'DOS' },
    'piece.cutOnFold': { en: 'Cut 1 on fold', fr: 'Couper 1 au pli' },
    'piece.quarterWaist': { en: '¼ waist', fr: '¼ taille' },
+   'legend.patternEdge': { en: 'Pattern edge', fr: 'Bord du patron' },
+   'legend.grainLine': { en: 'Grain line', fr: 'Droit-fil' },
+   'legend.measurements': { en: 'Measurements', fr: 'Mesures' },
 
    // Misc
    'misc.soon': { en: 'Soon', fr: 'Bientôt' },
