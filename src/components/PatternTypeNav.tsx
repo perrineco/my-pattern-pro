@@ -74,8 +74,8 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
   const handleMainClick = (type: PatternTypeConfig) => {
     if (!type.available) return;
     if (type.hasSubmenu) {
-      // If no bodice variant is currently selected, select the first available one
-      if (!isBodiceVariant && type.value === 'bodice') {
+      const isVariantActive = (type.value === 'bodice' && isBodiceVariant) || (type.value === 'pants' && isPantsVariant);
+      if (!isVariantActive) {
         const firstAvailable = type.submenu?.find(s => s.available);
         if (firstAvailable) {
           onSelect(firstAvailable.value);
