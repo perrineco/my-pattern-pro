@@ -128,7 +128,7 @@ const Index = () => {
     if (patternType === 'bodice') {
       return bodiceMeasurements;
     }
-    if (patternType === 'pants') {
+    if (isPantsVariant || patternType === 'pants') {
       return pantsMeasurements;
     }
     if (patternType === 'sleeve') {
