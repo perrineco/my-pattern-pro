@@ -10,7 +10,11 @@ interface PantsBackPanelProps {
   mirrored?: boolean;
 }
 
-export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category }: PantsBackPanelProps) {
+export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category, mirrored }: PantsBackPanelProps) {
+  const { t } = useLanguage();
+  const tm: React.CSSProperties | undefined = mirrored
+    ? { transform: 'scaleX(-1)', transformBox: 'fill-box' as const, transformOrigin: 'center' }
+    : undefined;
   const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
   const ease = measurements.ease ?? 2;
 
