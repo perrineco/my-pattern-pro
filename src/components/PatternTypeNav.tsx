@@ -116,7 +116,7 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 relative flex items-center gap-1",
               type.available
-                ? (selected === type.value || (type.hasSubmenu && isBodiceVariant && type.value === 'bodice'))
+                ? (selected === type.value || (type.hasSubmenu && isBodiceVariant && type.value === 'bodice') || (type.hasSubmenu && isPantsVariant && type.value === 'pants'))
                   ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground hover:bg-card/50"
                 : "text-muted-foreground/50 cursor-not-allowed"
