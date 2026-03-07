@@ -110,6 +110,9 @@ const Index = () => {
   const isBodiceDartless = patternType === 'bodice-dartless';
   const isBodiceWithDarts = patternType === 'bodice-with-darts';
   const isBodiceKnit = patternType === 'bodice-knit';
+  const isPantsVariant = patternType.startsWith('pants');
+  const isPantsDartless = patternType === 'pants-dartless' || patternType === 'pants';
+  const isPantsWithDarts = patternType === 'pants-with-darts';
 
   // Get current measurements based on pattern type
   const getCurrentMeasurements = (): Measurements => {
