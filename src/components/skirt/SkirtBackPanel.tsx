@@ -154,7 +154,7 @@ export function SkirtBackPanel({
         className="fill-foreground font-serif text-sm"
         style={tm}
       >
-        BACK
+        {t('piece.back')}
       </text>
       <text
         x={offsetX + patternWidth / 2}
