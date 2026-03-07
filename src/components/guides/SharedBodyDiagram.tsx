@@ -735,7 +735,7 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
     >
       <SharedDefs />
       {category === "women" && (
-        <g transform={`translate(${WomenTranslateX}, ${WomenTranslateY}) scale(${WoemnScale})`}>
+        <g transform={`translate(${WomenTranslateX}, ${WomenTranslateY}) scale(${WomenScale})`}>
           <WomenBody />
           {renderOverlay?.(pos)}
         </g>
