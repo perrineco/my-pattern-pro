@@ -277,6 +277,21 @@ Z"
         stroke="#b8845a"
         strokeWidth={0.8}
       />
+
+      {/* cheveux */}
+      <path
+        d="M 282.287 26.3393
+C 282.287 26.3393 275.552 28.7303 276.208 37.3965
+C 276.864 46.0628 277.28 45.7374 287.327 50.3722
+C 292.174 52.6085 295.181 56.293 300.748 52.8644
+C 303.822 50.9714 312.365 48.6165 311.355 38.6256
+C 310.324 28.4238 295.226 10.8713 282.287 26.3393
+Z"
+        fill="url(#skinWomen)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+      />
+
       {/* Tête */}
       <path
         d="M 280.422 39.2049
@@ -290,19 +305,6 @@ C 295.068 34.7679 293.436 32.4597 293.436 32.4597
 C 293.436 32.4597 296.139 35.5557 298.502 36.6818
 C 291.691 36.1189 286.399 33.0788 284.317 28.0124
 C 284.315 28.0124 284.802 36.1768 280.422 39.2049
-Z"
-        fill="url(#skinWomen)"
-        stroke="#b8845a"
-        strokeWidth={0.8}
-      />
-      {/* cheveux */}
-      <path
-        d="M 282.287 26.3393
-C 282.287 26.3393 275.552 28.7303 276.208 37.3965
-C 276.864 46.0628 277.28 45.7374 287.327 50.3722
-C 292.174 52.6085 295.181 56.293 300.748 52.8644
-C 303.822 50.9714 312.365 48.6165 311.355 38.6256
-C 310.324 28.4238 295.226 10.8713 282.287 26.3393
 Z"
         fill="url(#skinWomen)"
         stroke="#b8845a"
@@ -716,6 +718,14 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
   const kidsTranslateX = (240 * (1 - kidsScale)) / 2; // center horizontally
   const kidsTranslateY = 10; // small top offset
 
+  const WomenScale = 0.75;
+  const WomenTranslateX = (240 * (1 - WomenScale)) / 2; // center horizontally
+  const WomenTranslateY = 10; // small top offset
+
+  const MenScale = 0.75;
+  const MenTranslateX = (240 * (1 - MenScale)) / 2; // center horizontally
+  const MenTranslateY = 10; // small top offset
+
   return (
     <svg
       viewBox={`0 0 240 ${vbHeight}`}
@@ -725,16 +735,16 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
     >
       <SharedDefs />
       {category === "women" && (
-        <>
+        <g transform={`translate(${WomenTranslateX}, ${WomenTranslateY}) scale(${WoemnScale})`}>
           <WomenBody />
           {renderOverlay?.(pos)}
-        </>
+        </g>
       )}
       {category === "men" && (
-        <>
+        <g transform={`translate(${MenTranslateX}, ${MenTranslateY}) scale(${MenScale})`}>
           <MenBody />
           {renderOverlay?.(pos)}
-        </>
+        </g>
       )}
       {category === "kids" && (
         <g transform={`translate(${kidsTranslateX}, ${kidsTranslateY}) scale(${kidsScale})`}>
