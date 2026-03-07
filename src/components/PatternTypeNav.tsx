@@ -32,7 +32,16 @@ const patternTypes: PatternTypeConfig[] = [
     ]
   },
   { value: 'dress', labelKey: 'pattern.dress', available: false },
-  { value: 'pants', labelKey: 'pattern.pants', available: true },
+  { 
+    value: 'pants', 
+    labelKey: 'pattern.pants', 
+    available: true,
+    hasSubmenu: true,
+    submenu: [
+      { value: 'pants-dartless', labelKey: 'pattern.dartless', available: true },
+      { value: 'pants-with-darts', labelKey: 'pattern.withDarts', available: true },
+    ]
+  },
   { value: 'sleeve', labelKey: 'pattern.sleeve', available: false },
 ];
 
