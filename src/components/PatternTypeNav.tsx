@@ -57,7 +57,9 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
   });
 
   const isBodiceVariant = selected.startsWith('bodice');
+  const isPantsVariant = selected.startsWith('pants');
   const selectedBodiceVariant = isBodiceVariant ? selected : null;
+  const selectedPantsVariant = isPantsVariant ? selected : null;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
