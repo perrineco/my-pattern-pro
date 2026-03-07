@@ -95,9 +95,13 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
   };
 
   const getDisplayLabel = (type: PatternTypeConfig): string => {
-    if (type.hasSubmenu && selectedBodiceVariant && type.value === 'bodice') {
+    if (type.hasSubmenu && type.value === 'bodice' && selectedBodiceVariant) {
       const variant = type.submenu?.find(s => s.value === selectedBodiceVariant);
       return variant ? `${t('pattern.bodice')}: ${t(variant.labelKey)}` : t(type.labelKey);
+    }
+    if (type.hasSubmenu && type.value === 'pants' && selectedPantsVariant) {
+      const variant = type.submenu?.find(s => s.value === selectedPantsVariant);
+      return variant ? `${t('pattern.pants')}: ${t(variant.labelKey)}` : t(type.labelKey);
     }
     return t(type.labelKey);
   };
