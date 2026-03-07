@@ -266,6 +266,11 @@ const translations: Record<string, Record<Language, string>> = {
    'legend.patternEdge': { en: 'Pattern edge', fr: 'Bord du patron' },
    'legend.grainLine': { en: 'Grain line', fr: 'Droit-fil' },
    'legend.measurements': { en: 'Measurements', fr: 'Mesures' },
+   'piece.cut2': { en: 'Cut 2', fr: 'Couper 2' },
+   'piece.hip': { en: 'Hip', fr: 'Hanches' },
+   'piece.crotch': { en: 'Crotch', fr: 'Entrejambe' },
+   'piece.thigh': { en: 'Thigh', fr: 'Cuisse' },
+   'piece.knee': { en: 'Knee', fr: 'Genou' },
 
    // Misc
    'misc.soon': { en: 'Soon', fr: 'Bientôt' },
