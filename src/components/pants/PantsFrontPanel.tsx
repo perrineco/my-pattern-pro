@@ -10,6 +10,7 @@ interface PantsFrontPanelProps {
 }
 
 export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, category }: PantsFrontPanelProps) {
+  const { t } = useLanguage();
   const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
   const ease = measurements.ease ?? 2;
 
