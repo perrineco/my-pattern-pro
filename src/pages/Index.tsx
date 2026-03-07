@@ -335,7 +335,7 @@ const Index = () => {
                     category={category}
                     unit={measurementUnit}
                   />
-                ) : patternType === 'pants' ? (
+                ) : isPantsVariant || patternType === 'pants' ? (
                   <PantsMeasurementForm
                     measurements={pantsMeasurements}
                     onChange={setPantsMeasurements}
