@@ -543,31 +543,26 @@ const Index = () => {
             <div className="mt-12 grid md:grid-cols-3 gap-6">
               <div className="p-6 bg-card rounded-lg border border-border">
                 <h3 className="font-serif text-lg font-semibold mb-2 text-foreground">
-                  Custom Patterns
+                  {t('info.customPatterns')}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Create basic pattern blocks made to your exact measurements. They serve
-                  as the foundation for creating any garment style, from simple A-line skirts
-                  to complex fitted designs.
+                  {t('info.customPatternsDesc')}
                 </p>
               </div>
               <div className="p-6 bg-card rounded-lg border border-border">
                 <h3 className="font-serif text-lg font-semibold mb-2 text-foreground">
-                  Bodice Pattern
+                  {t('info.bodicePattern')}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  The bodice pattern includes front and back panels with bust darts for shaping.
-                  It forms the basis for tops, dresses, and jackets with proper fit through
-                  the torso.
+                  {t('info.bodicePatternDesc')}
                 </p>
               </div>
               <div className="p-6 bg-card rounded-lg border border-border">
                 <h3 className="font-serif text-lg font-semibold mb-2 text-foreground">
-                  Pants Pattern
+                  {t('info.pantsPattern')}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  The pants pattern includes front and back panels with waist dart for shaping.
-                  Full measurement control from waist to ankle for a perfect fit.
+                  {t('info.pantsPatternDesc')}
                 </p>
               </div>
             </div>
@@ -578,7 +573,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-border mt-16 py-8">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>Sloper Studio — Create custom-fit sewing patterns</p>
+          <p>{t('info.footer')}</p>
         </div>
       </footer>
     </div>
