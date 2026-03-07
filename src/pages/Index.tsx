@@ -458,7 +458,7 @@ const Index = () => {
                         : patternType === 'sleeve' ? t('title.basicSleeve')
                         : t('title.patternPreview')}
                     </h2>
-                    {patternType !== 'pants' && (
+                    {!isPantsVariant && patternType !== 'pants' && (
                       <div className="flex items-center gap-2 mt-1">
                         {patternType === 'skirt' ? (
                           <MeasurementGuide category={category} />
