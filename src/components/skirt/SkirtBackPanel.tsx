@@ -42,6 +42,7 @@ export function SkirtBackPanel({
   centerToDartScaled,
   mirrored,
 }: SkirtBackPanelProps) {
+  const { t } = useLanguage();
   const tm: React.CSSProperties | undefined = mirrored
     ? { transform: 'scaleX(-1)', transformBox: 'fill-box' as const, transformOrigin: 'center' }
     : undefined;
