@@ -590,6 +590,11 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
   const pos = getPositions(category);
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
 
+  // Scale down the kids silhouette so it appears smaller & more proportional
+  const kidsScale = 0.75;
+  const kidsTranslateX = (240 * (1 - kidsScale)) / 2; // center horizontally
+  const kidsTranslateY = 10; // small top offset
+
   return (
     <svg
       viewBox={`0 0 240 ${vbHeight}`}
@@ -598,10 +603,24 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
       style={{ overflow: "visible" }}
     >
       <SharedDefs />
-      {category === "women" && <WomenBody />}
-      {category === "men" && <MenBody />}
-      {category === "kids" && <KidsBody />}
-      {renderOverlay?.(pos)}
+      {category === "women" && (
+        <>
+          <WomenBody />
+          {renderOverlay?.(pos)}
+        </>
+      )}
+      {category === "men" && (
+        <>
+          <MenBody />
+          {renderOverlay?.(pos)}
+        </>
+      )}
+      {category === "kids" && (
+        <g transform={`translate(${kidsTranslateX}, ${kidsTranslateY}) scale(${kidsScale})`}>
+          <KidsBody />
+          {renderOverlay?.(pos)}
+        </g>
+      )}
     </svg>
   );
 }
