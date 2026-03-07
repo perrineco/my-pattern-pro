@@ -163,7 +163,7 @@ export function SkirtFrontPanel({
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
       >
-        FRONT
+        {t('piece.front')}
       </text>
       <text
         x={offsetX + patternWidth / 2}
