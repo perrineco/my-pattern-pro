@@ -146,7 +146,7 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
                   className={cn(
                     "w-full px-4 py-2 text-left text-sm transition-colors relative",
                     subType.available
-                      ? selectedBodiceVariant === subType.value
+                      ? (selectedBodiceVariant === subType.value || selectedPantsVariant === subType.value)
                         ? "bg-primary/10 text-primary font-medium"
                         : "text-foreground hover:bg-secondary"
                       : "text-muted-foreground/50 cursor-not-allowed"
