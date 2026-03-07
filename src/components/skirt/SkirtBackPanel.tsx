@@ -120,7 +120,7 @@ export function SkirtBackPanel({
           className="fill-primary text-xs font-sans"
           style={tm}
         >
-          ¼ waist = {(waistQuarter + dartWidth + ease).toFixed(1)}cm
+          {t('piece.quarterWaist')} = {(waistQuarter + dartWidth + ease).toFixed(1)}cm
         </text>
       </g>
 
