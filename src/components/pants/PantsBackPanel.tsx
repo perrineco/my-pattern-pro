@@ -1,4 +1,5 @@
 import { PantsMeasurements, Category } from "@/types/sloper";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PantsBackPanelProps {
   measurements: PantsMeasurements;
@@ -9,7 +10,11 @@ interface PantsBackPanelProps {
   mirrored?: boolean;
 }
 
-export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category }: PantsBackPanelProps) {
+export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category, mirrored }: PantsBackPanelProps) {
+  const { t } = useLanguage();
+  const tm: React.CSSProperties | undefined = mirrored
+    ? { transform: 'scaleX(-1)', transformBox: 'fill-box' as const, transformOrigin: 'center' }
+    : undefined;
   const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
   const ease = measurements.ease ?? 2;
 
@@ -216,30 +221,32 @@ export function PantsBackPanel({ measurements, offsetX, offsetY, scale, category
         y={offsetY + panelHeight * 0.45}
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
+        style={tm}
       >
-        BACK
+        {t('piece.back')}
       </text>
       <text
         x={centerX}
         y={offsetY + panelHeight * 0.45 + 16}
         textAnchor="middle"
         className="fill-muted-foreground text-xs"
+        style={tm}
       >
-        Cut 2
+        {t('piece.cut2')}
       </text>
 
       {/* Measurement labels */}
-      <text x={hipSideX + 5} y={hipY + 4} className="fill-muted-foreground text-[9px]">
-        Hip
+      <text x={hipSideX + 5} y={hipY + 4} className="fill-muted-foreground text-[9px]" style={tm}>
+        {t('piece.hip')}
       </text>
-      <text x={fX + 5} y={crotchY + 4} className="fill-muted-foreground text-[9px]">
-        Crotch
+      <text x={fX + 5} y={crotchY + 4} className="fill-muted-foreground text-[9px]" style={tm}>
+        {t('piece.crotch')}
       </text>
-      <text x={thighSideX + 5} y={iY + 4} className="fill-muted-foreground text-[9px]">
-        Thigh
+      <text x={thighSideX + 5} y={iY + 4} className="fill-muted-foreground text-[9px]" style={tm}>
+        {t('piece.thigh')}
       </text>
-      <text x={kneeSideX + 5} y={kneeYPos + 4} className="fill-muted-foreground text-[9px]">
-        Knee
+      <text x={kneeSideX + 5} y={kneeYPos + 4} className="fill-muted-foreground text-[9px]" style={tm}>
+        {t('piece.knee')}
       </text>
     </g>
   );

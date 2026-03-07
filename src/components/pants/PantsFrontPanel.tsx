@@ -1,4 +1,5 @@
 import { PantsMeasurements, Category } from "@/types/sloper";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PantsFrontPanelProps {
   measurements: PantsMeasurements;
@@ -9,6 +10,7 @@ interface PantsFrontPanelProps {
 }
 
 export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, category }: PantsFrontPanelProps) {
+  const { t } = useLanguage();
   const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
   const ease = measurements.ease ?? 2;
 
@@ -205,7 +207,7 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
       >
-        FRONT
+        {t('piece.front')}
       </text>
       <text
         x={centerX}
@@ -213,21 +215,21 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
         textAnchor="middle"
         className="fill-muted-foreground text-xs"
       >
-        Cut 2
+        {t('piece.cut2')}
       </text>
 
       {/* Measurement labels */}
       <text x={hipSideX + 5} y={hipY + 4} className="fill-muted-foreground text-[9px]">
-        Hip
+        {t('piece.hip')}
       </text>
       <text x={thighSideX + 5} y={crotchY + 4} className="fill-muted-foreground text-[9px]">
-        Crotch
+        {t('piece.crotch')}
       </text>
       {/*  <text x={thighSideX + 5} y={iY + 4} className="fill-muted-foreground text-[9px]">
         Thigh-->
       </text>*/}
       <text x={kneeSideX + 5} y={kneeYPos + 4} className="fill-muted-foreground text-[9px]">
-        Knee
+        {t('piece.knee')}
       </text>
     </g>
   );
