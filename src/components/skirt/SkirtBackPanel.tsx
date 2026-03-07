@@ -1,4 +1,5 @@
 import { Category } from "@/types/sloper";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SkirtBackPanelProps {
   waist: number;
@@ -41,6 +42,7 @@ export function SkirtBackPanel({
   centerToDartScaled,
   mirrored,
 }: SkirtBackPanelProps) {
+  const { t } = useLanguage();
   const tm: React.CSSProperties | undefined = mirrored
     ? { transform: 'scaleX(-1)', transformBox: 'fill-box' as const, transformOrigin: 'center' }
     : undefined;
@@ -118,7 +120,7 @@ export function SkirtBackPanel({
           className="fill-primary text-xs font-sans"
           style={tm}
         >
-          ¼ waist = {(waistQuarter + dartWidth + ease).toFixed(1)}cm
+          {t('piece.quarterWaist')} = {(waistQuarter + dartWidth + ease).toFixed(1)}cm
         </text>
       </g>
 
@@ -152,7 +154,7 @@ export function SkirtBackPanel({
         className="fill-foreground font-serif text-sm"
         style={tm}
       >
-        BACK
+        {t('piece.back')}
       </text>
       <text
         x={offsetX + patternWidth / 2}
@@ -161,7 +163,7 @@ export function SkirtBackPanel({
         className="fill-muted-foreground text-xs font-sans"
         style={tm}
       >
-        Cut 1 on fold
+        {t('piece.cutOnFold')}
       </text>
     </g>
   );

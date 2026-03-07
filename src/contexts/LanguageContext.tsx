@@ -258,6 +258,15 @@ const translations: Record<string, Record<Language, string>> = {
    'guide.tip.bodice5': { en: 'Take measurements over fitted clothing or undergarments', fr: 'Prenez les mesures par-dessus des vêtements ajustés ou des sous-vêtements' },
    'guide.tip.bodice6': { en: 'For back width (carrure dos), locate it by feeling where the arms connect to the body', fr: 'Pour la carrure dos, localisez-la en sentant où les bras se connectent au corps' },
 
+   // Pattern piece labels
+   'piece.front': { en: 'FRONT', fr: 'DEVANT' },
+   'piece.back': { en: 'BACK', fr: 'DOS' },
+   'piece.cutOnFold': { en: 'Cut 1 on fold', fr: 'Couper 1 au pli' },
+   'piece.quarterWaist': { en: '¼ waist', fr: '¼ taille' },
+   'legend.patternEdge': { en: 'Pattern edge', fr: 'Bord du patron' },
+   'legend.grainLine': { en: 'Grain line', fr: 'Droit-fil' },
+   'legend.measurements': { en: 'Measurements', fr: 'Mesures' },
+
    // Misc
    'misc.soon': { en: 'Soon', fr: 'Bientôt' },
    'misc.free': { en: 'Free', fr: 'Gratuit' },

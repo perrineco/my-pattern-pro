@@ -1,4 +1,5 @@
 import { Category } from "@/types/sloper";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SkirtFrontPanelProps {
   waist: number;
@@ -40,6 +41,7 @@ export function SkirtFrontPanel({
   centerToDartScaled,
   frontwaistRise,
 }: SkirtFrontPanelProps) {
+  const { t } = useLanguage();
   // Create the path for the front panel
   const panelPath = `
     M ${offsetX} ${offsetY}
@@ -113,7 +115,7 @@ export function SkirtFrontPanel({
           textAnchor="middle"
           className="fill-primary text-xs font-sans"
         >
-          ¼ waist = {(waistQuarter + dartWidth + ease).toFixed(1)}cm
+          {t('piece.quarterWaist')} = {(waistQuarter + dartWidth + ease).toFixed(1)}cm
         </text>
       </g>
 
@@ -161,7 +163,7 @@ export function SkirtFrontPanel({
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
       >
-        FRONT
+        {t('piece.front')}
       </text>
       <text
         x={offsetX + patternWidth / 2}
@@ -169,7 +171,7 @@ export function SkirtFrontPanel({
         textAnchor="middle"
         className="fill-muted-foreground text-xs font-sans"
       >
-        Cut 1 on fold
+        {t('piece.cutOnFold')}
       </text>
     </g>
   );
