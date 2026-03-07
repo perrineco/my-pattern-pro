@@ -32,7 +32,16 @@ const patternTypes: PatternTypeConfig[] = [
     ]
   },
   { value: 'dress', labelKey: 'pattern.dress', available: false },
-  { value: 'pants', labelKey: 'pattern.pants', available: true },
+  { 
+    value: 'pants', 
+    labelKey: 'pattern.pants', 
+    available: true,
+    hasSubmenu: true,
+    submenu: [
+      { value: 'pants-dartless', labelKey: 'pattern.dartless', available: true },
+      { value: 'pants-with-darts', labelKey: 'pattern.withDarts', available: true },
+    ]
+  },
   { value: 'sleeve', labelKey: 'pattern.sleeve', available: false },
 ];
 
@@ -48,7 +57,9 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
   });
 
   const isBodiceVariant = selected.startsWith('bodice');
+  const isPantsVariant = selected.startsWith('pants');
   const selectedBodiceVariant = isBodiceVariant ? selected : null;
+  const selectedPantsVariant = isPantsVariant ? selected : null;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -63,8 +74,8 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
   const handleMainClick = (type: PatternTypeConfig) => {
     if (!type.available) return;
     if (type.hasSubmenu) {
-      // If no bodice variant is currently selected, select the first available one
-      if (!isBodiceVariant && type.value === 'bodice') {
+      const isVariantActive = (type.value === 'bodice' && isBodiceVariant) || (type.value === 'pants' && isPantsVariant);
+      if (!isVariantActive) {
         const firstAvailable = type.submenu?.find(s => s.available);
         if (firstAvailable) {
           onSelect(firstAvailable.value);
@@ -84,9 +95,13 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
   };
 
   const getDisplayLabel = (type: PatternTypeConfig): string => {
-    if (type.hasSubmenu && selectedBodiceVariant && type.value === 'bodice') {
+    if (type.hasSubmenu && type.value === 'bodice' && selectedBodiceVariant) {
       const variant = type.submenu?.find(s => s.value === selectedBodiceVariant);
       return variant ? `${t('pattern.bodice')}: ${t(variant.labelKey)}` : t(type.labelKey);
+    }
+    if (type.hasSubmenu && type.value === 'pants' && selectedPantsVariant) {
+      const variant = type.submenu?.find(s => s.value === selectedPantsVariant);
+      return variant ? `${t('pattern.pants')}: ${t(variant.labelKey)}` : t(type.labelKey);
     }
     return t(type.labelKey);
   };
@@ -101,7 +116,7 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 relative flex items-center gap-1",
               type.available
-                ? (selected === type.value || (type.hasSubmenu && isBodiceVariant && type.value === 'bodice'))
+                ? (selected === type.value || (type.hasSubmenu && isBodiceVariant && type.value === 'bodice') || (type.hasSubmenu && isPantsVariant && type.value === 'pants'))
                   ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground hover:bg-card/50"
                 : "text-muted-foreground/50 cursor-not-allowed"
@@ -131,7 +146,7 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
                   className={cn(
                     "w-full px-4 py-2 text-left text-sm transition-colors relative",
                     subType.available
-                      ? selectedBodiceVariant === subType.value
+                      ? (selectedBodiceVariant === subType.value || selectedPantsVariant === subType.value)
                         ? "bg-primary/10 text-primary font-medium"
                         : "text-foreground hover:bg-secondary"
                       : "text-muted-foreground/50 cursor-not-allowed"

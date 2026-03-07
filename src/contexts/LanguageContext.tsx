@@ -37,7 +37,9 @@ const translations: Record<string, Record<Language, string>> = {
   'title.dartlessBodice': { en: 'Dartless Bodice', fr: 'Corsage sans pinces' },
   'title.bodiceWithDarts': { en: 'Bodice with Darts', fr: 'Corsage avec pinces' },
   'title.knitBodice': { en: 'Knit Bodice', fr: 'Corsage maille' },
-  'title.basicPants': { en: 'Basic Pants', fr: 'Pantalon de base' },
+   'title.basicPants': { en: 'Basic Pants', fr: 'Pantalon de base' },
+   'title.dartlessPants': { en: 'Dartless Pants', fr: 'Pantalon sans pinces' },
+   'title.pantsWithDarts': { en: 'Pants with Darts', fr: 'Pantalon avec pinces' },
   'title.basicSleeve': { en: 'Basic Sleeve', fr: 'Manche de base' },
   'title.patternPreview': { en: 'Pattern Preview', fr: 'Aperçu du patron' },
 

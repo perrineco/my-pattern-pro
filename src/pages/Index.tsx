@@ -20,6 +20,7 @@ import { DartlessBodicePatternPreview } from '@/components/DartlessBodicePattern
 import { BodiceWithDartsPatternPreview } from '@/components/BodiceWithDartsPatternPreview';
 import { KnitBodicePatternPreview } from '@/components/KnitBodicePatternPreview';
 import { PantsPatternPreview } from '@/components/PantsPatternPreview';
+import { PantsWithDartsPatternPreview } from '@/components/PantsWithDartsPatternPreview';
 import { SleevePatternPreview } from '@/components/SleevePatternPreview';
 import { ProfileManager } from '@/components/ProfileManager';
 import { ProfileManagerSimple } from '@/components/ProfileManagerSimple';
@@ -109,6 +110,9 @@ const Index = () => {
   const isBodiceDartless = patternType === 'bodice-dartless';
   const isBodiceWithDarts = patternType === 'bodice-with-darts';
   const isBodiceKnit = patternType === 'bodice-knit';
+  const isPantsVariant = patternType.startsWith('pants');
+  const isPantsDartless = patternType === 'pants-dartless' || patternType === 'pants';
+  const isPantsWithDarts = patternType === 'pants-with-darts';
 
   // Get current measurements based on pattern type
   const getCurrentMeasurements = (): Measurements => {
@@ -124,7 +128,7 @@ const Index = () => {
     if (patternType === 'bodice') {
       return bodiceMeasurements;
     }
-    if (patternType === 'pants') {
+    if (isPantsVariant || patternType === 'pants') {
       return pantsMeasurements;
     }
     if (patternType === 'sleeve') {
@@ -331,7 +335,7 @@ const Index = () => {
                     category={category}
                     unit={measurementUnit}
                   />
-                ) : patternType === 'pants' ? (
+                ) : isPantsVariant || patternType === 'pants' ? (
                   <PantsMeasurementForm
                     measurements={pantsMeasurements}
                     onChange={setPantsMeasurements}
@@ -449,11 +453,12 @@ const Index = () => {
                         : patternType === 'bodice-dartless' ? t('title.dartlessBodice')
                         : patternType === 'bodice-with-darts' ? t('title.bodiceWithDarts')
                         : patternType === 'bodice-knit' ? t('title.knitBodice')
-                        : patternType === 'pants' ? t('title.basicPants')
+                        : patternType === 'pants-dartless' || patternType === 'pants' ? t('title.dartlessPants')
+                        : patternType === 'pants-with-darts' ? t('title.pantsWithDarts')
                         : patternType === 'sleeve' ? t('title.basicSleeve')
                         : t('title.patternPreview')}
                     </h2>
-                    {patternType !== 'pants' && (
+                    {!isPantsVariant && patternType !== 'pants' && (
                       <div className="flex items-center gap-2 mt-1">
                         {patternType === 'skirt' ? (
                           <MeasurementGuide category={category} />
@@ -491,7 +496,7 @@ const Index = () => {
                     <div className="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">
                       Scale: {patternType === 'skirt' 
                         ? ((skirtMeasurements.hip / 4 + 1) / 10).toFixed(1)
-                        : patternType === 'pants'
+                        : isPantsVariant || patternType === 'pants'
                         ? ((pantsMeasurements.hip / 4 + 1) / 10).toFixed(1)
                         : patternType === 'sleeve'
                         ? ((sleeveMeasurements.upperArm / 2 + 1) / 10).toFixed(1)
@@ -528,7 +533,9 @@ const Index = () => {
                       measurements={bodiceMeasurements} 
                       panel={bodicePanel}
                     />
-                  ) : patternType === 'pants' ? (
+                  ) : isPantsWithDarts ? (
+                    <PantsWithDartsPatternPreview measurements={pantsMeasurements} category={category} />
+                  ) : isPantsDartless ? (
                     <PantsPatternPreview measurements={pantsMeasurements} category={category} />
                   ) : patternType === 'sleeve' ? (
                     <SleevePatternPreview measurements={sleeveMeasurements} category={category} />
