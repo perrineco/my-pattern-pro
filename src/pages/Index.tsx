@@ -533,7 +533,9 @@ const Index = () => {
                       measurements={bodiceMeasurements} 
                       panel={bodicePanel}
                     />
-                  ) : patternType === 'pants' ? (
+                  ) : isPantsWithDarts ? (
+                    <PantsWithDartsPatternPreview measurements={pantsMeasurements} category={category} />
+                  ) : isPantsDartless || patternType === 'pants' ? (
                     <PantsPatternPreview measurements={pantsMeasurements} category={category} />
                   ) : patternType === 'sleeve' ? (
                     <SleevePatternPreview measurements={sleeveMeasurements} category={category} />
