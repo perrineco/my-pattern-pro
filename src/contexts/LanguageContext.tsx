@@ -271,6 +271,13 @@ const translations: Record<string, Record<Language, string>> = {
    'piece.crotch': { en: 'Crotch', fr: 'Entrejambe' },
    'piece.thigh': { en: 'Thigh', fr: 'Cuisse' },
    'piece.knee': { en: 'Knee', fr: 'Genou' },
+   'info.customPatterns': { en: 'Custom Patterns', fr: 'Patrons sur mesure' },
+   'info.customPatternsDesc': { en: 'Create basic pattern blocks made to your exact measurements. They serve as the foundation for creating any garment style, from simple A-line skirts to complex fitted designs.', fr: 'Créez des patrons de base adaptés à vos mesures exactes. Ils servent de fondation pour créer tout style de vêtement, des jupes trapèze simples aux modèles ajustés complexes.' },
+   'info.bodicePattern': { en: 'Bodice Pattern', fr: 'Patron de corsage' },
+   'info.bodicePatternDesc': { en: 'The bodice pattern includes front and back panels with bust darts for shaping. It forms the basis for tops, dresses, and jackets with proper fit through the torso.', fr: 'Le patron de corsage comprend des panneaux devant et dos avec des pinces de poitrine pour la mise en forme. Il constitue la base des hauts, robes et vestes avec un ajustement parfait au buste.' },
+   'info.pantsPattern': { en: 'Pants Pattern', fr: 'Patron de pantalon' },
+   'info.pantsPatternDesc': { en: 'The pants pattern includes front and back panels with waist dart for shaping. Full measurement control from waist to ankle for a perfect fit.', fr: 'Le patron de pantalon comprend des panneaux devant et dos avec une pince de taille. Contrôle complet des mesures de la taille à la cheville pour un ajustement parfait.' },
+   'info.footer': { en: 'Sloper Studio — Create custom-fit sewing patterns', fr: 'Sloper Studio — Créez vos patrons de couture sur mesure' },
 
    // Misc
    'misc.soon': { en: 'Soon', fr: 'Bientôt' },
