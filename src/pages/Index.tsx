@@ -20,6 +20,7 @@ import { DartlessBodicePatternPreview } from '@/components/DartlessBodicePattern
 import { BodiceWithDartsPatternPreview } from '@/components/BodiceWithDartsPatternPreview';
 import { KnitBodicePatternPreview } from '@/components/KnitBodicePatternPreview';
 import { PantsPatternPreview } from '@/components/PantsPatternPreview';
+import { PantsWithDartsPatternPreview } from '@/components/PantsWithDartsPatternPreview';
 import { SleevePatternPreview } from '@/components/SleevePatternPreview';
 import { ProfileManager } from '@/components/ProfileManager';
 import { ProfileManagerSimple } from '@/components/ProfileManagerSimple';
