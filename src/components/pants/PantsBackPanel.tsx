@@ -1,4 +1,5 @@
 import { PantsMeasurements, Category } from "@/types/sloper";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PantsBackPanelProps {
   measurements: PantsMeasurements;
