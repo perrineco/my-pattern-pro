@@ -163,7 +163,7 @@ export function SkirtBackPanel({
         className="fill-muted-foreground text-xs font-sans"
         style={tm}
       >
-        Cut 1 on fold
+        {t('piece.cutOnFold')}
       </text>
     </g>
   );

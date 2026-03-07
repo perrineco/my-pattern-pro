@@ -171,7 +171,7 @@ export function SkirtFrontPanel({
         textAnchor="middle"
         className="fill-muted-foreground text-xs font-sans"
       >
-        Cut 1 on fold
+        {t('piece.cutOnFold')}
       </text>
     </g>
   );
