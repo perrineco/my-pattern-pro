@@ -453,7 +453,8 @@ const Index = () => {
                         : patternType === 'bodice-dartless' ? t('title.dartlessBodice')
                         : patternType === 'bodice-with-darts' ? t('title.bodiceWithDarts')
                         : patternType === 'bodice-knit' ? t('title.knitBodice')
-                        : patternType === 'pants' ? t('title.basicPants')
+                        : patternType === 'pants-dartless' || patternType === 'pants' ? t('title.dartlessPants')
+                        : patternType === 'pants-with-darts' ? t('title.pantsWithDarts')
                         : patternType === 'sleeve' ? t('title.basicSleeve')
                         : t('title.patternPreview')}
                     </h2>
