@@ -41,6 +41,7 @@ export function SkirtFrontPanel({
   centerToDartScaled,
   frontwaistRise,
 }: SkirtFrontPanelProps) {
+  const { t } = useLanguage();
   // Create the path for the front panel
   const panelPath = `
     M ${offsetX} ${offsetY}
