@@ -146,13 +146,13 @@ function BodiceOverlayFront({ pos, highlightedNumber, onNumberClick, t }: { pos:
         <text x={cx + 20} y={pos.neckBaseY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">2</text>
       </g>
 
-      {/* 3: Shoulder length (right side) */}
-      <line x1={cx + 8} y1={pos.neckBaseY} x2={pos.rightShoulderX} y2={pos.shoulderY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
-      <circle cx={pos.rightShoulderX} cy={pos.shoulderY} r="3" fill="hsl(var(--foreground))" />
-      <circle cx={cx + 8} cy={pos.neckBaseY} r="3" fill="hsl(var(--foreground))" />
+      {/* 3: Shoulder length */}
+      <line x1={cx - 8} y1={pos.neckBaseY} x2={pos.leftShoulderX} y2={pos.shoulderY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
+      <circle cx={pos.leftShoulderX} cy={pos.shoulderY} r="3" fill="hsl(var(--foreground))" />
+      <circle cx={cx - 8} cy={pos.neckBaseY} r="3" fill="hsl(var(--foreground))" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
-        <circle cx={(cx + 8 + pos.rightShoulderX) / 2} cy={(pos.neckBaseY + pos.shoulderY) / 2} r="7" fill={getCircleFill(3)} />
-        <text x={(cx + 8 + pos.rightShoulderX) / 2} y={(pos.neckBaseY + pos.shoulderY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">3</text>
+        <circle cx={(cx - 8 + pos.leftShoulderX) / 2} cy={(pos.neckBaseY + pos.shoulderY) / 2} r="7" fill={getCircleFill(3)} />
+        <text x={(cx - 8 + pos.leftShoulderX) / 2} y={(pos.neckBaseY + pos.shoulderY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">3</text>
       </g>
 
       {/* Waist reference line */}
