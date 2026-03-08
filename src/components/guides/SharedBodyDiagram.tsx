@@ -85,7 +85,7 @@ function getPositions(category: Category): BodyPositions {
     centerX,
     headCenterY: 25,
     neckBaseY: 58,
-    shoulderY: 53,
+    shoulderY: 62,
     bustY: 105,
     backWidthY: 80,
     waistY: 150,
@@ -374,7 +374,6 @@ Z"
         strokeLinejoin="round"
         filter="url(#shadow)"
       />
-
     </g>
   );
 }
@@ -794,7 +793,6 @@ Z"
         strokeWidth={1.2}
         strokeLinejoin="round"
       />
-
     </g>
   );
 }
