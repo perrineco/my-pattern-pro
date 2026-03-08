@@ -633,8 +633,10 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
 
   const kidsScale = 0.75;
-  const kidsTranslateX = (240 * (1 - kidsScale)) / 2;
-  const kidsTranslateY = 10;
+  const kidsCenterX = 630;
+  const kidsCenterY = 950;
+  const kidsTranslateX = 120 - kidsCenterX * kidsScale;
+  const kidsTranslateY = 170 - kidsCenterY * kidsScale;
 
   return (
     <svg
