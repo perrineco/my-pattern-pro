@@ -431,7 +431,7 @@ function KidsBodyBack() {
             C 69 222, 71 223, 73 220 C 74 217, 73 212, 72 208
             L 70 185 C 69 170, 70 150, 72 135 C 74 125, 77 118, 79 115`}
         fill="url(#skinKidsBack)"
-        stroke="#9a6040"
+        stroke="#b8845a"
         strokeWidth={0.8}
         strokeLinejoin="round"
       />
@@ -442,7 +442,7 @@ function KidsBodyBack() {
             C 171 222, 169 223, 167 220 C 166 217, 167 212, 168 208
             L 170 185 C 171 170, 170 150, 168 135 C 166 125, 163 118, 161 115`}
         fill="url(#skinKidsBack)"
-        stroke="#9a6040"
+        stroke="#b8845a"
         strokeWidth={0.8}
         strokeLinejoin="round"
       />
@@ -467,7 +467,7 @@ C 647.637 911.254 646.075 909.632 642.471 907.949
 C 635.718 904.795 621.575 902.144 613.865 911.501
 Z`}
         fill="url(#skinKidsBack)"
-        stroke="#9a6040"
+        stroke="#b8845a"
         strokeWidth={1}
         strokeLinejoin="round"
         filter="url(#shadowBack)"
@@ -633,10 +633,8 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
 
   const kidsScale = 0.75;
-  const kidsCenterX = 630;
-  const kidsCenterY = 950;
-  const kidsTranslateX = 120 - kidsCenterX * kidsScale;
-  const kidsTranslateY = 170 - kidsCenterY * kidsScale;
+  const kidsTranslateX = (240 * (1 - kidsScale)) / 2;
+  const kidsTranslateY = 10;
 
   return (
     <svg
