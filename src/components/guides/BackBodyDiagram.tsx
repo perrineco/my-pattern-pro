@@ -623,10 +623,12 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
         </>
       )}
       {category === "kids" && (
-        <g transform={`translate(${kidsTranslateX}, ${kidsTranslateY}) scale(${kidsScale})`}>
-          <KidsBodyBack />
+        <>
+          <g transform={`translate(${kidsTranslateX}, ${kidsTranslateY}) scale(${kidsScale})`}>
+            <KidsBodyBack />
+          </g>
           {renderOverlay?.(pos)}
-        </g>
+        </>
       )}
     </svg>
   );
