@@ -819,7 +819,7 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
 
   // Scale up women & men for larger diagrams
   const womenScale = 1.55;
-  const menScale = 1.1;
+  const menScale = 1.35;
 
   // Women body SVG paths are centered around x≈293, need to shift to centerX=120
   // After scale: 293 * scale + tx = 120 → tx = 120 - 293 * scale
