@@ -365,8 +365,6 @@ function MenBodyBack() {
         strokeWidth={0.6}
       />
 
-      {/* Nuque */}
-      <circle cx={cx} cy="50" r="2.5" fill="#b8945a" fillOpacity={0.6} />
 
       {/* Omoplates (plus marquées) */}
       <path d="M 95 78 C 102 72, 112 78, 108 88" fill="none" stroke="#b8945a" strokeWidth={0.7} strokeOpacity={0.4} />
