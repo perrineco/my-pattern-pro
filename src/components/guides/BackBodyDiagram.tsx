@@ -411,40 +411,18 @@ function MenBodyBack() {
 // ─── Silhouette Enfant (vue de dos) ──────────────────────────────────────────
 
 function KidsBodyBack() {
-  const cx = 120;
   return (
     <g id="kids-back">
+      {/* Colonne vertébrale */}
       <line
-        x1={cx}
-        y1="110"
-        x2={cx}
-        y2="290"
+        x1={630}
+        y1="875"
+        x2={630}
+        y2="1010"
         stroke="#b89470"
         strokeWidth={0.4}
         strokeOpacity={0.3}
         strokeDasharray="3,4"
-      />
-
-      {/* Bras gauche */}
-      <path
-        d={`M 75 117 C 70 125, 66 145, 65 165 C 64 185, 66 200, 68 218
-            C 69 222, 71 223, 73 220 C 74 217, 73 212, 72 208
-            L 70 185 C 69 170, 70 150, 72 135 C 74 125, 77 118, 79 115`}
-        fill="url(#skinKidsBack)"
-        stroke="#b8845a"
-        strokeWidth={0.8}
-        strokeLinejoin="round"
-      />
-
-      {/* Bras droit */}
-      <path
-        d={`M 165 117 C 170 125, 174 145, 175 165 C 176 185, 174 200, 172 218
-            C 171 222, 169 223, 167 220 C 166 217, 167 212, 168 208
-            L 170 185 C 171 170, 170 150, 168 135 C 166 125, 163 118, 161 115`}
-        fill="url(#skinKidsBack)"
-        stroke="#b8845a"
-        strokeWidth={0.8}
-        strokeLinejoin="round"
       />
 
       {/* Corps principal */}
@@ -591,11 +569,11 @@ Z`}
 
       {/* Label */}
       <text
-        x={cx}
-        y="320"
+        x={630}
+        y="1030"
         textAnchor="middle"
         fontFamily="Georgia, serif"
-        fontSize={9}
+        fontSize={7}
         fill="#7a5030"
         letterSpacing={1.5}
       >
@@ -618,9 +596,11 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
   const pos = getPositions(category);
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
 
-  const kidsScale = 0.75;
-  const kidsTranslateX = (240 * (1 - kidsScale)) / 2;
-  const kidsTranslateY = 10;
+  const kidsScale = 1.3;
+  const kidsCenterX = 630;
+  const kidsCenterY = 940;
+  const kidsTranslateX = 120 - kidsCenterX * kidsScale;
+  const kidsTranslateY = 155 - kidsCenterY * kidsScale;
 
   return (
     <svg
