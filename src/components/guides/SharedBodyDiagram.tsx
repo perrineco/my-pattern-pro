@@ -852,13 +852,21 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
 
   // Scale down the kids silhouette so it appears smaller & more proportional
   const kidsScale = 0.75;
-  const kidsTranslateX = (240 * (1 - kidsScale)) / 2; // center horizontally
-  const kidsTranslateY = 10; // small top offset
+  const kidsTranslateX = (240 * (1 - kidsScale)) / 2;
+  const kidsTranslateY = 10;
+
+  // Scale up women & men for larger diagrams
+  const womenScale = 1.15;
+  const menScale = 1.1;
 
   // Women body SVG paths are centered around x≈293, need to shift to centerX=120
-  const womenBodyOffsetX = 120 - 293;
-  // Men body SVG paths are centered around x≈428, need to shift to centerX=120
-  const menBodyOffsetX = 120 - 428;
+  // After scale: 293 * scale + tx = 120 → tx = 120 - 293 * scale
+  const womenBodyOffsetX = 120 - 293 * womenScale;
+  const womenBodyOffsetY = (vbHeight * (1 - womenScale)) / 2;
+
+  // Men body SVG paths are centered around x≈428
+  const menBodyOffsetX = 120 - 428 * menScale;
+  const menBodyOffsetY = (vbHeight * (1 - menScale)) / 2;
 
   return (
     <svg
@@ -870,7 +878,7 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
       <SharedDefs />
       {category === "women" && (
         <>
-          <g transform={`translate(${womenBodyOffsetX}, 0)`}>
+          <g transform={`translate(${womenBodyOffsetX}, ${womenBodyOffsetY}) scale(${womenScale})`}>
             <WomenBody />
           </g>
           {renderOverlay?.(pos)}
@@ -878,7 +886,7 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
       )}
       {category === "men" && (
         <>
-          <g transform={`translate(${menBodyOffsetX}, 0)`}>
+          <g transform={`translate(${menBodyOffsetX}, ${menBodyOffsetY}) scale(${menScale})`}>
             <MenBody />
           </g>
           {renderOverlay?.(pos)}
