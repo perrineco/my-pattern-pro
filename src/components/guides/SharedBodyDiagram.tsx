@@ -850,10 +850,10 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
   const pos = getPositions(category);
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
 
-  // Scale down the kids silhouette so it appears smaller & more proportional
-  const kidsScale = 0.75;
-  const kidsTranslateX = (240 * (1 - kidsScale)) / 2;
-  const kidsTranslateY = 10;
+  // Scale kids to occupy ~75% of the space, matching women/men size
+  const kidsScale = 1.0;
+  const kidsTranslateX = 0;
+  const kidsTranslateY = 0;
 
   // Scale up women & men for larger diagrams
   const womenScale = 1.55;
