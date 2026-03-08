@@ -555,12 +555,21 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
       style={{ overflow: "visible" }}
     >
       <SharedDefs />
-      {category === "women" && (
-        <>
-          <WomenBodyBack />
-          {renderOverlay?.(pos)}
-        </>
-      )}
+      {category === "women" && (() => {
+        // Women back paths centered around x≈452, y≈750-885 (span≈135 units)
+        // Scale to fill viewBox similarly to front (front uses 1.55)
+        const wbScale = 1.55;
+        const wbOffsetX = 120 - 452 * wbScale;
+        const wbOffsetY = (vbHeight * (1 - wbScale)) / 2 + 60;
+        return (
+          <>
+            <g transform={`translate(${wbOffsetX}, ${wbOffsetY}) scale(${wbScale})`}>
+              <WomenBodyBack />
+            </g>
+            {renderOverlay?.(pos)}
+          </>
+        );
+      })()}
       {category === "men" && (
         <>
           <MenBodyBack />
