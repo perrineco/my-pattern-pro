@@ -261,7 +261,8 @@ function BodiceOverlayFront({
         x2={pos.leftShoulderX}
         y2={pos.shoulderY}
         stroke="hsl(var(--foreground))"
-        strokeWidth="1.5"
+        strokeWidth="1"
+        strokeDasharray="3,2"
       />
       <circle cx={pos.leftShoulderX} cy={pos.shoulderY} r="1.5" fill="hsl(var(--foreground))" />
       <circle cx={cx - 8} cy={pos.neckBaseY} r="1.5" fill="hsl(var(--foreground))" />
