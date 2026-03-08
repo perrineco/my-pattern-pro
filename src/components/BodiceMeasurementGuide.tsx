@@ -97,7 +97,7 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
             </div>
             <div className="space-y-4">
               <p className="text-xs text-muted-foreground italic mb-2">
-                {t('guide.clickToSwitch') || 'Cliquez sur une mesure pour voir le diagramme correspondant'}
+                {t('guide.clickToSwitch')}
               </p>
               <MeasurementInstruction ref={el => { instructionRefs.current[1] = el; }} number={1} name={t('guide.bust')} description={t('guide.desc.bust')} highlighted={highlightedNumber === 1} view="front" onClick={() => handleInstructionClick(1)} />
               <MeasurementInstruction ref={el => { instructionRefs.current[2] = el; }} number={2} name={t('guide.neckline')} description={t('guide.desc.neckline')} highlighted={highlightedNumber === 2} view="front" onClick={() => handleInstructionClick(2)} />
