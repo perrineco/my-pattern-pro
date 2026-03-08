@@ -535,6 +535,10 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
   const pos = getPositions(category);
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
 
+  const womenScale = 0.95;
+  const womenTranslateX = 120 - 452 * womenScale;
+  const womenTranslateY = 160 - 863 * womenScale;
+
   const kidsScale = 0.75;
   const kidsTranslateX = (240 * (1 - kidsScale)) / 2;
   const kidsTranslateY = 10;
@@ -549,7 +553,9 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
       <SharedDefs />
       {category === "women" && (
         <>
-          <WomenBodyBack />
+          <g transform={`translate(${womenTranslateX}, ${womenTranslateY}) scale(${womenScale})`}>
+            <WomenBodyBack />
+          </g>
           {renderOverlay?.(pos)}
         </>
       )}
