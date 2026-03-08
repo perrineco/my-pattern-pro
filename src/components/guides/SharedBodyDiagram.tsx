@@ -855,13 +855,10 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
   const kidsTranslateX = (240 * (1 - kidsScale)) / 2; // center horizontally
   const kidsTranslateY = 10; // small top offset
 
-  const WomenScale = 0.95;
-  const WomenTranslateX = 0;
-  const WomenTranslateY = 10; // small top offset
-
-  const MenScale = 0.95;
-  const MenTranslateX = 0; // center horizontally
-  const MenTranslateY = 10; // small top offset
+  // Women body SVG paths are centered around x≈293, need to shift to centerX=120
+  const womenBodyOffsetX = 120 - 293;
+  // Men body SVG paths are centered around x≈428, need to shift to centerX=120
+  const menBodyOffsetX = 120 - 428;
 
   return (
     <svg
@@ -872,16 +869,20 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
     >
       <SharedDefs />
       {category === "women" && (
-        <g transform={`translate(${WomenTranslateX}, ${WomenTranslateY}) scale(${WomenScale})`}>
-          <WomenBody />
+        <>
+          <g transform={`translate(${womenBodyOffsetX}, 0)`}>
+            <WomenBody />
+          </g>
           {renderOverlay?.(pos)}
-        </g>
+        </>
       )}
       {category === "men" && (
-        <g transform={`translate(${MenTranslateX}, ${MenTranslateY}) scale(${MenScale})`}>
-          <MenBody />
+        <>
+          <g transform={`translate(${menBodyOffsetX}, 0)`}>
+            <MenBody />
+          </g>
           {renderOverlay?.(pos)}
-        </g>
+        </>
       )}
       {category === "kids" && (
         <g transform={`translate(${kidsTranslateX}, ${kidsTranslateY}) scale(${kidsScale})`}>
