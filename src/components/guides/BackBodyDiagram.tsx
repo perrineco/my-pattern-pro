@@ -36,14 +36,63 @@ function WomenBodyBack() {
   return (
     <g id="women-back">
       {/* Ligne centrale / colonne vertébrale */}
-      <line x1={cx} y1="62" x2={cx} y2="276" stroke="#c49070" strokeWidth={0.5} strokeOpacity={0.3} strokeDasharray="3,4" />
+      <line
+        x1={cx}
+        y1="62"
+        x2={cx}
+        y2="276"
+        stroke="#c49070"
+        strokeWidth={0.5}
+        strokeOpacity={0.3}
+        strokeDasharray="3,4"
+      />
 
       {/* Bras gauche */}
       <path
-        d={`M 80 56 C 74 64, 68 90, 66 120 C 64 150, 66 175, 68 200 C 70 220, 72 240, 74 252
-            C 75 256, 77 257, 79 254 C 81 251, 80 245, 79 238
-            L 76 200 C 74 175, 73 150, 74 125 C 75 100, 79 78, 83 65`}
-        fill="url(#skinWomenBack)" stroke="#b8845a" strokeWidth={0.8} strokeLinejoin="round"
+        d={`M 467.805 769.504
+L 469.363 790.023
+L 477.123 824.809
+L 483.898 862.682
+C 484.472 865.887 481.224 869.595 483.705 872.457
+C 483.772 872.534 484.914 873.724 485.529 875.434
+C 486.511 878.162 487.998 880.61 487.918 876.965
+C 487.882 875.329 485.881 871.882 487.762 870.916
+C 489.495 870.026 492.165 872.624 493.818 875.096
+C 493.833 875.114 493.925 875.22 493.957 875.258
+C 493.525 876.632 492.968 878.364 492.332 880.098
+C 491.507 882.35 492.721 883.385 492.721 883.385
+L 495.465 877.102
+L 495.467 877.104
+C 495.475 877.087 495.5 877.023 495.51 877.002
+L 495.691 876.584
+L 495.685 876.576
+C 495.915 876.028 496.205 875.27 496.244 874.779
+C 496.292 874.175 496.018 873.734 495.764 873.201
+C 494.363 870.271 493.045 867.241 491.787 864.627
+C 489.803 861.951 489.8 862.164 489.744 859.742
+C 489.619 854.282 488.78 847.09 489.123 837.783
+C 489.516 827.105 485.401 822.816 485.316 820.215
+C 485.287 819.299 484.114 808.523 482.268 799.197
+C 480.712 791.339 483.275 777.673 476.766 772.424
+C 475.784 771.633 474.541 771.164 473.105 770.797
+C 471.116 770.288 468.631 769.771 467.805 769.504
+Z
+
+M 496.723 875.152
+C 496.427 876.066 495.986 877.143 495.801 877.586
+C 497.024 879.161 498.642 881.29 499.283 881.625
+C 500.059 882.031 500.723 881.836 500.723 881.836
+C 499.394 880.112 497.916 877.491 496.723 875.152
+Z
+
+M 495.377 877.807
+C 495.374 878.072 495.308 878.326 495.297 878.486
+C 495.167 880.319 494.655 886.204 496.516 886.025
+L 497.407 879.807`}
+        fill="url(#skinWomenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
       />
 
       {/* Bras droit */}
@@ -51,7 +100,10 @@ function WomenBodyBack() {
         d={`M 160 56 C 166 64, 172 90, 174 120 C 176 150, 174 175, 172 200 C 170 220, 168 240, 166 252
             C 165 256, 163 257, 161 254 C 159 251, 160 245, 161 238
             L 164 200 C 166 175, 167 150, 166 125 C 165 100, 161 78, 157 65`}
-        fill="url(#skinWomenBack)" stroke="#b8845a" strokeWidth={0.8} strokeLinejoin="round"
+        fill="url(#skinWomenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
       />
 
       {/* Corps principal */}
@@ -69,21 +121,37 @@ function WomenBodyBack() {
             C 90 170, 92 160, 92 150
             C 91 135, 89 120, 87 108 C 85 95, 82 82, 80 70
             Z`}
-        fill="url(#skinWomenBack)" stroke="#b8845a" strokeWidth={1} strokeLinejoin="round" filter="url(#shadowBack)"
+        fill="url(#skinWomenBack)"
+        stroke="#b8845a"
+        strokeWidth={1}
+        strokeLinejoin="round"
+        filter="url(#shadowBack)"
       />
 
       {/* Cou */}
       <path
         d={`M 112 48 L 112 58 C 112 63, 116 66, ${cx} 66 C 124 66, 128 63, 128 58 L 128 48`}
-        fill="url(#skinWomenBack)" stroke="#b8845a" strokeWidth={0.8}
+        fill="url(#skinWomenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
       />
 
       {/* Tête (vue de dos) */}
       <ellipse cx={cx} cy="35" rx="18" ry="22" fill="url(#skinWomenBack)" stroke="#b8845a" strokeWidth={0.8} />
 
       {/* Oreilles */}
-      <path d="M 101 32 C 98 30, 96 33, 96 37 C 96 41, 98 44, 101 42" fill="url(#skinWomenBack)" stroke="#b8845a" strokeWidth={0.8} />
-      <path d="M 139 32 C 142 30, 144 33, 144 37 C 144 41, 142 44, 139 42" fill="url(#skinWomenBack)" stroke="#b8845a" strokeWidth={0.8} />
+      <path
+        d="M 101 32 C 98 30, 96 33, 96 37 C 96 41, 98 44, 101 42"
+        fill="url(#skinWomenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+      />
+      <path
+        d="M 139 32 C 142 30, 144 33, 144 37 C 144 41, 142 44, 139 42"
+        fill="url(#skinWomenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+      />
 
       {/* Cheveux (vue arrière) */}
       <path
@@ -92,7 +160,9 @@ function WomenBodyBack() {
             C 127 62, 124 65, ${cx} 68
             C 116 65, 113 62, 110 58
             C 105 52, 102 42, 102 28 Z`}
-        fill="#5a3e2a" stroke="#4a2e1a" strokeWidth={0.6}
+        fill="#5a3e2a"
+        stroke="#4a2e1a"
+        strokeWidth={0.6}
       />
 
       {/* Indication nuque */}
@@ -103,7 +173,15 @@ function WomenBodyBack() {
       <path d="M 140 82 C 135 78, 127 82, 129 90" fill="none" stroke="#c49070" strokeWidth={0.6} strokeOpacity={0.4} />
 
       {/* Label */}
-      <text x={cx} y="334" textAnchor="middle" fontFamily="Georgia, serif" fontSize={9} fill="#9a6040" letterSpacing={1.5}>
+      <text
+        x={cx}
+        y="334"
+        textAnchor="middle"
+        fontFamily="Georgia, serif"
+        fontSize={9}
+        fill="#9a6040"
+        letterSpacing={1.5}
+      >
         FEMME · DOS
       </text>
     </g>
@@ -116,14 +194,26 @@ function MenBodyBack() {
   const cx = 120;
   return (
     <g id="men-back">
-      <line x1={cx} y1="58" x2={cx} y2="276" stroke="#b8945a" strokeWidth={0.5} strokeOpacity={0.3} strokeDasharray="3,4" />
+      <line
+        x1={cx}
+        y1="58"
+        x2={cx}
+        y2="276"
+        stroke="#b8945a"
+        strokeWidth={0.5}
+        strokeOpacity={0.3}
+        strokeDasharray="3,4"
+      />
 
       {/* Bras gauche */}
       <path
         d={`M 70 54 C 62 62, 55 95, 52 130 C 50 160, 52 190, 55 220 C 57 240, 58 255, 60 262
             C 61 266, 63 267, 65 264 C 67 261, 66 255, 65 248
             L 62 215 C 60 190, 59 160, 60 130 C 62 100, 66 75, 73 62`}
-        fill="url(#skinMenBack)" stroke="#b8845a" strokeWidth={0.8} strokeLinejoin="round"
+        fill="url(#skinMenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
       />
 
       {/* Bras droit */}
@@ -131,7 +221,10 @@ function MenBodyBack() {
         d={`M 170 54 C 178 62, 185 95, 188 130 C 190 160, 188 190, 185 220 C 183 240, 182 255, 180 262
             C 179 266, 177 267, 175 264 C 173 261, 174 255, 175 248
             L 178 215 C 180 190, 181 160, 180 130 C 178 100, 174 75, 167 62`}
-        fill="url(#skinMenBack)" stroke="#b8845a" strokeWidth={0.8} strokeLinejoin="round"
+        fill="url(#skinMenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
       />
 
       {/* Corps principal (épaules larges, hanches étroites) */}
@@ -149,27 +242,45 @@ function MenBodyBack() {
             C 88 168, 88 158, 87 150
             C 85 142, 83 130, 80 115 C 77 100, 72 85, 70 70
             Z`}
-        fill="url(#skinMenBack)" stroke="#b8845a" strokeWidth={1} strokeLinejoin="round" filter="url(#shadowBack)"
+        fill="url(#skinMenBack)"
+        stroke="#b8845a"
+        strokeWidth={1}
+        strokeLinejoin="round"
+        filter="url(#shadowBack)"
       />
 
       {/* Cou (plus épais que femme) */}
       <path
         d={`M 108 45 L 108 55 C 108 60, 113 63, ${cx} 63 C 127 63, 132 60, 132 55 L 132 45`}
-        fill="url(#skinMenBack)" stroke="#b8845a" strokeWidth={0.8}
+        fill="url(#skinMenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
       />
 
       {/* Tête */}
       <ellipse cx={cx} cy="32" rx="19" ry="21" fill="url(#skinMenBack)" stroke="#b8845a" strokeWidth={0.8} />
 
       {/* Oreilles */}
-      <path d="M 100 29 C 97 27, 95 30, 95 34 C 95 38, 97 41, 100 39" fill="url(#skinMenBack)" stroke="#b8845a" strokeWidth={0.8} />
-      <path d="M 140 29 C 143 27, 145 30, 145 34 C 145 38, 143 41, 140 39" fill="url(#skinMenBack)" stroke="#b8845a" strokeWidth={0.8} />
+      <path
+        d="M 100 29 C 97 27, 95 30, 95 34 C 95 38, 97 41, 100 39"
+        fill="url(#skinMenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+      />
+      <path
+        d="M 140 29 C 143 27, 145 30, 145 34 C 145 38, 143 41, 140 39"
+        fill="url(#skinMenBack)"
+        stroke="#b8845a"
+        strokeWidth={0.8}
+      />
 
       {/* Cheveux courts (vue arrière) */}
       <path
         d={`M 101 26 C 101 10, 139 10, 139 26 C 139 32, 137 36, 135 38
             L 105 38 C 103 36, 101 32, 101 26 Z`}
-        fill="#3a2a1a" stroke="#2a1a0a" strokeWidth={0.6}
+        fill="#3a2a1a"
+        stroke="#2a1a0a"
+        strokeWidth={0.6}
       />
 
       {/* Nuque */}
@@ -180,7 +291,15 @@ function MenBodyBack() {
       <path d="M 145 78 C 138 72, 128 78, 132 88" fill="none" stroke="#b8945a" strokeWidth={0.7} strokeOpacity={0.4} />
 
       {/* Label */}
-      <text x={cx} y="334" textAnchor="middle" fontFamily="Georgia, serif" fontSize={9} fill="#8a6040" letterSpacing={1.5}>
+      <text
+        x={cx}
+        y="334"
+        textAnchor="middle"
+        fontFamily="Georgia, serif"
+        fontSize={9}
+        fill="#8a6040"
+        letterSpacing={1.5}
+      >
         HOMME · DOS
       </text>
     </g>
@@ -193,14 +312,26 @@ function KidsBodyBack() {
   const cx = 120;
   return (
     <g id="kids-back">
-      <line x1={cx} y1="110" x2={cx} y2="290" stroke="#b89470" strokeWidth={0.4} strokeOpacity={0.3} strokeDasharray="3,4" />
+      <line
+        x1={cx}
+        y1="110"
+        x2={cx}
+        y2="290"
+        stroke="#b89470"
+        strokeWidth={0.4}
+        strokeOpacity={0.3}
+        strokeDasharray="3,4"
+      />
 
       {/* Bras gauche */}
       <path
         d={`M 75 117 C 70 125, 66 145, 65 165 C 64 185, 66 200, 68 218
             C 69 222, 71 223, 73 220 C 74 217, 73 212, 72 208
             L 70 185 C 69 170, 70 150, 72 135 C 74 125, 77 118, 79 115`}
-        fill="url(#skinKidsBack)" stroke="#9a6040" strokeWidth={0.8} strokeLinejoin="round"
+        fill="url(#skinKidsBack)"
+        stroke="#9a6040"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
       />
 
       {/* Bras droit */}
@@ -208,7 +339,10 @@ function KidsBodyBack() {
         d={`M 165 117 C 170 125, 174 145, 175 165 C 176 185, 174 200, 172 218
             C 171 222, 169 223, 167 220 C 166 217, 167 212, 168 208
             L 170 185 C 171 170, 170 150, 168 135 C 166 125, 163 118, 161 115`}
-        fill="url(#skinKidsBack)" stroke="#9a6040" strokeWidth={0.8} strokeLinejoin="round"
+        fill="url(#skinKidsBack)"
+        stroke="#9a6040"
+        strokeWidth={0.8}
+        strokeLinejoin="round"
       />
 
       {/* Corps principal */}
@@ -226,34 +360,60 @@ function KidsBodyBack() {
             C 83 170, 83 162, 82 155
             C 80 148, 77 138, 75 128
             Z`}
-        fill="url(#skinKidsBack)" stroke="#9a6040" strokeWidth={1} strokeLinejoin="round" filter="url(#shadowBack)"
+        fill="url(#skinKidsBack)"
+        stroke="#9a6040"
+        strokeWidth={1}
+        strokeLinejoin="round"
+        filter="url(#shadowBack)"
       />
 
       {/* Cou */}
       <path
         d={`M 112 100 L 112 110 C 112 114, 116 116, ${cx} 116 C 124 116, 128 114, 128 110 L 128 100`}
-        fill="url(#skinKidsBack)" stroke="#9a6040" strokeWidth={0.8}
+        fill="url(#skinKidsBack)"
+        stroke="#9a6040"
+        strokeWidth={0.8}
       />
 
       {/* Tête */}
       <ellipse cx={cx} cy="82" rx="20" ry="24" fill="url(#skinKidsBack)" stroke="#9a6040" strokeWidth={0.8} />
 
       {/* Oreilles */}
-      <path d="M 99 80 C 96 78, 94 80, 94 84 C 94 88, 96 90, 99 88" fill="url(#skinKidsBack)" stroke="#9a6040" strokeWidth={0.8} />
-      <path d="M 141 80 C 144 78, 146 80, 146 84 C 146 88, 144 90, 141 88" fill="url(#skinKidsBack)" stroke="#9a6040" strokeWidth={0.8} />
+      <path
+        d="M 99 80 C 96 78, 94 80, 94 84 C 94 88, 96 90, 99 88"
+        fill="url(#skinKidsBack)"
+        stroke="#9a6040"
+        strokeWidth={0.8}
+      />
+      <path
+        d="M 141 80 C 144 78, 146 80, 146 84 C 146 88, 144 90, 141 88"
+        fill="url(#skinKidsBack)"
+        stroke="#9a6040"
+        strokeWidth={0.8}
+      />
 
       {/* Cheveux (vue arrière) */}
       <path
         d={`M 100 75 C 100 55, 140 55, 140 75 C 140 85, 137 92, 133 96
             L 107 96 C 103 92, 100 85, 100 75 Z`}
-        fill="#5a3e2a" stroke="#4a2e1a" strokeWidth={0.6}
+        fill="#5a3e2a"
+        stroke="#4a2e1a"
+        strokeWidth={0.6}
       />
 
       {/* Nuque */}
       <circle cx={cx} cy="105" r="2" fill="#9a6040" fillOpacity={0.5} />
 
       {/* Label */}
-      <text x={cx} y="320" textAnchor="middle" fontFamily="Georgia, serif" fontSize={9} fill="#7a5030" letterSpacing={1.5}>
+      <text
+        x={cx}
+        y="320"
+        textAnchor="middle"
+        fontFamily="Georgia, serif"
+        fontSize={9}
+        fill="#7a5030"
+        letterSpacing={1.5}
+      >
         ENFANT · DOS
       </text>
     </g>
