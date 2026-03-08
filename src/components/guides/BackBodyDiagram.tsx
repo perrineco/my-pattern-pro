@@ -576,12 +576,20 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
             </>
           );
         })()}
-      {category === "men" && (
-        <>
-          <MenBodyBack />
-          {renderOverlay?.(pos)}
-        </>
-      )}
+      {category === "men" &&
+        (() => {
+          const menScale = 1.35;
+          const menOffsetX = 120 - 120 * menScale;
+          const menOffsetY = (vbHeight / 2) - 170 * menScale;
+          return (
+            <>
+              <g transform={`translate(${menOffsetX}, ${menOffsetY}) scale(${menScale})`}>
+                <MenBodyBack />
+              </g>
+              {renderOverlay?.(pos)}
+            </>
+          );
+        })()}
       {category === "kids" && (
         <>
           <g transform={`translate(${kidsTranslateX}, ${kidsTranslateY}) scale(${kidsScale})`}>
