@@ -148,7 +148,7 @@ function BodiceOverlayFront({ pos, highlightedNumber, onNumberClick, t }: { pos:
       </g>
 
       {/* 2: Neckline circumference */}
-      <ellipse cx={cx} cy={pos.neckBaseY} rx={12} ry={6} fill="none" stroke="hsl(var(--foreground))" strokeWidth="1" strokeDasharray="3,2" />
+      <path d={`M ${cx - 12} ${pos.neckBaseY} A 12 6 0 0 1 ${cx + 12} ${pos.neckBaseY}`} fill="none" stroke="hsl(var(--foreground))" strokeWidth="1" strokeDasharray="3,2" />
       <g onClick={() => onNumberClick(2)} className="cursor-pointer">
         <circle cx={cx + 20} cy={pos.neckBaseY} r="7" fill={getCircleFill(2)} />
         <text x={cx + 20} y={pos.neckBaseY + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">2</text>
