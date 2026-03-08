@@ -556,11 +556,10 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
     >
       <SharedDefs />
       {category === "women" && (() => {
-        // Women back paths centered around x≈452, y≈750-885 (span≈135 units)
-        // Scale to fill viewBox similarly to front (front uses 1.55)
+        // Women back paths: x≈403-500 (center≈452), y≈750-885 (center≈817)
         const wbScale = 1.55;
         const wbOffsetX = 120 - 452 * wbScale;
-        const wbOffsetY = (vbHeight * (1 - wbScale)) / 2 + 60;
+        const wbOffsetY = vbHeight / 2 - 817 * wbScale + 30;
         return (
           <>
             <g transform={`translate(${wbOffsetX}, ${wbOffsetY}) scale(${wbScale})`}>
