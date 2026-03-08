@@ -176,7 +176,7 @@ function BodiceOverlayBack({ pos, highlightedNumber, onNumberClick, t }: { pos: 
     <>
       {/* Nape point */}
       <circle cx={cx} cy={pos.neckBaseY - 5} r="3" fill="hsl(var(--foreground))" />
-      <text x={cx - 15} y={pos.neckBaseY - 8} textAnchor="end" className="fill-muted-foreground text-[8px]">{t('guide.nape') || 'Nuque'}</text>
+      <text x={cx - 15} y={pos.neckBaseY - 8} textAnchor="end" className="fill-muted-foreground text-[8px]">{t('guide.nape')}</text>
 
       {/* 4: Back width */}
       <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY} stroke="hsl(var(--foreground))" strokeWidth="2" />
