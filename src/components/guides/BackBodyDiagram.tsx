@@ -569,11 +569,11 @@ Z`}
 
       {/* Label */}
       <text
-        x={cx}
-        y="320"
+        x={630}
+        y="1030"
         textAnchor="middle"
         fontFamily="Georgia, serif"
-        fontSize={9}
+        fontSize={7}
         fill="#7a5030"
         letterSpacing={1.5}
       >
