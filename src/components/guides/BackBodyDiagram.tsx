@@ -274,18 +274,6 @@ Z"
       <path d="M 100 82 C 105 78, 113 82, 111 90" fill="none" stroke="#c49070" strokeWidth={0.6} strokeOpacity={0.4} />
       <path d="M 140 82 C 135 78, 127 82, 129 90" fill="none" stroke="#c49070" strokeWidth={0.6} strokeOpacity={0.4} />
 
-      {/* Label */}
-      <text
-        x={cx}
-        y="334"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize={9}
-        fill="#9a6040"
-        letterSpacing={1.5}
-      >
-        FEMME · DOS
-      </text>
     </g>
   );
 }
