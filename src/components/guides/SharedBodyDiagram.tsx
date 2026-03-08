@@ -855,7 +855,7 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
   const kidsTranslateX = (240 * (1 - kidsScale)) / 2; // center horizontally
   const kidsTranslateY = 10; // small top offset
 
-  const WomenScale = 0.75;
+  const WomenScale = 0.9;
   const WomenTranslateX = (120 * (1 - WomenScale)) / 2; // center horizontally
   const WomenTranslateY = 10; // small top offset
 
