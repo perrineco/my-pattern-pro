@@ -608,18 +608,6 @@ Z"
         strokeLinejoin="round"
         filter="url(#shadow)"
       />
-      {/* Label */}
-      <text
-        x="120"
-        y="334"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize={9}
-        fill="#7a5030"
-        letterSpacing={1.5}
-      >
-        HOMME
-      </text>
     </g>
   );
 }
