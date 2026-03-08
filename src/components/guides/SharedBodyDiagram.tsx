@@ -375,18 +375,6 @@ Z"
         filter="url(#shadow)"
       />
 
-      {/* Label */}
-      <text
-        x="120"
-        y="334"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize={9}
-        fill="#9a6040"
-        letterSpacing={1.5}
-      >
-        FEMME
-      </text>
     </g>
   );
 }
