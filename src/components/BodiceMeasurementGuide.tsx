@@ -62,7 +62,7 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  {t('guide.frontView') || 'Vue de face'}
+                  {t('guide.frontView')}
                 </button>
                 <button
                   onClick={() => setView('back')}
