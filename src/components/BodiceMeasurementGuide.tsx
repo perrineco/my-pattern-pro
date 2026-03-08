@@ -80,7 +80,6 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
               {view === 'front' ? (
                 <SharedBodyDiagram
                   category={category}
-                  viewBoxHeight={220}
                   renderOverlay={(pos) => (
                     <BodiceOverlayFront pos={pos} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} t={t} />
                   )}
@@ -88,7 +87,6 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
               ) : (
                 <BackBodyDiagram
                   category={category}
-                  viewBoxHeight={220}
                   renderOverlay={(pos) => (
                     <BodiceOverlayBack pos={pos} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} t={t} />
                   )}
