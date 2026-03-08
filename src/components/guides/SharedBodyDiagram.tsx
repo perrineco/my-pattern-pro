@@ -857,10 +857,12 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
         </>
       )}
       {category === "kids" && (
-        <g transform={`translate(${kidsTranslateX}, ${kidsTranslateY}) scale(${kidsScale})`}>
-          <KidsBody />
+        <>
+          <g transform={`translate(${kidsTranslateX}, ${kidsTranslateY}) scale(${kidsScale})`}>
+            <KidsBody />
+          </g>
           {renderOverlay?.(pos)}
-        </g>
+        </>
       )}
     </svg>
   );
