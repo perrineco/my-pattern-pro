@@ -177,25 +177,25 @@ function BodiceOverlayBack({ pos, highlightedNumber, onNumberClick, t }: { pos: 
       <text x={cx - 15} y={pos.neckBaseY - 8} textAnchor="end" className="fill-muted-foreground text-[8px]">{t('guide.nape')}</text>
 
       {/* 4: Back width */}
-      <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY} stroke="hsl(var(--foreground))" strokeWidth="2" />
-      <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY - 5} x2={cx - pos.bustWidth / 2 + 8} y2={pos.backWidthY + 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
-      <line x1={cx + pos.bustWidth / 2 - 8} y1={pos.backWidthY - 5} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY + 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
+      <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY} stroke="hsl(var(--foreground))" strokeWidth="1.2" />
+      <line x1={cx - pos.bustWidth / 2 + 8} y1={pos.backWidthY - 5} x2={cx - pos.bustWidth / 2 + 8} y2={pos.backWidthY + 5} stroke="hsl(var(--foreground))" strokeWidth="0.8" />
+      <line x1={cx + pos.bustWidth / 2 - 8} y1={pos.backWidthY - 5} x2={cx + pos.bustWidth / 2 - 8} y2={pos.backWidthY + 5} stroke="hsl(var(--foreground))" strokeWidth="0.8" />
       <g onClick={() => onNumberClick(4)} className="cursor-pointer">
         <circle cx={cx} cy={pos.backWidthY - 12} r="7" fill={getCircleFill(4)} />
         <text x={cx} y={pos.backWidthY - 9} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">4</text>
       </g>
 
       {/* 5: Back length (nape to waist) */}
-      <line x1={cx + 15} y1={pos.neckBaseY - 5} x2={cx + 15} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
-      <line x1={cx + 10} y1={pos.neckBaseY - 5} x2={cx + 20} y2={pos.neckBaseY - 5} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
-      <line x1={cx + 10} y1={pos.waistY} x2={cx + 20} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="1.5" />
+      <line x1={cx + 15} y1={pos.neckBaseY - 5} x2={cx + 15} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="0.8" />
+      <line x1={cx + 10} y1={pos.neckBaseY - 5} x2={cx + 20} y2={pos.neckBaseY - 5} stroke="hsl(var(--foreground))" strokeWidth="0.8" />
+      <line x1={cx + 10} y1={pos.waistY} x2={cx + 20} y2={pos.waistY} stroke="hsl(var(--foreground))" strokeWidth="0.8" />
       <g onClick={() => onNumberClick(5)} className="cursor-pointer">
         <circle cx={cx + 30} cy={(pos.neckBaseY + pos.waistY) / 2} r="7" fill={getCircleFill(5)} />
         <text x={cx + 30} y={(pos.neckBaseY + pos.waistY) / 2 + 3} textAnchor="middle" className="fill-white text-[9px] font-bold pointer-events-none">5</text>
       </g>
 
       {/* Waist reference line */}
-      <line x1={cx - pos.waistWidth / 2 - 10} y1={pos.waistY} x2={cx + pos.waistWidth / 2 + 10} y2={pos.waistY} stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="3,3" />
+      <line x1={cx - pos.waistWidth / 2 - 10} y1={pos.waistY} x2={cx + pos.waistWidth / 2 + 10} y2={pos.waistY} stroke="hsl(var(--muted-foreground))" strokeWidth="0.7" strokeDasharray="3,3" />
       <text x={cx + pos.waistWidth / 2 + 15} y={pos.waistY + 4} className="fill-muted-foreground text-[8px]">{t('guide.waist')}</text>
     </>
   );
