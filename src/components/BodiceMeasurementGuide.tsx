@@ -77,21 +77,24 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
               </div>
 
               {/* Diagram */}
-              {view === 'front' ? (
-                <SharedBodyDiagram
-                  category={category}
-                  renderOverlay={(pos) => (
-                    <BodiceOverlayFront pos={pos} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} t={t} />
-                  )}
-                />
-              ) : (
-                <BackBodyDiagram
-                  category={category}
-                  renderOverlay={(pos) => (
-                    <BodiceOverlayBack pos={pos} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} t={t} />
-                  )}
-                />
-              )}
+              <div className="relative w-full">
+                <div className={`transition-opacity duration-200 ${view === 'front' ? 'opacity-100' : 'opacity-0 pointer-events-none absolute inset-0'}`}>
+                  <SharedBodyDiagram
+                    category={category}
+                    renderOverlay={(pos) => (
+                      <BodiceOverlayFront pos={pos} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} t={t} />
+                    )}
+                  />
+                </div>
+                <div className={`transition-opacity duration-200 ${view === 'back' ? 'opacity-100' : 'opacity-0 pointer-events-none absolute inset-0'}`}>
+                  <BackBodyDiagram
+                    category={category}
+                    renderOverlay={(pos) => (
+                      <BodiceOverlayBack pos={pos} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} t={t} />
+                    )}
+                  />
+                </div>
+              </div>
             </div>
             <div className="space-y-4">
               <p className="text-xs text-muted-foreground italic mb-2">
