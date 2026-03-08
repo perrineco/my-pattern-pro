@@ -862,7 +862,7 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
   // Women body SVG paths are centered around x≈293, need to shift to centerX=120
   // After scale: 293 * scale + tx = 120 → tx = 120 - 293 * scale
   const womenBodyOffsetX = 120 - 293 * womenScale;
-  const womenBodyOffsetY = (vbHeight * (1 - womenScale)) / 2;
+  const womenBodyOffsetY = (vbHeight * (1 - womenScale)) / 2 + 40;
 
   // Men body SVG paths are centered around x≈428
   const menBodyOffsetX = 120 - 428 * menScale;
