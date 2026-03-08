@@ -260,6 +260,12 @@ const translations: Record<string, Record<Language, string>> = {
    'guide.tip.bodice5': { en: 'Take measurements over fitted clothing or undergarments', fr: 'Prenez les mesures par-dessus des vêtements ajustés ou des sous-vêtements' },
    'guide.tip.bodice6': { en: 'For back width (carrure dos), locate it by feeling where the arms connect to the body', fr: 'Pour la carrure dos, localisez-la en sentant où les bras se connectent au corps' },
 
+   // Bodice guide views
+   'guide.frontView': { en: 'Front view', fr: 'Vue de devant' },
+   'guide.backView': { en: 'Back view', fr: 'Vue de dos' },
+   'guide.clickToSwitch': { en: 'Click a measurement to see the corresponding view', fr: 'Cliquez sur une mesure pour voir le diagramme correspondant' },
+   'guide.nape': { en: 'Nape', fr: 'Nuque' },
+
    // Pattern piece labels
    'piece.front': { en: 'FRONT', fr: 'DEVANT' },
    'piece.back': { en: 'BACK', fr: 'DOS' },
