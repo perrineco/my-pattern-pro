@@ -365,8 +365,6 @@ function MenBodyBack() {
         strokeWidth={0.6}
       />
 
-      {/* Nuque */}
-      <circle cx={cx} cy="50" r="2.5" fill="#b8945a" fillOpacity={0.6} />
 
       {/* Omoplates (plus marquées) */}
       <path d="M 95 78 C 102 72, 112 78, 108 88" fill="none" stroke="#b8945a" strokeWidth={0.7} strokeOpacity={0.4} />
@@ -578,12 +576,20 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
             </>
           );
         })()}
-      {category === "men" && (
-        <>
-          <MenBodyBack />
-          {renderOverlay?.(pos)}
-        </>
-      )}
+      {category === "men" &&
+        (() => {
+          const menScale = 1.35;
+          const menOffsetX = 120 - 120 * menScale;
+          const menOffsetY = (vbHeight / 2) - 170 * menScale;
+          return (
+            <>
+              <g transform={`translate(${menOffsetX}, ${menOffsetY}) scale(${menScale})`}>
+                <MenBodyBack />
+              </g>
+              {renderOverlay?.(pos)}
+            </>
+          );
+        })()}
       {category === "kids" && (
         <>
           <g transform={`translate(${kidsTranslateX}, ${kidsTranslateY}) scale(${kidsScale})`}>
