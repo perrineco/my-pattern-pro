@@ -795,18 +795,6 @@ Z"
         strokeLinejoin="round"
       />
 
-      {/* Label */}
-      <text
-        x="120"
-        y="338"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize={9}
-        fill="#7a5030"
-        letterSpacing={1.5}
-      >
-        ENFANT
-      </text>
     </g>
   );
 }

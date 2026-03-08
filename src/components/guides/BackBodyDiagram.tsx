@@ -543,18 +543,6 @@ Z`}
         strokeWidth={0.6}
       />
 
-      {/* Label */}
-      <text
-        x={630}
-        y="1030"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize={7}
-        fill="#7a5030"
-        letterSpacing={1.5}
-      >
-        ENFANT · DOS
-      </text>
     </g>
   );
 }
