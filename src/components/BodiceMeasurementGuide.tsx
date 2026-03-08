@@ -78,7 +78,11 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
 
               {/* Diagram */}
               <div className="relative w-full">
-                <div className={`transition-opacity duration-200 ${view === 'front' ? 'opacity-100' : 'opacity-0 pointer-events-none absolute inset-0'}`}>
+                {/* Invisible front always in flow to set container size */}
+                <div className="invisible">
+                  <SharedBodyDiagram category={category} />
+                </div>
+                <div className={`absolute inset-0 transition-opacity duration-200 ${view === 'front' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   <SharedBodyDiagram
                     category={category}
                     renderOverlay={(pos) => (
@@ -86,9 +90,10 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
                     )}
                   />
                 </div>
-                <div className={`transition-opacity duration-200 ${view === 'back' ? 'opacity-100' : 'opacity-0 pointer-events-none absolute inset-0'}`}>
+                <div className={`absolute inset-0 transition-opacity duration-200 ${view === 'back' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                   <BackBodyDiagram
                     category={category}
+                    viewBoxHeight={category === "kids" ? 345 : 340}
                     renderOverlay={(pos) => (
                       <BodiceOverlayBack pos={pos} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} t={t} />
                     )}
