@@ -380,18 +380,6 @@ function MenBodyBack() {
       <path d="M 95 78 C 102 72, 112 78, 108 88" fill="none" stroke="#b8945a" strokeWidth={0.7} strokeOpacity={0.4} />
       <path d="M 145 78 C 138 72, 128 78, 132 88" fill="none" stroke="#b8945a" strokeWidth={0.7} strokeOpacity={0.4} />
 
-      {/* Label */}
-      <text
-        x={cx}
-        y="334"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize={9}
-        fill="#8a6040"
-        letterSpacing={1.5}
-      >
-        HOMME · DOS
-      </text>
     </g>
   );
 }
