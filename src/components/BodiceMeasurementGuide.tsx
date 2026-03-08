@@ -72,7 +72,7 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  {t('guide.backView') || 'Vue de dos'}
+                  {t('guide.backView')}
                 </button>
               </div>
 
