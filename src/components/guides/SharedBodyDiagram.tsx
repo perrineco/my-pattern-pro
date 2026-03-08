@@ -375,18 +375,6 @@ Z"
         filter="url(#shadow)"
       />
 
-      {/* Label */}
-      <text
-        x="120"
-        y="334"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize={9}
-        fill="#9a6040"
-        letterSpacing={1.5}
-      >
-        FEMME
-      </text>
     </g>
   );
 }
@@ -620,18 +608,6 @@ Z"
         strokeLinejoin="round"
         filter="url(#shadow)"
       />
-      {/* Label */}
-      <text
-        x="120"
-        y="334"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize={9}
-        fill="#7a5030"
-        letterSpacing={1.5}
-      >
-        HOMME
-      </text>
     </g>
   );
 }
@@ -819,18 +795,6 @@ Z"
         strokeLinejoin="round"
       />
 
-      {/* Label */}
-      <text
-        x="120"
-        y="338"
-        textAnchor="middle"
-        fontFamily="Georgia, serif"
-        fontSize={9}
-        fill="#7a5030"
-        letterSpacing={1.5}
-      >
-        ENFANT
-      </text>
     </g>
   );
 }
