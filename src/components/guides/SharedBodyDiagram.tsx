@@ -31,7 +31,7 @@ function getPositions(category: Category): BodyPositions {
 
   if (category === "kids") {
     return {
-      centerX: 100,
+      centerX: 102,
       headCenterY: 46,
       neckBaseY: 95,
       shoulderY: 105,

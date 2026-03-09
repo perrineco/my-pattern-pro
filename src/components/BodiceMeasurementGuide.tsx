@@ -328,25 +328,25 @@ function BodiceOverlayBack({
 
       {/* 4: Back width */}
       <line
-        x1={cx - pos.baclWidth / 2}
+        x1={cx - pos.backWidth / 2}
         y1={pos.backWidthY}
-        x2={cx + pos.baclWidth / 2}
+        x2={cx + pos.backWidth / 2}
         y2={pos.backWidthY}
         stroke="hsl(var(--foreground))"
         strokeWidth="1.2"
       />
       <line
-        x1={cx - pos.baclWidth / 2}
+        x1={cx - pos.backWidth / 2}
         y1={pos.backWidthY - 5}
-        x2={cx - pos.baclWidth / 2}
+        x2={cx - pos.backWidth / 2}
         y2={pos.backWidthY + 5}
         stroke="hsl(var(--foreground))"
         strokeWidth="0.8"
       />
       <line
-        x1={cx + pos.baclWidth / 2}
+        x1={cx + pos.backWidth / 2}
         y1={pos.backWidthY - 5}
-        x2={cx + pos.baclWidth / 2}
+        x2={cx + pos.backWidth / 2}
         y2={pos.backWidthY + 5}
         stroke="hsl(var(--foreground))"
         strokeWidth="0.8"
