@@ -460,7 +460,7 @@ C 223.848 927.256 228.844 939.628 226.83 950.93
 C 225.07 960.812 220.947 974.403 219.995 984.137
 C 219.474 989.456 221.685 995.015 219.377 997.933
 Z`}
-        fill="#3a2a1a"
+        fill="url(#skinMenBack)"
         stroke="#2a1a0a"
         strokeWidth={0.6}
       />
@@ -483,7 +483,7 @@ C 186.482 927.394 181.486 939.766 183.5 951.068
 C 185.26 960.95 189.383 974.541 190.335 984.275
 C 190.855 989.594 188.644 995.153 190.953 998.071
 Z`}
-        fill="#3a2a1a"
+        fill="url(#skinMenBack)"
         stroke="#2a1a0a"
         strokeWidth={0.6}
       />
@@ -719,7 +719,7 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
         (() => {
           const menScale = 1.35;
           const menOffsetX = 120 - 204.5 * menScale;
-          const menOffsetY = 130 - 809.3 * menScale;
+          const menOffsetY = 150 - 809.3 * menScale;
           return (
             <>
               <g transform={`translate(${menOffsetX}, ${menOffsetY}) scale(${menScale})`}>
