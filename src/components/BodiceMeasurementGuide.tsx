@@ -410,7 +410,7 @@ function BodiceOverlayBack({
         strokeWidth="0.7"
         strokeDasharray="3,3"
       />
-      <text x={cx + pos.waistWidth / 2 + 15} y={pos.waistY + 4} className="fill-muted-foreground text-[8px]">
+      <text x={cx + pos.waistWidth / 2 + 25} y={pos.waistY + 4} className="fill-muted-foreground text-[8px]">
         {t("guide.waist")}
       </text>
     </>

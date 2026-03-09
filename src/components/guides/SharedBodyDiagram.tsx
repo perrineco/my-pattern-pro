@@ -61,7 +61,7 @@ function getPositions(category: Category): BodyPositions {
       neckBaseY: 67,
       shoulderY: 75,
       bustY: 120,
-      backWidthY: 98,
+      backWidthY: 115,
       waistY: 160,
       hipY: 180,
       hemY: 280,
@@ -75,7 +75,7 @@ function getPositions(category: Category): BodyPositions {
       wristY: 260,
       armWidth: 26,
       wristWidth: 18,
-      leftShoulderX: centerX - 60,
+      leftShoulderX: centerX - 40,
       rightShoulderX: centerX + 50,
     };
   }
