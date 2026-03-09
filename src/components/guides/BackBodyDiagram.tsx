@@ -645,7 +645,7 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
         })()}
       {category === "men" &&
         (() => {
-          const menScale = 1.35;
+          const menScale = 0.35;
           const menOffsetX = 120 - 420 * menScale;
           const menOffsetY = vbHeight / 2 - 170 * menScale;
           return (

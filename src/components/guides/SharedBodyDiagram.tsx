@@ -75,7 +75,7 @@ function getPositions(category: Category): BodyPositions {
       wristY: 260,
       armWidth: 26,
       wristWidth: 18,
-      leftShoulderX: centerX - 40,
+      leftShoulderX: centerX - 60,
       rightShoulderX: centerX + 50,
     };
   }
