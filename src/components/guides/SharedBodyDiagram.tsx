@@ -58,8 +58,8 @@ function getPositions(category: Category): BodyPositions {
     return {
       centerX,
       headCenterY: 25,
-      neckBaseY: 63,
-      shoulderY: 75,
+      neckBaseY: 67,
+      shoulderY: 65,
       bustY: 120,
       backWidthY: 78,
       waistY: 160,
