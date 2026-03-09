@@ -293,7 +293,7 @@ function BodiceOverlayFront({
         strokeWidth="0.7"
         strokeDasharray="3,3"
       />
-      <text x={cx + pos.waistWidth / 2 + 15} y={pos.waistY + 4} className="fill-muted-foreground text-[8px]">
+      <text x={cx + pos.waistWidth / 2 + 25} y={pos.waistY + 4} className="fill-muted-foreground text-[8px]">
         {t("guide.waist")}
       </text>
     </>
@@ -320,11 +320,11 @@ function BodiceOverlayBack({
 
   return (
     <>
-      {/* Nape point */}
+      {/* Nape point 
       <circle cx={cx} cy={pos.neckBaseY - 5} r="3" fill="hsl(var(--foreground))" />
       <text x={cx - 15} y={pos.neckBaseY - 8} textAnchor="end" className="fill-muted-foreground text-[8px]">
         {t("guide.nape")}
-      </text>
+      </text>*/}
 
       {/* 4: Back width */}
       <line
@@ -374,9 +374,9 @@ function BodiceOverlayBack({
       />
       <line
         x1={cx + 10}
-        y1={pos.neckBaseY - 5}
+        y1={pos.neckBaseY}
         x2={cx + 20}
-        y2={pos.neckBaseY - 5}
+        y2={pos.neckBaseY}
         stroke="hsl(var(--foreground))"
         strokeWidth="0.8"
       />
