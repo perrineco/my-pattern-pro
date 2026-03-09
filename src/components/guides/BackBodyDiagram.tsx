@@ -645,9 +645,9 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
         })()}
       {category === "men" &&
         (() => {
-          const menScale = 0.35;
-          const menOffsetX = 120 - 420 * menScale;
-          const menOffsetY = vbHeight / 2 - 170 * menScale;
+          const menScale = 2.2; // Échelle pour que l'objet occupe ~70% de la hauteur (105 * 2.2 = 231px)
+          const menOffsetX = 120 - 204.5 * menScale;
+          const menOffsetY = 170 - 809.3 * menScale;
           return (
             <>
               <g transform={`translate(${menOffsetX}, ${menOffsetY}) scale(${menScale})`}>
