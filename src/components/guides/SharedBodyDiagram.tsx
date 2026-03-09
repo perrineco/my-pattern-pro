@@ -812,8 +812,8 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
   const pos = getPositions(category);
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
 
-  // Scale kids to occupy ~75% of the space, matching women/men size
-  const kidsScale = 1.0;
+  // Scale kids
+  const kidsScale = 1.5;
   const kidsTranslateX = 0;
   const kidsTranslateY = 0;
 
