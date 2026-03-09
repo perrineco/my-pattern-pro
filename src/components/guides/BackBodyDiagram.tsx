@@ -690,7 +690,7 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
   // Match front kids size: front spans y≈28-292 (264 units), back spans y≈869-1011 (142 units)
   const kidsScale = 2.35;
   const kidsTranslateX = 103 - 630 * kidsScale;
-  const kidsTranslateY = 8 - 869 * kidsScale;
+  const kidsTranslateY = 7 - 869 * kidsScale;
 
   return (
     <svg
