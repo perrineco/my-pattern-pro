@@ -41,7 +41,7 @@ function getPositions(category: Category): BodyPositions {
       hemY: 298,
       ankleY: 318,
       shoulderWidth: 90,
-      bustWidth: 68,
+      bustWidth: 38,
       waistWidth: 64,
       hipWidth: 90,
       underarmY: 130,
