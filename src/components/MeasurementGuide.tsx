@@ -47,6 +47,7 @@ export function MeasurementGuide({ category, patternType = 'skirt' }: Measuremen
               <SharedBodyDiagram
                 category={category}
                 patternType={patternType}
+                renderOverlay={(pos) => isPants
                   ? <PantsOverlay pos={pos} t={t} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} />
                   : <SkirtOverlay pos={pos} t={t} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} />
                 }
