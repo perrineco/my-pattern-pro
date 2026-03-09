@@ -46,6 +46,7 @@ export function MeasurementGuide({ category, patternType = 'skirt' }: Measuremen
             <div className="flex justify-center">
               <SharedBodyDiagram
                 category={category}
+                patternType={patternType}
                 renderOverlay={(pos) => isPants
                   ? <PantsOverlay pos={pos} t={t} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} />
                   : <SkirtOverlay pos={pos} t={t} highlightedNumber={highlightedNumber} onNumberClick={handleNumberClick} />

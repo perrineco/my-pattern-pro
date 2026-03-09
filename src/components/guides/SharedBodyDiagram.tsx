@@ -810,29 +810,36 @@ interface SharedBodyDiagramProps {
   /** Hauteur du viewBox (optionnel, calculée automatiquement sinon). */
   viewBoxHeight?: number;
   className?: string;
+  /** Type de patron pour ajuster les scales (pantalon = vue plus basse). */
+  patternType?: string;
 }
 
-export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, className }: SharedBodyDiagramProps) {
+export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, className, patternType }: SharedBodyDiagramProps) {
   const pos = getPositions(category);
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
+  const isPants = patternType === 'pants';
 
   // Scale kids
-  const kidsScale = 1.25;
-  const kidsTranslateX = -35;
-  const kidsTranslateY = -25;
+  const kidsScale = isPants ? 1.15 : 1.25;
+  const kidsTranslateX = isPants ? -25 : -35;
+  const kidsTranslateY = isPants ? -45 : -25;
 
   // Scale up women & men for larger diagrams
-  const womenScale = 1.55;
-  const menScale = 1.35;
+  const womenScale = isPants ? 1.45 : 1.55;
+  const menScale = isPants ? 1.25 : 1.35;
 
   // Women body SVG paths are centered around x≈293, need to shift to centerX=120
   // After scale: 293 * scale + tx = 120 → tx = 120 - 293 * scale
   const womenBodyOffsetX = 120 - 293 * womenScale;
-  const womenBodyOffsetY = (vbHeight * (1 - womenScale)) / 2 + 60;
+  const womenBodyOffsetY = isPants
+    ? (vbHeight * (1 - womenScale)) / 2 + 30
+    : (vbHeight * (1 - womenScale)) / 2 + 60;
 
   // Men body SVG paths are centered around x≈428
   const menBodyOffsetX = 120 - 428 * menScale;
-  const menBodyOffsetY = (vbHeight * (1 - menScale)) / 2 + 40;
+  const menBodyOffsetY = isPants
+    ? (vbHeight * (1 - menScale)) / 2 + 15
+    : (vbHeight * (1 - menScale)) / 2 + 40;
 
   return (
     <svg

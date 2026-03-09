@@ -681,16 +681,18 @@ interface BackBodyDiagramProps {
   renderOverlay?: (pos: BodyPositions) => ReactNode;
   viewBoxHeight?: number;
   className?: string;
+  patternType?: string;
 }
 
-export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, className }: BackBodyDiagramProps) {
+export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, className, patternType }: BackBodyDiagramProps) {
   const pos = getPositions(category);
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
+  const isPants = patternType === 'pants';
 
   // Match front kids size: front spans y≈28-292 (264 units), back spans y≈869-1011 (142 units)
-  const kidsScale = 2.35;
-  const kidsTranslateX = 103 - 630 * kidsScale;
-  const kidsTranslateY = 7 - 869 * kidsScale;
+  const kidsScale = isPants ? 2.15 : 2.35;
+  const kidsTranslateX = isPants ? 103 - 630 * kidsScale + 15 : 103 - 630 * kidsScale;
+  const kidsTranslateY = isPants ? 7 - 869 * kidsScale + 40 : 7 - 869 * kidsScale;
 
   return (
     <svg
@@ -703,9 +705,11 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
       {category === "women" &&
         (() => {
           // Women back paths: x≈403-500 (center≈452), y≈750-885 (center≈817)
-          const wbScale = 1.55;
+          const wbScale = isPants ? 1.45 : 1.55;
           const wbOffsetX = 120 - 452 * wbScale;
-          const wbOffsetY = vbHeight / 2 - 817 * wbScale - 29;
+          const wbOffsetY = isPants
+            ? vbHeight / 2 - 817 * wbScale - 5
+            : vbHeight / 2 - 817 * wbScale - 29;
           return (
             <>
               <g transform={`translate(${wbOffsetX}, ${wbOffsetY}) scale(${wbScale})`}>
@@ -717,9 +721,11 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
         })()}
       {category === "men" &&
         (() => {
-          const menScale = 1.35;
+          const menScale = isPants ? 1.25 : 1.35;
           const menOffsetX = 120 - 204.5 * menScale;
-          const menOffsetY = 140 - 809.3 * menScale;
+          const menOffsetY = isPants
+            ? 140 - 809.3 * menScale + 25
+            : 140 - 809.3 * menScale;
           return (
             <>
               <g transform={`translate(${menOffsetX}, ${menOffsetY}) scale(${menScale})`}>
