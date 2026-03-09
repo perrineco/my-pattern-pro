@@ -444,7 +444,7 @@ Z`}
 
       {/* jambe droite) */}
       <path
-        d={`MM 219.377 997.933
+        d={`M 219.377 997.933
 C 219.971 998.953 221.185 1000.59 222.581 1002.01
 C 223.936 1003.39 225.473 1004.53 226.106 1006.48
 C 227.389 1010.45 225.17 1010.89 219.193 1010.96
@@ -719,7 +719,7 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
         (() => {
           const menScale = 1.35;
           const menOffsetX = 120 - 204.5 * menScale;
-          const menOffsetY = 150 - 809.3 * menScale;
+          const menOffsetY = 140 - 809.3 * menScale;
           return (
             <>
               <g transform={`translate(${menOffsetX}, ${menOffsetY}) scale(${menScale})`}>
