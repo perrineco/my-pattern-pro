@@ -705,9 +705,11 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
       {category === "women" &&
         (() => {
           // Women back paths: x≈403-500 (center≈452), y≈750-885 (center≈817)
-          const wbScale = 1.55;
+          const wbScale = isPants ? 1.45 : 1.55;
           const wbOffsetX = 120 - 452 * wbScale;
-          const wbOffsetY = vbHeight / 2 - 817 * wbScale - 29;
+          const wbOffsetY = isPants
+            ? vbHeight / 2 - 817 * wbScale - 5
+            : vbHeight / 2 - 817 * wbScale - 29;
           return (
             <>
               <g transform={`translate(${wbOffsetX}, ${wbOffsetY}) scale(${wbScale})`}>
