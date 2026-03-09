@@ -14,6 +14,7 @@ export interface BodyPositions {
   ankleY: number;
   shoulderWidth: number;
   bustWidth: number;
+  backWidth: number;
   waistWidth: number;
   hipWidth: number;
   underarmY: number;
@@ -30,7 +31,7 @@ function getPositions(category: Category): BodyPositions {
 
   if (category === "kids") {
     return {
-      centerX: 110,
+      centerX: 100,
       headCenterY: 46,
       neckBaseY: 95,
       shoulderY: 105,
@@ -42,6 +43,7 @@ function getPositions(category: Category): BodyPositions {
       ankleY: 318,
       shoulderWidth: 90,
       bustWidth: 38,
+  backWidth: 30;
       waistWidth: 64,
       hipWidth: 90,
       underarmY: 130,
@@ -68,6 +70,7 @@ function getPositions(category: Category): BodyPositions {
       ankleY: 310,
       shoulderWidth: 80,
       bustWidth: 60,
+  backWidth: 30;
       waistWidth: 78,
       hipWidth: 76,
       underarmY: 85,
@@ -94,6 +97,7 @@ function getPositions(category: Category): BodyPositions {
     ankleY: 310,
     shoulderWidth: 76,
     bustWidth: 56,
+  backWidth: 30;
     waistWidth: 56,
     hipWidth: 86,
     underarmY: 85,
