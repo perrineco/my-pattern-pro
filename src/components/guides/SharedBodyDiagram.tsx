@@ -837,7 +837,9 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
 
   // Men body SVG paths are centered around x≈428
   const menBodyOffsetX = 120 - 428 * menScale;
-  const menBodyOffsetY = (vbHeight * (1 - menScale)) / 2 + 40;
+  const menBodyOffsetY = isPants
+    ? (vbHeight * (1 - menScale)) / 2 + 15
+    : (vbHeight * (1 - menScale)) / 2 + 40;
 
   return (
     <svg
