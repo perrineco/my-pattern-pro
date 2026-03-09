@@ -256,7 +256,7 @@ function BodiceOverlayFront({
 
       {/* 3: Shoulder length */}
       <line
-        x1={cx - 8}
+        x1={cx - 14}
         y1={pos.neckBaseY}
         x2={pos.leftShoulderX}
         y2={pos.shoulderY}
@@ -265,7 +265,7 @@ function BodiceOverlayFront({
         strokeDasharray="3,2"
       />
       <circle cx={pos.leftShoulderX} cy={pos.shoulderY} r="1.5" fill="hsl(var(--foreground))" />
-      <circle cx={cx - 12} cy={pos.neckBaseY} r="1.5" fill="hsl(var(--foreground))" />
+      <circle cx={cx - 14} cy={pos.neckBaseY} r="1.5" fill="hsl(var(--foreground))" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
         <circle
           cx={(cx - 8 + pos.leftShoulderX) / 2}
@@ -336,17 +336,17 @@ function BodiceOverlayBack({
         strokeWidth="1.2"
       />
       <line
-        x1={cx - pos.bustWidth / 2 + 8}
+        x1={cx - pos.bustWidth / 2 - 8}
         y1={pos.backWidthY - 5}
-        x2={cx - pos.bustWidth / 2 + 8}
+        x2={cx - pos.bustWidth / 2 - 8}
         y2={pos.backWidthY + 5}
         stroke="hsl(var(--foreground))"
         strokeWidth="0.8"
       />
       <line
-        x1={cx + pos.bustWidth / 2 - 8}
+        x1={cx + pos.bustWidth / 2 + 8}
         y1={pos.backWidthY - 5}
-        x2={cx + pos.bustWidth / 2 - 8}
+        x2={cx + pos.bustWidth / 2 + 8}
         y2={pos.backWidthY + 5}
         stroke="hsl(var(--foreground))"
         strokeWidth="0.8"
