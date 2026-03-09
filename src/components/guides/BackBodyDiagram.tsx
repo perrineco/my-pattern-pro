@@ -681,16 +681,18 @@ interface BackBodyDiagramProps {
   renderOverlay?: (pos: BodyPositions) => ReactNode;
   viewBoxHeight?: number;
   className?: string;
+  patternType?: string;
 }
 
-export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, className }: BackBodyDiagramProps) {
+export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, className, patternType }: BackBodyDiagramProps) {
   const pos = getPositions(category);
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
+  const isPants = patternType === 'pants';
 
   // Match front kids size: front spans y≈28-292 (264 units), back spans y≈869-1011 (142 units)
-  const kidsScale = 2.35;
-  const kidsTranslateX = 103 - 630 * kidsScale;
-  const kidsTranslateY = 7 - 869 * kidsScale;
+  const kidsScale = isPants ? 2.15 : 2.35;
+  const kidsTranslateX = isPants ? 103 - 630 * kidsScale + 15 : 103 - 630 * kidsScale;
+  const kidsTranslateY = isPants ? 7 - 869 * kidsScale + 40 : 7 - 869 * kidsScale;
 
   return (
     <svg
