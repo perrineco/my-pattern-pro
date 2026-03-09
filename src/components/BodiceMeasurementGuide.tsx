@@ -366,7 +366,7 @@ function BodiceOverlayBack({
       {/* 5: Back length (nape to waist) */}
       <line
         x1={cx + 15}
-        y1={pos.neckBaseY - 5}
+        y1={pos.neckBaseY}
         x2={cx + 15}
         y2={pos.waistY}
         stroke="hsl(var(--foreground))"
