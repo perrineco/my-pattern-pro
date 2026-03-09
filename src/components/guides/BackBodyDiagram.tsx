@@ -721,9 +721,11 @@ export function BackBodyDiagram({ category, renderOverlay, viewBoxHeight, classN
         })()}
       {category === "men" &&
         (() => {
-          const menScale = 1.35;
+          const menScale = isPants ? 1.25 : 1.35;
           const menOffsetX = 120 - 204.5 * menScale;
-          const menOffsetY = 140 - 809.3 * menScale;
+          const menOffsetY = isPants
+            ? 140 - 809.3 * menScale + 25
+            : 140 - 809.3 * menScale;
           return (
             <>
               <g transform={`translate(${menOffsetX}, ${menOffsetY}) scale(${menScale})`}>
