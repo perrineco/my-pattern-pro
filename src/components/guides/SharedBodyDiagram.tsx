@@ -815,7 +815,7 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
   // Scale kids
   const kidsScale = 1.25;
   const kidsTranslateX = -35;
-  const kidsTranslateY = -22;
+  const kidsTranslateY = -24;
 
   // Scale up women & men for larger diagrams
   const womenScale = 1.55;
