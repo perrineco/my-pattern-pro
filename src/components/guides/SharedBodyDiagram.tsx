@@ -813,7 +813,7 @@ export function SharedBodyDiagram({ category, renderOverlay, viewBoxHeight, clas
   const vbHeight = viewBoxHeight ?? (category === "kids" ? 345 : 340);
 
   // Scale kids
-  const kidsScale = 1.5;
+  const kidsScale = 1.25;
   const kidsTranslateX = 0;
   const kidsTranslateY = 0;
 
