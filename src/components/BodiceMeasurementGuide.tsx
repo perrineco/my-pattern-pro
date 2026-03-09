@@ -265,7 +265,7 @@ function BodiceOverlayFront({
         strokeDasharray="3,2"
       />
       <circle cx={pos.leftShoulderX} cy={pos.shoulderY} r="1.5" fill="hsl(var(--foreground))" />
-      <circle cx={cx - 8} cy={pos.neckBaseY} r="1.5" fill="hsl(var(--foreground))" />
+      <circle cx={cx - 12} cy={pos.neckBaseY} r="1.5" fill="hsl(var(--foreground))" />
       <g onClick={() => onNumberClick(3)} className="cursor-pointer">
         <circle
           cx={(cx - 8 + pos.leftShoulderX) / 2}
