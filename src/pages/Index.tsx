@@ -42,7 +42,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const isProfileMode = searchParams.get('mode') === 'profiles';
-  const { user, session, subscription, purchasedPatterns } = useAuth();
+  const { user, session, subscription, purchasedPatterns, loading } = useAuth();
   const { t } = useLanguage();
   const { unit: measurementUnit, setUnit: handleUnitChange } = useUnit();
 
@@ -394,7 +394,7 @@ const Index = () => {
                   </Card>
                 )}
 
-                {user && subscription.tier === 'none' && (
+                {user && subscription.tier === 'none' && !loading && (
                   <Card className="p-4 bg-primary/5 border-primary/20">
                     <p className="text-sm text-foreground mb-3">
                       {t('misc.upgradePrompt')}
