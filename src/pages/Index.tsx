@@ -250,12 +250,6 @@ const Index = () => {
                   </label>
                   <CategorySelector selected={category} onSelect={handleCategoryChange} />
                 </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1 block">
-                    {t('label.units')}
-                  </label>
-                  <UnitToggle unit={measurementUnit} onChange={handleUnitChange} />
-                </div>
               </div>
 
               <div className="w-full lg:w-auto overflow-x-auto">
