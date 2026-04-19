@@ -9,10 +9,12 @@ import { Header } from '@/components/Header';
 import { Check, Crown, Sparkles, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import { cn } from '@/lib/utils';
 
 export default function Pricing() {
   const { user, session, subscription } = useAuth();
+  const { symbol } = useCurrency();
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [loading, setLoading] = useState<string | null>(null);
@@ -116,7 +118,7 @@ export default function Pricing() {
               <p className="text-sm text-muted-foreground">{t('pricing.single.desc')}</p>
             </div>
             <div className="mb-6">
-              <span className="text-4xl font-bold">{STRIPE_CONFIG.singlePurchase.price}€</span>
+              <span className="text-4xl font-bold">{STRIPE_CONFIG.singlePurchase.price}{symbol}</span>
               <span className="text-muted-foreground">{t('pricing.perPattern')}</span>
             </div>
             <ul className="space-y-3 mb-6">
@@ -153,7 +155,7 @@ export default function Pricing() {
               <p className="text-sm text-muted-foreground">{t('pricing.basic.desc')}</p>
             </div>
             <div className="mb-6">
-              <span className="text-4xl font-bold">{STRIPE_CONFIG.subscriptions.basic.price}€</span>
+              <span className="text-4xl font-bold">{STRIPE_CONFIG.subscriptions.basic.price}{symbol}</span>
               <span className="text-muted-foreground">{t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-3 mb-6">
@@ -203,7 +205,7 @@ export default function Pricing() {
               <p className="text-sm text-muted-foreground">{t('pricing.pro.desc')}</p>
             </div>
             <div className="mb-6">
-              <span className="text-4xl font-bold">{STRIPE_CONFIG.subscriptions.pro.price}€</span>
+              <span className="text-4xl font-bold">{STRIPE_CONFIG.subscriptions.pro.price}{symbol}</span>
               <span className="text-muted-foreground">{t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-3 mb-6">

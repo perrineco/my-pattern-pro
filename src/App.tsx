@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { UnitProvider } from "@/contexts/UnitContext";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import Welcome from "./pages/Welcome";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -27,6 +28,7 @@ const App = () => (
         <AuthProvider>
         <LanguageProvider>
         <UnitProvider>
+        <CurrencyProvider>
           <Routes>
             <Route path="/" element={<Welcome />} />
             <Route path="/app" element={<Index />} />
@@ -39,6 +41,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+        </CurrencyProvider>
         </UnitProvider>
         </LanguageProvider>
         </AuthProvider>

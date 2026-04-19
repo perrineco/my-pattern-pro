@@ -1,5 +1,6 @@
  import { useState } from 'react';
  import { useNavigate } from 'react-router-dom';
+ import { Header } from '@/components/Header';
  import { useForm } from 'react-hook-form';
  import { zodResolver } from '@hookform/resolvers/zod';
  import { z } from 'zod';
@@ -92,10 +93,11 @@
    
    return (
      <div className="min-h-screen bg-background">
+       <Header />
        <div className="container max-w-2xl py-8 px-4">
          <Button
            variant="ghost"
-           onClick={() => navigate('/')}
+           onClick={() => navigate(-1)}
            className="mb-6 gap-2"
          >
            <ArrowLeft className="w-4 h-4" />
