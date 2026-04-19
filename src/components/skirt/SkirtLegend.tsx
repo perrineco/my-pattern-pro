@@ -4,7 +4,7 @@ export function SkirtLegend() {
   const { t } = useLanguage();
 
   return (
-    <div className="absolute bottom-4 right-4 bg-card/90 backdrop-blur-sm p-3 rounded-md border border-border text-xs space-y-1">
+    <div className="absolute top-4 left-4 bg-card/90 backdrop-blur-sm p-3 rounded-md border border-border text-xs space-y-1">
       <div className="flex items-center gap-2">
         <div className="w-4 h-0.5 bg-pattern-stroke" />
         <span className="text-muted-foreground">{t('legend.patternEdge')}</span>
