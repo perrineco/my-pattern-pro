@@ -161,6 +161,7 @@ const translations: Record<string, Record<Language, string>> = {
   'action.manageProfiles': { en: 'Manage Profiles', fr: 'Gérer les profils' },
   'action.manageSubscription': { en: 'Manage Subscription', fr: 'Gérer l\'abonnement' },
   'action.contactUs': { en: 'Contact Us', fr: 'Nous contacter' },
+  'nav.settings': { en: 'Settings', fr: 'Paramètres' },
   'action.backToPatterns': { en: 'Back to Patterns', fr: 'Retour aux patrons' },
   'action.saveAsNew': { en: 'Save as new profile', fr: 'Sauvegarder comme nouveau profil' },
   'action.deleteProfile': { en: 'Delete profile', fr: 'Supprimer le profil' },

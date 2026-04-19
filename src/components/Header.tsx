@@ -33,7 +33,7 @@ export function Header() {
             </div>
             <div>
               <h1 className="font-serif text-xl font-semibold text-foreground tracking-tight">
-                Sloper Studio
+                Petit Citron Studio
               </h1>
               <p className="text-xs text-muted-foreground">
                 {t('misc.createPatterns')}
@@ -87,7 +87,7 @@ export function Header() {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => navigate('/settings')}>
                           <Settings className="w-4 h-4 mr-2" />
-                          Paramètres
+                          {t('nav.settings')}
                         </DropdownMenuItem>
                          <DropdownMenuItem onClick={() => navigate('/contact')}>
                            <MessageSquare className="w-4 h-4 mr-2" />
