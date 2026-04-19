@@ -116,7 +116,7 @@ export default function Pricing() {
               <p className="text-sm text-muted-foreground">{t('pricing.single.desc')}</p>
             </div>
             <div className="mb-6">
-              <span className="text-4xl font-bold">${STRIPE_CONFIG.singlePurchase.price}</span>
+              <span className="text-4xl font-bold">{STRIPE_CONFIG.singlePurchase.price}€</span>
               <span className="text-muted-foreground">{t('pricing.perPattern')}</span>
             </div>
             <ul className="space-y-3 mb-6">
@@ -153,7 +153,7 @@ export default function Pricing() {
               <p className="text-sm text-muted-foreground">{t('pricing.basic.desc')}</p>
             </div>
             <div className="mb-6">
-              <span className="text-4xl font-bold">${STRIPE_CONFIG.subscriptions.basic.price}</span>
+              <span className="text-4xl font-bold">{STRIPE_CONFIG.subscriptions.basic.price}€</span>
               <span className="text-muted-foreground">{t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-3 mb-6">
@@ -203,7 +203,7 @@ export default function Pricing() {
               <p className="text-sm text-muted-foreground">{t('pricing.pro.desc')}</p>
             </div>
             <div className="mb-6">
-              <span className="text-4xl font-bold">${STRIPE_CONFIG.subscriptions.pro.price}</span>
+              <span className="text-4xl font-bold">{STRIPE_CONFIG.subscriptions.pro.price}€</span>
               <span className="text-muted-foreground">{t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-3 mb-6">

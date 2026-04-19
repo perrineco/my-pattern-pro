@@ -21,21 +21,21 @@
  import { ArrowLeft, Send, MessageSquare, Bug, Lightbulb, HelpCircle } from 'lucide-react';
  
  const contactSchema = z.object({
-   name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
-   email: z.string().trim().email('Please enter a valid email address').max(255, 'Email must be less than 255 characters'),
+   name: z.string().trim().min(1, 'Le nom est requis').max(100, 'Le nom doit faire moins de 100 caractères'),
+   email: z.string().trim().email('Veuillez entrer une adresse email valide').max(255, "L'email doit faire moins de 255 caractères"),
    category: z.enum(['question', 'bug_report', 'feature_request', 'other'], {
-     required_error: 'Please select a category',
+     required_error: 'Veuillez sélectionner une catégorie',
    }),
-   message: z.string().trim().min(10, 'Message must be at least 10 characters').max(2000, 'Message must be less than 2000 characters'),
+   message: z.string().trim().min(10, 'Le message doit faire au moins 10 caractères').max(2000, 'Le message doit faire moins de 2000 caractères'),
  });
- 
+
  type ContactFormData = z.infer<typeof contactSchema>;
- 
+
  const categories = [
-   { value: 'question', label: 'Question', icon: HelpCircle, description: 'Ask about using the app' },
-   { value: 'bug_report', label: 'Bug Report', icon: Bug, description: 'Report an issue or error' },
-   { value: 'feature_request', label: 'Feature Request', icon: Lightbulb, description: 'Suggest an improvement' },
-   { value: 'other', label: 'Other', icon: MessageSquare, description: 'General feedback' },
+   { value: 'question', label: 'Question', icon: HelpCircle, description: "Poser une question sur l'app" },
+   { value: 'bug_report', label: 'Signaler un bug', icon: Bug, description: 'Signaler un problème ou une erreur' },
+   { value: 'feature_request', label: 'Suggestion', icon: Lightbulb, description: 'Proposer une amélioration' },
+   { value: 'other', label: 'Autre', icon: MessageSquare, description: 'Retour général' },
  ];
  
  export default function Contact() {
@@ -75,15 +75,15 @@
        
        if (error) throw error;
        
-       toast.success('Thank you for your message!', {
-         description: 'We\'ll get back to you as soon as possible.',
+       toast.success('Merci pour votre message !', {
+         description: 'Nous vous répondrons dans les plus brefs délais.',
        });
-       
+
        reset();
      } catch (error) {
        console.error('Error submitting contact form:', error);
-       toast.error('Failed to send message', {
-         description: 'Please try again later.',
+       toast.error("Échec de l'envoi", {
+         description: 'Veuillez réessayer plus tard.',
        });
      } finally {
        setIsSubmitting(false);
@@ -99,25 +99,25 @@
            className="mb-6 gap-2"
          >
            <ArrowLeft className="w-4 h-4" />
-           Back to Sloper
+           Retour
          </Button>
-         
+
          <Card>
            <CardHeader className="text-center">
-             <CardTitle className="font-serif text-2xl">Contact Us</CardTitle>
+             <CardTitle className="font-serif text-2xl">Nous contacter</CardTitle>
              <CardDescription>
-               Have a question, found a bug, or want to suggest a feature? We'd love to hear from you!
+               Une question, un bug, une suggestion ? Nous serions ravis de vous lire !
              </CardDescription>
            </CardHeader>
-           
+
            <CardContent>
              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-               {/* Name */}
+               {/* Nom */}
                <div className="space-y-2">
-                 <Label htmlFor="name">Name</Label>
+                 <Label htmlFor="name">Nom</Label>
                  <Input
                    id="name"
-                   placeholder="Your name"
+                   placeholder="Votre nom"
                    {...register('name')}
                    className={errors.name ? 'border-destructive' : ''}
                  />
@@ -132,7 +132,7 @@
                  <Input
                    id="email"
                    type="email"
-                   placeholder="your@email.com"
+                   placeholder="votre@email.com"
                    {...register('email')}
                    className={errors.email ? 'border-destructive' : ''}
                  />
@@ -141,15 +141,15 @@
                  )}
                </div>
                
-               {/* Category */}
+               {/* Catégorie */}
                <div className="space-y-2">
-                 <Label>Category</Label>
+                 <Label>Catégorie</Label>
                  <Select
                    value={selectedCategory}
                    onValueChange={(value) => setValue('category', value as ContactFormData['category'])}
                  >
                    <SelectTrigger className={errors.category ? 'border-destructive' : ''}>
-                     <SelectValue placeholder="Select a category" />
+                     <SelectValue placeholder="Sélectionner une catégorie" />
                    </SelectTrigger>
                    <SelectContent>
                      {categories.map((cat) => {
@@ -175,7 +175,7 @@
                  <Label htmlFor="message">Message</Label>
                  <Textarea
                    id="message"
-                   placeholder="Tell us more..."
+                   placeholder="Dites-nous en plus..."
                    rows={5}
                    {...register('message')}
                    className={errors.message ? 'border-destructive' : ''}
@@ -190,7 +190,7 @@
                
                <Button type="submit" className="w-full gap-2" disabled={isSubmitting}>
                  <Send className="w-4 h-4" />
-                 {isSubmitting ? 'Sending...' : 'Send Message'}
+                 {isSubmitting ? 'Envoi en cours...' : 'Envoyer'}
                </Button>
              </form>
            </CardContent>

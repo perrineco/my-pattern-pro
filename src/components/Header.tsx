@@ -9,13 +9,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Scissors, User, LogOut, CreditCard, MessageSquare, Wrench, Globe } from 'lucide-react';
+import { Scissors, User, LogOut, CreditCard, MessageSquare, Wrench, Settings } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 
 export function Header() {
   const navigate = useNavigate();
   const { user, subscription, signOut, loading } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
 
   const handleSignOut = async () => {
     await signOut();
@@ -41,17 +42,6 @@ export function Header() {
           </button>
 
           <div className="flex items-center gap-3">
-            {/* Language Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLanguage(language === 'en' ? 'fr' : 'en')}
-              className="gap-1.5 text-xs"
-            >
-              <Globe className="w-3.5 h-3.5" />
-              {language === 'en' ? 'FR' : 'EN'}
-            </Button>
-
             {!loading && (
               <>
                 {user ? (
@@ -94,6 +84,10 @@ export function Header() {
                         <DropdownMenuItem onClick={() => navigate('/pricing')}>
                           <CreditCard className="w-4 h-4 mr-2" />
                           {t('action.manageSubscription')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/settings')}>
+                          <Settings className="w-4 h-4 mr-2" />
+                          Paramètres
                         </DropdownMenuItem>
                          <DropdownMenuItem onClick={() => navigate('/contact')}>
                            <MessageSquare className="w-4 h-4 mr-2" />
