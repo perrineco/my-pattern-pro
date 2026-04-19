@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, PantsMeasurements, SleeveMeasurements, Measurements, isBodiceMeasurements, isPantsMeasurements, isSleeveMeasurements, UnifiedMeasurements } from '@/types/sloper';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useUnit } from '@/contexts/UnitContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { CategorySelector } from '@/components/CategorySelector';
@@ -43,7 +44,8 @@ const Index = () => {
   const isProfileMode = searchParams.get('mode') === 'profiles';
   const { user, session, subscription, purchasedPatterns } = useAuth();
   const { t } = useLanguage();
-  
+  const { unit: measurementUnit, setUnit: handleUnitChange } = useUnit();
+
   const [category, setCategory] = useState<Category>('women');
   const [patternType, setPatternType] = useState<PatternType>('skirt');
   const [skirtMeasurements, setSkirtMeasurements] = useState<SkirtMeasurements>(
@@ -69,18 +71,6 @@ const Index = () => {
   );
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
   const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null);
-  
-  // Unit toggle state - persist to localStorage
-  const [measurementUnit, setMeasurementUnit] = useState<MeasurementUnit>(() => {
-    const saved = localStorage.getItem('measurementUnit');
-    return (saved === 'cm' || saved === 'inches') ? saved : 'cm';
-  });
-
-  // Persist unit preference when it changes
-  const handleUnitChange = (unit: MeasurementUnit) => {
-    setMeasurementUnit(unit);
-    localStorage.setItem('measurementUnit', unit);
-  };
   
   // Profile mode state
   const [unifiedMeasurements, setUnifiedMeasurements] = useState<UnifiedMeasurements>(
@@ -219,18 +209,12 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center justify-center">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-muted-foreground block">
                   {t('label.category')}
                 </label>
                 <CategorySelector selected={category} onSelect={handleCategoryChange} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground block">
-                  {t('label.units')}
-                </label>
-                <UnitToggle unit={measurementUnit} onChange={handleUnitChange} />
               </div>
             </div>
 
