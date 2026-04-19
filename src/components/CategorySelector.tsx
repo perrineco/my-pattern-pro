@@ -23,7 +23,7 @@ export function CategorySelector({ selected, onSelect }: CategorySelectorProps) 
           key={cat.value}
           onClick={() => onSelect(cat.value)}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200",
             "border hover:border-primary/50",
             selected === cat.value
               ? "bg-primary text-primary-foreground border-primary shadow-sm"

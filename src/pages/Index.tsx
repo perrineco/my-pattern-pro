@@ -242,16 +242,16 @@ const Index = () => {
           /* Normal Pattern Mode */
           <>
             {/* Top controls */}
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 lg:gap-6 mb-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3 lg:gap-6 mb-6">
+              <div className="flex flex-row items-end gap-4 flex-wrap">
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">
                     {t('label.category')}
                   </label>
                   <CategorySelector selected={category} onSelect={handleCategoryChange} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">
                     {t('label.units')}
                   </label>
                   <UnitToggle unit={measurementUnit} onChange={handleUnitChange} />
@@ -259,7 +259,7 @@ const Index = () => {
               </div>
 
               <div className="w-full lg:w-auto overflow-x-auto">
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">
                   {t('label.garmentType')}
                 </label>
                 <PatternTypeNav selected={patternType} onSelect={handlePatternTypeChange} category={category} />
