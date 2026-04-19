@@ -30,7 +30,7 @@ import { UnitToggle, MeasurementUnit } from '@/components/UnitToggle';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Printer, Lock, ArrowLeft, RotateCcw } from 'lucide-react';
+import { Download, Printer, Lock, ArrowLeft, RotateCcw, Wrench } from 'lucide-react';
 import { MeasurementGuide } from '@/components/MeasurementGuide';
 import { BodiceMeasurementGuide } from '@/components/BodiceMeasurementGuide';
 import { SleeveMeasurementGuide } from '@/components/SleeveMeasurementGuide';
