@@ -341,6 +341,15 @@ const Index = () => {
                     unit={measurementUnit}
                   />
                 )}
+                {/* Adjustments link */}
+                <button
+                  onClick={() => navigate('/adjustments')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+                >
+                  <Wrench className="w-3.5 h-3.5" />
+                  {t('action.adjustments')}
+                </button>
+
                 {/* Action buttons */}
                 <div className="flex flex-col gap-3">
                   <div className="flex gap-3">

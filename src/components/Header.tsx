@@ -46,13 +46,6 @@ export function Header() {
               <>
                 {user ? (
                   <>
-
-                    <Button variant="outline" size="sm" onClick={() => navigate('/adjustments')}>
-                      <Wrench className="w-4 h-4 mr-2" />
-                      {t('action.adjustments')}
-                    </Button>
-
-
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="rounded-full">
@@ -84,6 +77,10 @@ export function Header() {
                         <DropdownMenuItem onClick={() => navigate('/pricing')}>
                           <CreditCard className="w-4 h-4 mr-2" />
                           {t('action.manageSubscription')}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/adjustments')}>
+                          <Wrench className="w-4 h-4 mr-2" />
+                          {t('action.adjustments')}
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => navigate('/settings')}>
                           <Settings className="w-4 h-4 mr-2" />
