@@ -39,7 +39,7 @@ export function BodiceMeasurementForm({
   return (
     <Card className="border-border">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="space-y-1">
           <CardTitle className="font-serif text-lg text-foreground">
             {t('label.measurements')}
           </CardTitle>

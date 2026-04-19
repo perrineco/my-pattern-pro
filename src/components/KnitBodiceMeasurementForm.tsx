@@ -35,8 +35,8 @@ export function KnitBodiceMeasurementForm({
   };
 
   return (
-    <Card className="p-6 space-y-6 bg-card border-border">
-      <div className="flex items-center justify-between">
+    <Card className="p-4 space-y-4 bg-card border-border">
+      <div className="space-y-1">
         <div>
           <h3 className="font-serif text-xl font-semibold text-foreground">{t('label.measurements')}</h3>
           <p className="text-xs text-primary/70 italic mt-0.5">{t('section.forKnitFabrics')}</p>

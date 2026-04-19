@@ -35,8 +35,8 @@ export function PantsMeasurementForm({
   };
 
   return (
-    <Card className="p-6 space-y-6 bg-card border-border">
-      <div className="flex items-center justify-between">
+    <Card className="p-4 space-y-4 bg-card border-border">
+      <div className="space-y-1">
         <h3 className="font-serif text-xl font-semibold text-foreground">{t('label.measurements')}</h3>
         <div className="flex items-center gap-2">
           <MeasurementGuide category={category} patternType="pants" />

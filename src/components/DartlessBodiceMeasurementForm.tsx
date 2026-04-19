@@ -39,7 +39,7 @@ export function DartlessBodiceMeasurementForm({
   return (
     <Card className="border-border">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="space-y-1">
           <div>
             <CardTitle className="font-serif text-lg text-foreground">
               {t('title.dartlessBodice')}

@@ -37,11 +37,9 @@ export function MeasurementInput({
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-baseline justify-between">
-        <Label className="text-sm font-medium text-foreground">{label}</Label>
-        {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
-      </div>
+    <div className="space-y-1">
+      <Label className="text-sm font-medium text-foreground">{label}</Label>
+      {hint && <span className="text-xs text-muted-foreground block">{hint}</span>}
       <div className="relative">
         <Input
           type="number"
