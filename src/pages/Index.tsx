@@ -5,7 +5,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useUnit } from '@/contexts/UnitContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
-import { STRIPE_CONFIG } from '@/lib/stripe-config';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { CategorySelector } from '@/components/CategorySelector';
