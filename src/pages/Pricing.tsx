@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { STRIPE_CONFIG, getPatternsLimit } from '@/lib/stripe-config';
 import { Header } from '@/components/Header';
-import { Check, Crown, Sparkles, ShoppingCart } from 'lucide-react';
+import { Check, Crown, Sparkles, ShoppingCart, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -18,6 +18,7 @@ export default function Pricing() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [loading, setLoading] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const handleSubscribe = async (priceId: string, tierName: string) => {
     if (!user) {
@@ -116,7 +117,7 @@ export default function Pricing() {
                 <ShoppingCart className="w-6 h-6 text-secondary-foreground" />
               </div>
               <h3 className="font-serif text-base sm:text-xl font-semibold mb-0 sm:mb-1">{t('pricing.single.title')}</h3>
-              <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.single.desc')}</p>
+              {(expanded['single'] || true) && <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.single.desc')}</p>}
             </div>
             <div className="mb-2 sm:mb-6">
               <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.singlePurchase.price}{symbol}</span>
@@ -131,14 +132,22 @@ export default function Pricing() {
                 <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                 <span>{t('pricing.single.f2')}</span>
               </li>
-              <li className="hidden sm:flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary shrink-0" />
-                <span>{t('pricing.single.f3')}</span>
-              </li>
+              {(expanded['single']) && (
+                <li className="flex items-center gap-2 text-xs sm:text-sm sm:flex">
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
+                  <span>{t('pricing.single.f3')}</span>
+                </li>
+              )}
+              {!expanded['single'] && <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.single.f3')}</span></li>}
             </ul>
-            <p className="hidden sm:block text-xs text-muted-foreground text-center">
-              {t('pricing.single.note')}
-            </p>
+            {expanded['single'] && <p className="sm:block text-xs text-muted-foreground text-center mb-2">{t('pricing.single.note')}</p>}
+            {!expanded['single'] && <p className="hidden sm:block text-xs text-muted-foreground text-center mb-2">{t('pricing.single.note')}</p>}
+            <button
+              className="sm:hidden w-full flex items-center justify-center gap-1 text-xs text-muted-foreground py-1"
+              onClick={() => setExpanded(e => ({ ...e, single: !e['single'] }))}
+            >
+              <ChevronDown className={cn("w-3 h-3 transition-transform", expanded['single'] && "rotate-180")} />
+            </button>
           </Card>
 
           {/* Basic */}
@@ -168,14 +177,23 @@ export default function Pricing() {
                 <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                 <span>{t('pricing.basic.f2')}</span>
               </li>
-              <li className="hidden sm:flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary shrink-0" />
-                <span>{t('pricing.basic.f3')}</span>
-              </li>
-              <li className="hidden sm:flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary shrink-0" />
-                <span>{t('pricing.basic.f4')}</span>
-              </li>
+              {expanded['basic'] ? (
+                <>
+                  <li className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
+                    <span>{t('pricing.basic.f3')}</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
+                    <span>{t('pricing.basic.f4')}</span>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.basic.f3')}</span></li>
+                  <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.basic.f4')}</span></li>
+                </>
+              )}
             </ul>
             <Button
               className="w-full h-8 sm:h-10 text-xs sm:text-sm"
@@ -185,6 +203,12 @@ export default function Pricing() {
             >
               {isBasic ? t('pricing.currentPlan') : loading === 'basic' ? t('pricing.loading') : t('pricing.subscribe')}
             </Button>
+            <button
+              className="sm:hidden w-full flex items-center justify-center gap-1 text-xs text-muted-foreground py-1 mt-1"
+              onClick={() => setExpanded(e => ({ ...e, basic: !e['basic'] }))}
+            >
+              <ChevronDown className={cn("w-3 h-3 transition-transform", expanded['basic'] && "rotate-180")} />
+            </button>
           </Card>
 
           {/* Pro */}
@@ -212,14 +236,23 @@ export default function Pricing() {
                 <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                 <span>{t('pricing.pro.f2')}</span>
               </li>
-              <li className="hidden sm:flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary shrink-0" />
-                <span>{t('pricing.pro.f3')}</span>
-              </li>
-              <li className="hidden sm:flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary shrink-0" />
-                <span>{t('pricing.pro.f4')}</span>
-              </li>
+              {expanded['pro'] ? (
+                <>
+                  <li className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
+                    <span>{t('pricing.pro.f3')}</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
+                    <span>{t('pricing.pro.f4')}</span>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.pro.f3')}</span></li>
+                  <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.pro.f4')}</span></li>
+                </>
+              )}
             </ul>
             <Button
               className="w-full h-8 sm:h-10 text-xs sm:text-sm"
@@ -229,6 +262,12 @@ export default function Pricing() {
             >
               {isPro ? t('pricing.currentPlan') : loading === 'pro' ? t('pricing.loading') : t('pricing.subscribe')}
             </Button>
+            <button
+              className="sm:hidden w-full flex items-center justify-center gap-1 text-xs text-muted-foreground py-1 mt-1"
+              onClick={() => setExpanded(e => ({ ...e, pro: !e['pro'] }))}
+            >
+              <ChevronDown className={cn("w-3 h-3 transition-transform", expanded['pro'] && "rotate-180")} />
+            </button>
           </Card>
         </div>
 
