@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { SubscriptionTier, getSubscriptionTierFromProductId, isTestProAccount } from '@/lib/stripe-config';
+import { SubscriptionTier, getSubscriptionTierFromProductId } from '@/lib/stripe-config';
 
 interface SubscriptionState {
   tier: SubscriptionTier;
@@ -37,20 +37,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkSubscription = async () => {
     if (!session?.access_token) return;
-
-    // Check for test account bypass FIRST - before calling edge function
-    const userEmail = session?.user?.email;
-    console.log('checkSubscription - userEmail:', userEmail, 'isTestPro:', isTestProAccount(userEmail));
-    
-    if (userEmail && isTestProAccount(userEmail)) {
-      console.log('Test Pro account detected, setting tier to pro');
-      setSubscription({
-        tier: 'pro',
-        subscriptionEnd: null,
-        patternsUsedThisMonth: 0,
-      });
-      return;
-    }
 
     try {
       const { data, error } = await supabase.functions.invoke('check-subscription', {

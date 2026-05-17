@@ -25,26 +25,11 @@ export const STRIPE_CONFIG = {
 
 export type SubscriptionTier = 'none' | 'basic' | 'pro';
 
-// Test accounts that bypass payment for development/testing
-export const TEST_PRO_EMAILS: string[] = [
-  'perrine+sloper@petitcitron.com',
-];
-
 export function getSubscriptionTierFromProductId(productId: string | null): SubscriptionTier {
   if (!productId) return 'none';
   if (productId === STRIPE_CONFIG.subscriptions.basic.productId) return 'basic';
   if (productId === STRIPE_CONFIG.subscriptions.pro.productId) return 'pro';
   return 'none';
-}
-
-export function isTestProAccount(email: string | undefined | null): boolean {
-  if (!email) return false;
-  const normalizedEmail = email.toLowerCase().trim();
-  const isTest = TEST_PRO_EMAILS.some(testEmail => 
-    testEmail.toLowerCase().trim() === normalizedEmail
-  );
-  console.log('isTestProAccount check:', { email, normalizedEmail, isTest, testEmails: TEST_PRO_EMAILS });
-  return isTest;
 }
 
 export function getPatternsLimit(tier: SubscriptionTier): number {
