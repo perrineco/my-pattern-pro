@@ -51,10 +51,19 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
   const { t } = useLanguage();
 
   // Filter pattern types based on category
-  const filteredPatternTypes = patternTypes.filter(type => {
-    if (type.value === 'skirt' && category === 'men') return false;
-    return true;
-  });
+  const filteredPatternTypes = patternTypes
+    .filter(type => !(type.value === 'skirt' && category === 'men'))
+    .map(type => {
+      if (type.value === 'pants' && category === 'men' && type.submenu) {
+        return {
+          ...type,
+          submenu: type.submenu.map(sub =>
+            sub.value === 'pants-dartless' ? { ...sub, available: false } : sub
+          ),
+        };
+      }
+      return type;
+    });
 
   const isBodiceVariant = selected.startsWith('bodice');
   const isPantsVariant = selected.startsWith('pants');
