@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, PantsMeasurements, SleeveMeasurements, Measurements, isBodiceMeasurements, isPantsMeasurements, isSleeveMeasurements, UnifiedMeasurements } from '@/types/sloper';
+import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, PantsMeasurements, SleeveMeasurements, Measurements, UnifiedMeasurements, toSkirtMeasurements, toBodiceMeasurements, toPantsMeasurements, toSleeveMeasurements } from '@/types/sloper';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useUnit } from '@/contexts/UnitContext';
@@ -138,14 +138,14 @@ const Index = () => {
     return purchasedPatterns.includes(type);
   };
 
-  const handleLoadProfile = (loadedMeasurements: Measurements) => {
-    if (isBodiceMeasurements(loadedMeasurements)) {
-      setBodiceMeasurements(loadedMeasurements);
-    } else if (isPantsMeasurements(loadedMeasurements)) {
-      setPantsMeasurements(loadedMeasurements);
-    } else {
-      setSkirtMeasurements(loadedMeasurements as SkirtMeasurements);
-    }
+  const handleLoadProfile = (loadedMeasurements: UnifiedMeasurements) => {
+    setSkirtMeasurements(toSkirtMeasurements(loadedMeasurements));
+    setBodiceMeasurements(toBodiceMeasurements(loadedMeasurements));
+    setDartlessBodiceMeasurements(toBodiceMeasurements(loadedMeasurements));
+    setKnitBodiceMeasurements(toBodiceMeasurements(loadedMeasurements));
+    setBodiceDartsMeasurements(toBodiceMeasurements(loadedMeasurements));
+    setPantsMeasurements(toPantsMeasurements(loadedMeasurements));
+    setSleeveMeasurements(toSleeveMeasurements(loadedMeasurements));
   };
 
   const handlePatternPurchase = async (type: PatternType) => {
@@ -275,7 +275,7 @@ const Index = () => {
                       category={category}
                       patternType={patternType}
                       currentMeasurements={getCurrentMeasurements() as Measurements}
-                      onLoadProfile={(m) => handleLoadProfile(m)}
+                      onLoadProfile={(m) => handleLoadProfile(m as UnifiedMeasurements)}
                       onProfileNameChange={setSelectedProfileName}
                     />
                   </div>

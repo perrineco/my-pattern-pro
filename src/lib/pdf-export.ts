@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { SkirtMeasurements, BodiceMeasurements, SleeveMeasurements, isBodiceMeasurements, isSleeveMeasurements } from '@/types/sloper';
+import { SkirtMeasurements, BodiceMeasurements, SleeveMeasurements } from '@/types/sloper';
 import { MeasurementUnit, cmToInches } from '@/components/UnitToggle';
 import { Language } from '@/contexts/LanguageContext';
 
@@ -567,8 +567,9 @@ export function generatePatternPDF(
   unit: MeasurementUnit = 'cm',
   lang: Language = 'en'
 ): void {
-  const isBodice = isBodiceMeasurements(measurements);
-  const isSleeve = isSleeveMeasurements(measurements);
+  const bodiceTypes = ['bodice', 'bodice-dartless', 'bodice-with-darts', 'bodice-knit', 'dress'];
+  const isBodice = bodiceTypes.includes(patternType);
+  const isSleeve = patternType === 'sleeve';
 
   const dimensions = isSleeve
     ? calculateSleeveDimensions(measurements)
