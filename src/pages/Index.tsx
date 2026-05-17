@@ -481,7 +481,7 @@ const Index = () => {
                       </Tabs>
                     )}
                     <div className="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">
-                      Scale: {patternType === 'skirt' 
+                      Scale: {patternType === 'skirt'
                         ? ((skirtMeasurements.hip / 4 + 1) / 10).toFixed(1)
                         : isPantsVariant || patternType === 'pants'
                         ? ((pantsMeasurements.hip / 4 + 1) / 10).toFixed(1)
@@ -493,7 +493,7 @@ const Index = () => {
                               ? ((bodiceDartsMeasurements.bust / 4 + 1) / 10).toFixed(1)
                               : isBodiceKnit
                                 ? ((knitBodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)
-                                : ((bodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)}:10
+                                : ((bodiceMeasurements.bust / 4 + 1) / 10).toFixed(1)}:10 cm
                     </div>
                   </div>
                 </div>
