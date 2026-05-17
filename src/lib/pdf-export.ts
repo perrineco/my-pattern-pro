@@ -471,9 +471,9 @@ function drawDiagramSkirt(
   const patternWidth = hipQuarter + ease;
   const centerToDart = patternWidth * (isFront ? 0.4 : 0.35);
 
-  doc.setFillColor(220, 235, 195);
-  doc.setDrawColor(80, 120, 40);
-  doc.setLineWidth(0.5);
+  doc.setFillColor(238, 246, 225);
+  doc.setDrawColor(110, 150, 60);
+  doc.setLineWidth(0.3);
   doc.lines(
     [
       [centerToDart * scaleX, 0],
@@ -506,9 +506,9 @@ function drawDiagramBodice(
   const armholeDepthMm = m.backLength * 0.5 * 10;
   const neckDropMm = isFront ? 15 : 0;
 
-  doc.setFillColor(220, 235, 195);
-  doc.setDrawColor(80, 120, 40);
-  doc.setLineWidth(0.5);
+  doc.setFillColor(238, 246, 225);
+  doc.setDrawColor(110, 150, 60);
+  doc.setLineWidth(0.3);
   doc.lines(
     [
       [neckWidthMm * scaleX, -neckDropMm * scaleY],
@@ -539,9 +539,9 @@ function drawDiagramSleeve(
   const elbowMm = m.elbowLength * 10;
   const he = hu - (hu - hw) * (elbowMm / lengthMm); // halfElbowWidth
 
-  doc.setFillColor(220, 235, 195);
-  doc.setDrawColor(80, 120, 40);
-  doc.setLineWidth(0.5);
+  doc.setFillColor(238, 246, 225);
+  doc.setDrawColor(110, 150, 60);
+  doc.setLineWidth(0.3);
   // Start at left underarm, go clockwise
   doc.lines(
     [
