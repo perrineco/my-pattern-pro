@@ -44,7 +44,10 @@ export function MeasurementInput({
         <Input
           type="number"
           value={displayValue || ''}
-          onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
+          onChange={(e) => {
+            const v = parseFloat(e.target.value);
+            if (!isNaN(v) && v > 0) handleChange(v);
+          }}
           min={displayMin}
           max={displayMax}
           step={displayStep}

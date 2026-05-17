@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,13 +11,13 @@ import { Scissors, Mail, Lock, Loader2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
-const authSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+const authSchema = (t: (k: string) => string) => z.object({
+  email: z.string().email(t('auth.invalidEmail')),
+  password: z.string().min(6, t('auth.passwordMin')),
 });
 
-const emailSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
+const emailSchema = (t: (k: string) => string) => z.object({
+  email: z.string().email(t('auth.invalidEmail')),
 });
 
 type AuthMode = 'login' | 'signup' | 'forgot-password' | 'reset-password';
@@ -43,6 +44,7 @@ export default function Auth() {
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
   
   const { signIn, signUp, user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,7 +59,7 @@ export default function Auth() {
     setErrors({});
 
     if (mode === 'forgot-password') {
-      const result = emailSchema.safeParse({ email });
+      const result = emailSchema(t).safeParse({ email });
       if (!result.success) {
         setErrors({ email: result.error.errors[0]?.message });
         return;
@@ -72,11 +74,11 @@ export default function Auth() {
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success('Password reset email sent! Check your inbox.');
+          toast.success(t('auth.resetEmailSent'));
           setMode('login');
         }
-      } catch (err) {
-        toast.error('An unexpected error occurred');
+      } catch {
+        toast.error(t('auth.unexpectedError'));
       } finally {
         setLoading(false);
       }
@@ -85,11 +87,11 @@ export default function Auth() {
 
     if (mode === 'reset-password') {
       if (newPassword.length < 6) {
-        setErrors({ password: 'Password must be at least 6 characters' });
+        setErrors({ password: t('auth.passwordMin') });
         return;
       }
       if (newPassword !== confirmPassword) {
-        setErrors({ confirmPassword: 'Passwords do not match' });
+        setErrors({ confirmPassword: t('auth.passwordsNoMatch') });
         return;
       }
 
@@ -100,7 +102,7 @@ export default function Auth() {
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success('Password updated successfully!');
+          toast.success(t('auth.passwordUpdated'));
           // Clear hash from URL
           window.history.replaceState(null, '', window.location.pathname);
           navigate('/');
@@ -114,7 +116,7 @@ export default function Auth() {
     }
 
     // Login or Signup
-    const result = authSchema.safeParse({ email, password });
+    const result = authSchema(t).safeParse({ email, password });
     if (!result.success) {
       const fieldErrors: { email?: string; password?: string } = {};
       result.error.errors.forEach((err) => {
@@ -132,29 +134,29 @@ export default function Auth() {
         const { error } = await signIn(email, password);
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
-            toast.error('Invalid email or password');
+            toast.error(t('auth.invalidCredentials'));
           } else {
             toast.error(error.message);
           }
         } else {
-          toast.success('Welcome back!');
+          toast.success(t('auth.welcomeBackToast'));
           navigate('/');
         }
       } else {
         const { error } = await signUp(email, password);
         if (error) {
           if (error.message.includes('already registered')) {
-            toast.error('This email is already registered. Please sign in instead.');
+            toast.error(t('auth.emailRegistered'));
           } else {
             toast.error(error.message);
           }
         } else {
-          toast.success('Account created successfully!');
+          toast.success(t('auth.accountCreated'));
           navigate('/');
         }
       }
     } catch (err) {
-      toast.error('An unexpected error occurred');
+      toast.error(t('auth.unexpectedError'));
     } finally {
       setLoading(false);
     }
@@ -162,27 +164,19 @@ export default function Auth() {
 
   const getTitle = () => {
     switch (mode) {
-      case 'signup':
-        return 'Create your account';
-      case 'forgot-password':
-        return 'Reset your password';
-      case 'reset-password':
-        return 'Set new password';
-      default:
-        return 'Welcome back';
+      case 'signup': return t('auth.createAccount');
+      case 'forgot-password': return t('auth.resetPassword');
+      case 'reset-password': return t('auth.setNewPassword');
+      default: return t('auth.welcomeBack');
     }
   };
 
   const getSubtitle = () => {
     switch (mode) {
-      case 'signup':
-        return 'Start creating custom sewing patterns';
-      case 'forgot-password':
-        return "Enter your email and we'll send you a reset link";
-      case 'reset-password':
-        return 'Enter your new password below';
-      default:
-        return 'Sign in to access your saved patterns';
+      case 'signup': return t('auth.createAccountDesc');
+      case 'forgot-password': return t('auth.resetPasswordDesc');
+      case 'reset-password': return t('auth.setNewPasswordDesc');
+      default: return t('auth.welcomeBackDesc');
     }
   };
 
@@ -213,7 +207,7 @@ export default function Auth() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode !== 'reset-password' && (
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -233,7 +227,7 @@ export default function Auth() {
 
           {(mode === 'login' || mode === 'signup') && (
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -254,7 +248,7 @@ export default function Auth() {
           {mode === 'reset-password' && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="newPassword">New Password</Label>
+                <Label htmlFor="newPassword">{t('auth.newPassword')}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -272,7 +266,7 @@ export default function Auth() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">{t('auth.confirmPassword')}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -298,7 +292,7 @@ export default function Auth() {
                 onClick={() => setMode('forgot-password')}
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                Forgot password?
+                {t('auth.forgotPassword')}
               </button>
             </div>
           )}
@@ -307,17 +301,17 @@ export default function Auth() {
             {loading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                {mode === 'login' && 'Signing in...'}
-                {mode === 'signup' && 'Creating account...'}
-                {mode === 'forgot-password' && 'Sending email...'}
-                {mode === 'reset-password' && 'Updating password...'}
+                {mode === 'login' && t('auth.signingIn')}
+                {mode === 'signup' && t('auth.creatingAccount')}
+                {mode === 'forgot-password' && t('auth.sendingEmail')}
+                {mode === 'reset-password' && t('auth.updatingPassword')}
               </>
             ) : (
               <>
-                {mode === 'login' && 'Sign In'}
-                {mode === 'signup' && 'Create Account'}
-                {mode === 'forgot-password' && 'Send Reset Link'}
-                {mode === 'reset-password' && 'Update Password'}
+                {mode === 'login' && t('action.signIn')}
+                {mode === 'signup' && t('auth.createAccountBtn')}
+                {mode === 'forgot-password' && t('auth.sendResetLink')}
+                {mode === 'reset-password' && t('auth.updatePassword')}
               </>
             )}
           </Button>
@@ -331,7 +325,7 @@ export default function Auth() {
               className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1 mx-auto"
             >
               <ArrowLeft className="w-3 h-3" />
-              Back to sign in
+              {t('auth.backToSignIn')}
             </button>
           )}
 
@@ -341,9 +335,7 @@ export default function Auth() {
               onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
-              {mode === 'login'
-                ? "Don't have an account? Sign up"
-                : 'Already have an account? Sign in'}
+              {mode === 'login' ? t('auth.noAccount') : t('auth.hasAccount')}
             </button>
           )}
         </div>
