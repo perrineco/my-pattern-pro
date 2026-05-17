@@ -75,7 +75,12 @@
        });
        
        if (error) throw error;
-       
+
+      // Fire-and-forget — don't block the UX if email fails
+      supabase.functions.invoke('send-contact-email', {
+        body: { name: data.name, email: data.email, category: data.category, message: data.message },
+      }).catch(console.error);
+
        toast.success('Merci pour votre message !', {
          description: 'Nous vous répondrons dans les plus brefs délais.',
        });
