@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -9,9 +9,11 @@ import { Scissors, Ruler, Download, Users, Crown, Star, ArrowRight, CheckCircle2
 
 export default function Welcome() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { t } = useLanguage();
   const { symbol, currency } = useCurrency();
+
+  if (!loading && user) return <Navigate to="/app" replace />;
 
   const handleGetStarted = () => {
     navigate(user ? '/app' : '/auth');
