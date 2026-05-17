@@ -176,7 +176,8 @@ const Index = () => {
   const handleExportPDF = () => {
     try {
       const measurements = getCurrentMeasurements();
-      generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, measurementUnit, language);
+      const userName = user?.user_metadata?.full_name || user?.email || '';
+      generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, measurementUnit, language, userName);
       toast.success(t('toast.pdfDownloaded'));
     } catch {
       toast.error(t('toast.pdfError') ?? 'Failed to generate PDF');

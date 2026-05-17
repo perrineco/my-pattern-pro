@@ -33,6 +33,7 @@ const pdfT = {
       '4. Match up the alignment marks and circles from adjacent pages.',
       '5. Tape or glue pages together, starting from the top-left corner.',
       '6. Once assembled, cut out the pattern piece along the solid black line.',
+      '7. This pattern is a basic block with no seam allowances.',
     ],
     fr: [
       "1. Imprimez toutes les pages à 100% (sans mise à l'échelle).",
@@ -41,10 +42,15 @@ const pdfT = {
       '4. Alignez les repères et cercles des pages adjacentes.',
       '5. Collez ou scotchez les pages en commençant par le coin supérieur gauche.',
       '6. Une fois assemblé, découpez le patron le long du trait plein noir.',
+      '7. Ce patron est un bloc de base sans marges de couture.',
     ],
   },
-  noSeamAllowance: { en: 'This pattern is a basic block with no seam allowances.', fr: 'Ce patron est un bloc de base sans marges de couture.' },
   patternLabel: { en: 'Pattern', fr: 'Patron' },
+  basicBlock: { en: 'basic block', fr: 'patron de base' },
+  patternTypes: {
+    en: { skirt: 'Skirt', bodice: 'Bodice', 'bodice-dartless': 'Dartless Bodice', 'bodice-with-darts': 'Bodice with Darts', 'bodice-knit': 'Knit Bodice', dress: 'Dress', sleeve: 'Sleeve', pants: 'Pants' },
+    fr: { skirt: 'Jupe', bodice: 'Corsage', 'bodice-dartless': 'Corsage sans pinces', 'bodice-with-darts': 'Corsage avec pinces', 'bodice-knit': 'Corsage jersey', dress: 'Robe', sleeve: 'Manche', pants: 'Pantalon' },
+  },
   totalPages: { en: 'Total pages', fr: 'Total pages' },
   measurementsUsed: { en: 'Measurements used:', fr: 'Mesures utilisées :' },
   pageLayout: { en: 'Page Layout:', fr: 'Plan des pages :' },
@@ -566,7 +572,8 @@ export function generatePatternPDF(
   measurements: SkirtMeasurements | BodiceMeasurements | SleeveMeasurements,
   patternType: string = 'skirt',
   unit: MeasurementUnit = 'cm',
-  lang: Language = 'en'
+  lang: Language = 'en',
+  userName: string = ''
 ): void {
   const bodiceTypes = ['bodice', 'bodice-dartless', 'bodice-with-darts', 'bodice-knit', 'dress'];
   const isBodice = bodiceTypes.includes(patternType);
@@ -636,11 +643,9 @@ export function generatePatternPDF(
 
   doc.setFontSize(10);
   const panelDescription = isSleeve ? tr(pdfT.singlePanel, lang) : tr(pdfT.frontBackPanels, lang);
-  const patternName = patternType.charAt(0).toUpperCase() + patternType.slice(1);
+  const patternName = pdfT.patternTypes[lang][patternType] ?? patternType.charAt(0).toUpperCase() + patternType.slice(1);
   const baseInstructions = [
     ...tr(pdfT.instructions, lang),
-    '',
-    tr(pdfT.noSeamAllowance, lang),
     '',
     `${tr(pdfT.patternLabel, lang)}: ${patternName} - ${panelDescription}`,
     `${tr(pdfT.totalPages, lang)}: ${tiles.totalPages * panels.length}`,
@@ -734,5 +739,9 @@ export function generatePatternPDF(
     doc.text(panelLabel, panelDiagramX + (tiles.cols * tileW) / 2, panelDiagramY + tiles.rows * tileH + 6, { align: 'center' });
   });
 
-  doc.save(`${patternType}-pattern.pdf`);
+  const date = new Date().toISOString().slice(0, 10);
+  const typeLabel = pdfT.patternTypes[lang][patternType] ?? patternType;
+  const prefix = lang === 'fr' ? 'patron de base' : 'basic block';
+  const namePart = userName ? ` - ${userName}` : '';
+  doc.save(`${prefix} - ${typeLabel.toLowerCase()} - ${date}${namePart}.pdf`);
 }
