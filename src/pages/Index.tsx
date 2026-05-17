@@ -174,10 +174,13 @@ const Index = () => {
   const isPatternLocked = !canAccessPattern(patternType) && patternType !== 'skirt';
 
   const handleExportPDF = () => {
-    const measurements = getCurrentMeasurements();
-    // Both dartless and regular bodice now use the same BodiceMeasurements type
-    generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, measurementUnit);
-    toast.success(t('toast.pdfDownloaded'));
+    try {
+      const measurements = getCurrentMeasurements();
+      generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, measurementUnit);
+      toast.success(t('toast.pdfDownloaded'));
+    } catch {
+      toast.error(t('toast.pdfError') ?? 'Failed to generate PDF');
+    }
   };
 
   return (
@@ -361,10 +364,7 @@ const Index = () => {
                       size="lg"
                       className="gap-2"
                       disabled={isPatternLocked}
-                      onClick={() => {
-                        handleExportPDF();
-                        toast.info('PDF generated - print from your PDF viewer');
-                      }}
+                      onClick={handleExportPDF}
                     >
                       <Printer className="w-4 h-4" />
                       {t('action.print')}

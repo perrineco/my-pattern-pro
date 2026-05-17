@@ -126,7 +126,7 @@ function drawPageInfo(doc: jsPDF, pageNum: number, totalPages: number, col: numb
   doc.setFontSize(8);
   doc.setTextColor(120, 120, 120);
   doc.text(`Page ${pageNum} of ${totalPages} (Row ${row + 1}, Col ${col + 1})`, A4_WIDTH / 2, A4_HEIGHT - 3, { align: 'center' });
-  doc.text('Sloper Studio', MARGIN, A4_HEIGHT - 3);
+  doc.text('Petit Citron Studio', MARGIN, A4_HEIGHT - 3);
   doc.text('Cut on fold', A4_WIDTH - MARGIN, A4_HEIGHT - 3, { align: 'right' });
 }
 

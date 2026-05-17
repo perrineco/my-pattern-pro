@@ -55,7 +55,7 @@ export default function Welcome() {
               <Scissors className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="font-serif text-xl font-semibold text-foreground tracking-tight">Sloper Studio</h1>
+              <h1 className="font-serif text-xl font-semibold text-foreground tracking-tight">Petit Citron Studio</h1>
               <p className="text-xs text-muted-foreground">{t('misc.createPatterns')}</p>
             </div>
           </button>

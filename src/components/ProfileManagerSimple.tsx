@@ -121,7 +121,7 @@ export function ProfileManagerSimple({
         .insert([{
           user_id: userId,
           category,
-          pattern_type: 'skirt',
+          pattern_type: 'unified',
           name: newProfileName.trim(),
           measurements: JSON.parse(JSON.stringify(currentMeasurements)),
         }])

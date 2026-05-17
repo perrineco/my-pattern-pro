@@ -196,7 +196,7 @@ export default function Auth() {
           </div>
           <div>
             <h1 className="font-serif text-2xl font-semibold text-foreground">
-              Sloper Studio
+              Petit Citron Studio
             </h1>
           </div>
         </div>

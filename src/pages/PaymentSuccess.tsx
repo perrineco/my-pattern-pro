@@ -5,7 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Scissors, CheckCircle, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
@@ -17,36 +16,28 @@ export default function PaymentSuccess() {
 
   useEffect(() => {
     const recordPurchase = async () => {
-      if (!user || !session || !patternType) return;
+      if (!session || !patternType || !sessionId) return;
 
       try {
-        // Record the pattern purchase in the database
-        const { error } = await supabase
-          .from('pattern_purchases')
-          .insert({
-            user_id: user.id,
-            pattern_type: patternType,
-            stripe_payment_intent_id: sessionId,
-          });
+        const { error } = await supabase.functions.invoke('verify-pattern-purchase', {
+          body: { sessionId, patternType },
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
 
-        if (error && !error.message.includes('duplicate')) {
-          console.error('Error recording purchase:', error);
-        }
-
+        if (error) throw error;
         await refreshPurchasedPatterns();
-      } catch (err) {
-        console.error('Failed to record purchase:', err);
+      } catch {
+        // Silent — purchase may already be recorded or session invalid
       }
     };
 
-    // Refresh subscription status
     if (session) {
       checkSubscription();
-      if (patternType) {
+      if (patternType && sessionId) {
         recordPurchase();
       }
     }
-  }, [session, user, patternType, sessionId]);
+  }, [session, patternType, sessionId]);
 
   if (!user) {
     return (
@@ -85,7 +76,7 @@ export default function PaymentSuccess() {
         <div className="mt-6 pt-6 border-t border-border">
           <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Scissors className="w-4 h-4" />
-            <span>Sloper Studio</span>
+            <span>Petit Citron Studio</span>
           </div>
         </div>
       </Card>
