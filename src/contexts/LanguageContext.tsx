@@ -433,7 +433,7 @@ const translations: Record<string, Record<Language, string>> = {
   'pricing.title': { en: 'Choose Your Plan', fr: 'Choisissez votre formule' },
   'pricing.subtitle': { en: 'Create professional sewing patterns with our sloper generator. Choose a subscription or purchase individual patterns.', fr: 'Créez des patrons de couture professionnels avec notre générateur de bases. Choisissez un abonnement ou achetez des patrons individuels.' },
   'pricing.currentPlan': { en: 'Current Plan', fr: 'Formule actuelle' },
-  'pricing.mostPopular': { en: 'Most Popular', fr: 'Le plus populaire' },
+  'pricing.mostPopular': { en: 'Recommended', fr: 'Recommandé' },
   'pricing.youreOn': { en: "You're currently on the", fr: 'Vous êtes actuellement sur la formule' },
   'pricing.plan': { en: 'plan', fr: '' },
   'pricing.patternsUsed': { en: 'patterns used this month', fr: 'patrons utilisés ce mois-ci' },
