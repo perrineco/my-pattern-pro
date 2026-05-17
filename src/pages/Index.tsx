@@ -4,6 +4,8 @@ import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, PantsMeas
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useUnit } from '@/contexts/UnitContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { STRIPE_CONFIG } from '@/lib/stripe-config';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { CategorySelector } from '@/components/CategorySelector';
@@ -45,6 +47,11 @@ const Index = () => {
   const { user, session, subscription, purchasedPatterns, loading } = useAuth();
   const { t, language } = useLanguage();
   const { unit: measurementUnit, setUnit: handleUnitChange } = useUnit();
+  const { symbol: currencySymbol, currency } = useCurrency();
+  const singlePrice = STRIPE_CONFIG.singlePurchase.price;
+  const priceFormatted = currency === 'USD' || currency === 'CAD'
+    ? `${currencySymbol}${singlePrice.toFixed(2)}`
+    : `${singlePrice.toFixed(2)} ${currencySymbol}`;
 
   const [category, setCategory] = useState<Category>('women');
   const [patternType, setPatternType] = useState<PatternType>('skirt');
@@ -415,7 +422,7 @@ const Index = () => {
                         {t('locked.title')}
                       </h3>
                       <p className="text-sm text-muted-foreground mb-4 max-w-xs">
-                        {t('locked.description')}
+                        {t('locked.description')} {priceFormatted}.
                       </p>
                       <div className="flex gap-3 justify-center">
                         <Button onClick={() => navigate('/pricing')}>
@@ -425,7 +432,7 @@ const Index = () => {
                           variant="outline"
                           onClick={() => handlePatternPurchase(patternType)}
                         >
-                          {t('locked.buyFor')}
+                          {t('locked.buyFor')} {priceFormatted}
                         </Button>
                       </div>
                     </div>

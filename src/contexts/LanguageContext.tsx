@@ -479,8 +479,8 @@ const translations: Record<string, Record<Language, string>> = {
 
   // Pattern Locked
   'locked.title': { en: 'Pattern Locked', fr: 'Patron verrouillé' },
-  'locked.description': { en: 'Subscribe to access this pattern, or purchase it individually for $4.99.', fr: 'Abonnez-vous pour accéder à ce patron, ou achetez-le individuellement pour 4,99 $.' },
-  'locked.buyFor': { en: 'Buy for $4.99', fr: 'Acheter pour 4,99 $' },
+  'locked.description': { en: 'Subscribe to access this pattern, or purchase it individually for', fr: 'Abonnez-vous pour accéder à ce patron, ou achetez-le individuellement pour' },
+  'locked.buyFor': { en: 'Buy for', fr: 'Acheter pour' },
 
   // Toasts
   'toast.signInToPurchase': { en: 'Please sign in to purchase patterns', fr: 'Veuillez vous connecter pour acheter des patrons' },
