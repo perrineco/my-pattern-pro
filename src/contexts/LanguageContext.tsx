@@ -454,7 +454,7 @@ const translations: Record<string, Record<Language, string>> = {
 
   // Basic card
   'pricing.basic.title': { en: 'Basic', fr: 'Basique' },
-  'pricing.basic.desc': { en: 'For hobbyists', fr: 'Pour les amateurs' },
+  'pricing.basic.desc': { en: 'For hobbyists', fr: 'Pour les passionné.e.s' },
   'pricing.basic.f1': { en: '5 patterns per month', fr: '5 patrons par mois' },
   'pricing.basic.f2': { en: 'All pattern types', fr: 'Tous les types de patrons' },
   'pricing.basic.f3': { en: 'Save measurements', fr: 'Sauvegarde des mesures' },
