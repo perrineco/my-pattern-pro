@@ -675,50 +675,50 @@ export function generatePatternPDF(
     y += 7;
   });
 
-  // Tile layout diagram
+  // Tile layout diagram — tiles are A4-proportioned so pattern scale is uniform (no distortion)
   y += 10;
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
   doc.text(tr(pdfT.pageLayout, lang), MARGIN + 10, y);
   y += 8;
 
-  const diagramScale = 22; // mm per page tile in diagram
-  const panelGap = 12;     // mm between front and back grids
-  const scaleX = diagramScale / PRINTABLE_WIDTH;
-  const scaleY = diagramScale / PRINTABLE_HEIGHT;
+  const tileW = 18; // mm per tile (width)
+  const tileH = Math.round(tileW * PRINTABLE_HEIGHT / PRINTABLE_WIDTH); // ≈26mm — proportional to A4
+  const panelGap = 12;
+  const diagScale = tileW / PRINTABLE_WIDTH; // uniform scale: same for X and Y
 
   panels.forEach((panel, panelIndex) => {
-    const panelDiagramX = MARGIN + 10 + panelIndex * (tiles.cols * diagramScale + panelGap);
+    const panelDiagramX = MARGIN + 10 + panelIndex * (tiles.cols * tileW + panelGap);
     const panelDiagramY = y;
 
-    // Draw tile grid with light gray background
+    // Draw A4-proportioned tile grid
     for (let row = 0; row < tiles.rows; row++) {
       for (let col = 0; col < tiles.cols; col++) {
-        const tileX = panelDiagramX + col * diagramScale;
-        const tileY = panelDiagramY + row * diagramScale;
+        const tileX = panelDiagramX + col * tileW;
+        const tileY = panelDiagramY + row * tileH;
         const pageNumber = panelIndex * tiles.totalPages + row * tiles.cols + col + 1;
 
         doc.setFillColor(245, 245, 245);
-        doc.setDrawColor(180, 180, 180);
+        doc.setDrawColor(160, 160, 160);
         doc.setLineWidth(0.3);
-        doc.rect(tileX, tileY, diagramScale, diagramScale, 'FD');
+        doc.rect(tileX, tileY, tileW, tileH, 'FD');
 
-        doc.setFontSize(6);
-        doc.setTextColor(190, 190, 190);
-        doc.text(String(pageNumber), tileX + 2.5, tileY + 4);
+        doc.setFontSize(7);
+        doc.setTextColor(100, 100, 100);
+        doc.text(String(pageNumber), tileX + tileW / 2, tileY + tileH / 2 + 2, { align: 'center' });
       }
     }
 
-    // Draw pattern outline scaled to tile grid
-    const patternStartX = panelDiagramX + patternMarginMm * scaleX;
-    const patternStartY = panelDiagramY + patternMarginMm * scaleY;
+    // Draw pattern outline — diagScale is uniform so aspect ratio is preserved
+    const patternStartX = panelDiagramX + patternMarginMm * diagScale;
+    const patternStartY = panelDiagramY + patternMarginMm * diagScale;
 
     if (isSleeve) {
-      drawDiagramSleeve(doc, measurements as SleeveMeasurements, patternStartX, patternStartY, scaleX, scaleY);
+      drawDiagramSleeve(doc, measurements as SleeveMeasurements, patternStartX, patternStartY, diagScale, diagScale);
     } else if (isBodice) {
-      drawDiagramBodice(doc, measurements as BodiceMeasurements, patternStartX, patternStartY, panel, scaleX, scaleY);
+      drawDiagramBodice(doc, measurements as BodiceMeasurements, patternStartX, patternStartY, panel, diagScale, diagScale);
     } else {
-      drawDiagramSkirt(doc, measurements as SkirtMeasurements, patternStartX, patternStartY, panel, scaleX, scaleY);
+      drawDiagramSkirt(doc, measurements as SkirtMeasurements, patternStartX, patternStartY, panel, diagScale, diagScale);
     }
 
     // Panel label below grid
@@ -727,7 +727,7 @@ export function generatePatternPDF(
     const panelLabel = isSleeve
       ? tr(pdfT.sleeve, lang)
       : panel === 'front' ? tr(pdfT.front, lang) : tr(pdfT.back, lang);
-    doc.text(panelLabel, panelDiagramX + (tiles.cols * diagramScale) / 2, panelDiagramY + tiles.rows * diagramScale + 6, { align: 'center' });
+    doc.text(panelLabel, panelDiagramX + (tiles.cols * tileW) / 2, panelDiagramY + tiles.rows * tileH + 6, { align: 'center' });
   });
 
   doc.save(`${patternType}-pattern.pdf`);
