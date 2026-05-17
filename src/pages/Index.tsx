@@ -43,7 +43,7 @@ const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const isProfileMode = searchParams.get('mode') === 'profiles';
   const { user, session, subscription, purchasedPatterns, loading } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { unit: measurementUnit, setUnit: handleUnitChange } = useUnit();
 
   const [category, setCategory] = useState<Category>('women');
@@ -176,7 +176,7 @@ const Index = () => {
   const handleExportPDF = () => {
     try {
       const measurements = getCurrentMeasurements();
-      generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, measurementUnit);
+      generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, measurementUnit, language);
       toast.success(t('toast.pdfDownloaded'));
     } catch {
       toast.error(t('toast.pdfError') ?? 'Failed to generate PDF');

@@ -7,10 +7,10 @@ interface CategorySelectorProps {
   onSelect: (category: Category) => void;
 }
 
-const categories: { value: Category; labelKey: string; icon: string }[] = [
-  { value: 'women', labelKey: 'category.women', icon: '♀' },
-  { value: 'men', labelKey: 'category.men', icon: '♂' },
-  { value: 'kids', labelKey: 'category.kids', icon: '★' },
+const categories: { value: Category; labelKey: string }[] = [
+  { value: 'women', labelKey: 'category.women' },
+  { value: 'men', labelKey: 'category.men' },
+  { value: 'kids', labelKey: 'category.kids' },
 ];
 
 export function CategorySelector({ selected, onSelect }: CategorySelectorProps) {
@@ -23,15 +23,14 @@ export function CategorySelector({ selected, onSelect }: CategorySelectorProps) 
           key={cat.value}
           onClick={() => onSelect(cat.value)}
           className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200",
+            "px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200",
             "border hover:border-primary/50",
             selected === cat.value
               ? "bg-primary text-primary-foreground border-primary shadow-sm"
               : "bg-card text-foreground border-border hover:bg-accent"
           )}
         >
-          <span className="text-base">{cat.icon}</span>
-          <span>{t(cat.labelKey)}</span>
+          {t(cat.labelKey)}
         </button>
       ))}
     </div>
