@@ -74,20 +74,20 @@ export default function Pricing() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="font-serif text-4xl font-bold text-foreground mb-4">
+      <main className="container mx-auto px-4 py-3 sm:py-12">
+        <div className="text-center mb-4 sm:mb-12">
+          <h1 className="font-serif text-2xl sm:text-4xl font-bold text-foreground mb-1 sm:mb-4">
             {t('pricing.title')}
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="hidden sm:block text-lg text-muted-foreground max-w-2xl mx-auto">
             {t('pricing.subtitle')}
           </p>
         </div>
 
         {/* Current Plan Banner */}
         {subscription.tier !== 'none' && (
-          <div className="mb-8 p-4 bg-primary/10 border border-primary/20 rounded-lg text-center">
-            <p className="text-sm font-medium text-foreground">
+          <div className="mb-3 sm:mb-8 p-2 sm:p-4 bg-primary/10 border border-primary/20 rounded-lg text-center">
+            <p className="text-xs sm:text-sm font-medium text-foreground">
               {t('pricing.youreOn')} <span className="text-primary capitalize">{subscription.tier}</span> {t('pricing.plan')}
               {subscription.tier === 'basic' && (
                 <span className="text-muted-foreground">
@@ -97,9 +97,10 @@ export default function Pricing() {
             </p>
             <Button
               variant="link"
+              size="sm"
               onClick={handleManageSubscription}
               disabled={loading === 'manage'}
-              className="mt-1"
+              className="mt-0 sm:mt-1 h-7 text-xs sm:text-sm"
             >
               {t('pricing.manageSubscription')}
             </Button>
@@ -107,77 +108,77 @@ export default function Pricing() {
         )}
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-2 sm:gap-6 max-w-5xl mx-auto">
           {/* Single Purchase */}
-          <Card className="p-6 relative">
-            <div className="mb-6">
-              <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center mb-4">
+          <Card className="p-3 sm:p-6 relative">
+            <div className="mb-2 sm:mb-6">
+              <div className="hidden sm:flex w-12 h-12 rounded-lg bg-secondary items-center justify-center mb-4">
                 <ShoppingCart className="w-6 h-6 text-secondary-foreground" />
               </div>
-              <h3 className="font-serif text-xl font-semibold mb-1">{t('pricing.single.title')}</h3>
-              <p className="text-sm text-muted-foreground">{t('pricing.single.desc')}</p>
+              <h3 className="font-serif text-base sm:text-xl font-semibold mb-0 sm:mb-1">{t('pricing.single.title')}</h3>
+              <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.single.desc')}</p>
             </div>
-            <div className="mb-6">
-              <span className="text-4xl font-bold">{STRIPE_CONFIG.singlePurchase.price}{symbol}</span>
-              <span className="text-muted-foreground">{t('pricing.perPattern')}</span>
+            <div className="mb-2 sm:mb-6">
+              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.singlePurchase.price}{symbol}</span>
+              <span className="text-xs sm:text-base text-muted-foreground"> {t('pricing.perPattern')}</span>
             </div>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+            <ul className="space-y-1 sm:space-y-3 mb-2 sm:mb-6">
+              <li className="flex items-center gap-2 text-xs sm:text-sm">
+                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                 <span>{t('pricing.single.f1')}</span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+              <li className="flex items-center gap-2 text-xs sm:text-sm">
+                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                 <span>{t('pricing.single.f2')}</span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+              <li className="hidden sm:flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary shrink-0" />
                 <span>{t('pricing.single.f3')}</span>
               </li>
             </ul>
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="hidden sm:block text-xs text-muted-foreground text-center">
               {t('pricing.single.note')}
             </p>
           </Card>
 
           {/* Basic */}
-          <Card className={cn("p-6 relative", isBasic && "ring-2 ring-primary")}>
+          <Card className={cn("p-3 sm:p-6 relative", isBasic && "ring-2 ring-primary")}>
             {isBasic && (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 sm:px-3 py-0.5 sm:py-1 bg-primary text-primary-foreground text-[10px] sm:text-xs font-medium rounded-full whitespace-nowrap">
                 {t('pricing.currentPlan')}
               </div>
             )}
-            <div className="mb-6">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+            <div className="mb-2 sm:mb-6">
+              <div className="hidden sm:flex w-12 h-12 rounded-lg bg-primary/10 items-center justify-center mb-4">
                 <Sparkles className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-serif text-xl font-semibold mb-1">{t('pricing.basic.title')}</h3>
-              <p className="text-sm text-muted-foreground">{t('pricing.basic.desc')}</p>
+              <h3 className="font-serif text-base sm:text-xl font-semibold mb-0 sm:mb-1">{t('pricing.basic.title')}</h3>
+              <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.basic.desc')}</p>
             </div>
-            <div className="mb-6">
-              <span className="text-4xl font-bold">{STRIPE_CONFIG.subscriptions.basic.price}{symbol}</span>
-              <span className="text-muted-foreground">{t('pricing.perMonth')}</span>
+            <div className="mb-2 sm:mb-6">
+              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.subscriptions.basic.price}{symbol}</span>
+              <span className="text-xs sm:text-base text-muted-foreground"> {t('pricing.perMonth')}</span>
             </div>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+            <ul className="space-y-1 sm:space-y-3 mb-2 sm:mb-6">
+              <li className="flex items-center gap-2 text-xs sm:text-sm">
+                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                 <span>{t('pricing.basic.f1')}</span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+              <li className="flex items-center gap-2 text-xs sm:text-sm">
+                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                 <span>{t('pricing.basic.f2')}</span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+              <li className="hidden sm:flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary shrink-0" />
                 <span>{t('pricing.basic.f3')}</span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+              <li className="hidden sm:flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary shrink-0" />
                 <span>{t('pricing.basic.f4')}</span>
               </li>
             </ul>
             <Button
-              className="w-full"
+              className="w-full h-8 sm:h-10 text-xs sm:text-sm"
               variant={isBasic ? "outline" : "default"}
               disabled={isBasic || loading === 'basic'}
               onClick={() => handleSubscribe(STRIPE_CONFIG.subscriptions.basic.priceId, 'basic')}
@@ -187,47 +188,41 @@ export default function Pricing() {
           </Card>
 
           {/* Pro */}
-          <Card className={cn("p-6 relative border-primary", isPro && "ring-2 ring-primary")}>
-            {isPro ? (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
-                {t('pricing.currentPlan')}
-              </div>
-            ) : (
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
-                {t('pricing.mostPopular')}
-              </div>
-            )}
-            <div className="mb-6">
-              <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center mb-4">
+          <Card className={cn("p-3 sm:p-6 relative border-primary", isPro && "ring-2 ring-primary")}>
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 sm:px-3 py-0.5 sm:py-1 bg-primary text-primary-foreground text-[10px] sm:text-xs font-medium rounded-full whitespace-nowrap">
+              {isPro ? t('pricing.currentPlan') : t('pricing.mostPopular')}
+            </div>
+            <div className="mb-2 sm:mb-6">
+              <div className="hidden sm:flex w-12 h-12 rounded-lg bg-primary items-center justify-center mb-4">
                 <Crown className="w-6 h-6 text-primary-foreground" />
               </div>
-              <h3 className="font-serif text-xl font-semibold mb-1">{t('pricing.pro.title')}</h3>
-              <p className="text-sm text-muted-foreground">{t('pricing.pro.desc')}</p>
+              <h3 className="font-serif text-base sm:text-xl font-semibold mb-0 sm:mb-1">{t('pricing.pro.title')}</h3>
+              <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.pro.desc')}</p>
             </div>
-            <div className="mb-6">
-              <span className="text-4xl font-bold">{STRIPE_CONFIG.subscriptions.pro.price}{symbol}</span>
-              <span className="text-muted-foreground">{t('pricing.perMonth')}</span>
+            <div className="mb-2 sm:mb-6">
+              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.subscriptions.pro.price}{symbol}</span>
+              <span className="text-xs sm:text-base text-muted-foreground"> {t('pricing.perMonth')}</span>
             </div>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+            <ul className="space-y-1 sm:space-y-3 mb-2 sm:mb-6">
+              <li className="flex items-center gap-2 text-xs sm:text-sm">
+                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                 <span className="font-medium">{t('pricing.pro.f1')}</span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+              <li className="flex items-center gap-2 text-xs sm:text-sm">
+                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                 <span>{t('pricing.pro.f2')}</span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+              <li className="hidden sm:flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary shrink-0" />
                 <span>{t('pricing.pro.f3')}</span>
               </li>
-              <li className="flex items-center gap-2 text-sm">
-                <Check className="w-4 h-4 text-primary" />
+              <li className="hidden sm:flex items-center gap-2 text-sm">
+                <Check className="w-4 h-4 text-primary shrink-0" />
                 <span>{t('pricing.pro.f4')}</span>
               </li>
             </ul>
             <Button
-              className="w-full"
+              className="w-full h-8 sm:h-10 text-xs sm:text-sm"
               variant={isPro ? "outline" : "default"}
               disabled={isPro || loading === 'pro'}
               onClick={() => handleSubscribe(STRIPE_CONFIG.subscriptions.pro.priceId, 'pro')}
