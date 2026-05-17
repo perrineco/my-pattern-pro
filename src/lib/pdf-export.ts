@@ -43,6 +43,7 @@ const pdfT = {
       '6. Une fois assemblé, découpez le patron le long du trait plein noir.',
     ],
   },
+  noSeamAllowance: { en: 'This pattern is a basic block with no seam allowances.', fr: 'Ce patron est un bloc de base sans marges de couture.' },
   patternLabel: { en: 'Pattern', fr: 'Patron' },
   totalPages: { en: 'Total pages', fr: 'Total pages' },
   measurementsUsed: { en: 'Measurements used:', fr: 'Mesures utilisées :' },
@@ -638,6 +639,8 @@ export function generatePatternPDF(
   const patternName = patternType.charAt(0).toUpperCase() + patternType.slice(1);
   const baseInstructions = [
     ...tr(pdfT.instructions, lang),
+    '',
+    tr(pdfT.noSeamAllowance, lang),
     '',
     `${tr(pdfT.patternLabel, lang)}: ${patternName} - ${panelDescription}`,
     `${tr(pdfT.totalPages, lang)}: ${tiles.totalPages * panels.length}`,

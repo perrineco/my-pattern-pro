@@ -100,17 +100,26 @@ serve(async (req) => {
         .eq('user_id', user.id);
     } else {
       logStep("No active subscription found");
-      
-      // Reset subscription in database
-      await supabaseClient
+
+      // Only reset tier if the user previously had a Stripe subscription (expired/cancelled).
+      // If stripe_subscription_id is already null, the tier was set manually — leave it untouched.
+      const { data: currentSub } = await supabaseClient
         .from('user_subscriptions')
-        .update({
-          tier: 'none',
-          stripe_subscription_id: null,
-          period_start: null,
-          period_end: null,
-        })
-        .eq('user_id', user.id);
+        .select('stripe_subscription_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (currentSub?.stripe_subscription_id) {
+        await supabaseClient
+          .from('user_subscriptions')
+          .update({
+            tier: 'none',
+            stripe_subscription_id: null,
+            period_start: null,
+            period_end: null,
+          })
+          .eq('user_id', user.id);
+      }
     }
 
     // Get patterns used from database
