@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCurrency } from '@/contexts/CurrencyContext';
+import { STRIPE_CONFIG } from '@/lib/stripe-config';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Scissors, Ruler, Download, Users, Crown, Star, ArrowRight, CheckCircle2 } from 'lucide-react';
@@ -9,10 +11,15 @@ export default function Welcome() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useLanguage();
+  const { symbol, currency } = useCurrency();
 
   const handleGetStarted = () => {
     navigate(user ? '/app' : '/auth');
   };
+
+  const fmt = (price: number) => currency === 'USD' || currency === 'CAD'
+    ? `${symbol}${price}`
+    : `${price}${symbol}`;
 
   const features = [
     { icon: Ruler, title: t('welcome.feat.measurements'), description: t('welcome.feat.measurementsDesc') },
@@ -23,17 +30,17 @@ export default function Welcome() {
 
   const plans = [
     {
-      name: t('welcome.plan.free'), price: '$0', period: '',
+      name: t('welcome.plan.free'), price: fmt(0), period: '',
       features: [t('welcome.plan.feat.skirt'), t('welcome.plan.feat.allCategories'), t('welcome.plan.feat.pdfExport'), t('welcome.plan.feat.livePreview')],
       cta: t('welcome.plan.getStarted'), highlighted: false,
     },
     {
-      name: t('welcome.plan.basic'), price: '$9', period: '/mo',
+      name: t('welcome.plan.basic'), price: fmt(STRIPE_CONFIG.subscriptions.basic.price), period: '/mo',
       features: [t('welcome.plan.feat.allPatterns'), t('welcome.plan.feat.saveProfiles'), t('welcome.plan.feat.tenPatterns'), t('welcome.plan.feat.prioritySupport')],
       cta: t('welcome.plan.startBasic'), highlighted: false,
     },
     {
-      name: t('welcome.plan.pro'), price: '$19', period: '/mo',
+      name: t('welcome.plan.pro'), price: fmt(STRIPE_CONFIG.subscriptions.pro.price), period: '/mo',
       features: [t('welcome.plan.feat.unlimited'), t('welcome.plan.feat.unlimitedProfiles'), t('welcome.plan.feat.allFuture'), t('welcome.plan.feat.earlyAccess')],
       cta: t('welcome.plan.goPro'), highlighted: true,
     },
