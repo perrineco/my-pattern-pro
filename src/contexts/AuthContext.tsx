@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const tier = getSubscriptionTierFromProductId(data?.product_id);
+      const tier = (data?.tier as SubscriptionTier) || getSubscriptionTierFromProductId(data?.product_id);
       setSubscription({
         tier,
         subscriptionEnd: data?.subscription_end || null,

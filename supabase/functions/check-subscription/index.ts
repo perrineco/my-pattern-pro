@@ -47,18 +47,18 @@ serve(async (req) => {
     if (customers.data.length === 0) {
       logStep("No customer found, returning unsubscribed state");
       
-      // Get patterns used from database
       const { data: subData } = await supabaseClient
         .from('user_subscriptions')
-        .select('monthly_patterns_used')
+        .select('monthly_patterns_used, tier')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      return new Response(JSON.stringify({ 
+      return new Response(JSON.stringify({
         subscribed: false,
         product_id: null,
         subscription_end: null,
-        patterns_used: subData?.monthly_patterns_used || 0
+        patterns_used: subData?.monthly_patterns_used || 0,
+        tier: subData?.tier || 'none',
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -122,10 +122,9 @@ serve(async (req) => {
       }
     }
 
-    // Get patterns used from database
     const { data: subData } = await supabaseClient
       .from('user_subscriptions')
-      .select('monthly_patterns_used')
+      .select('monthly_patterns_used, tier')
       .eq('user_id', user.id)
       .maybeSingle();
 
@@ -133,7 +132,8 @@ serve(async (req) => {
       subscribed: hasActiveSub,
       product_id: productId,
       subscription_end: subscriptionEnd,
-      patterns_used: subData?.monthly_patterns_used || 0
+      patterns_used: subData?.monthly_patterns_used || 0,
+      tier: subData?.tier || 'none',
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
