@@ -46,15 +46,15 @@ export default function Auth() {
   const [consentTerms, setConsentTerms] = useState(false);
   const [consentMorpho, setConsentMorpho] = useState(false);
   
-  const { signIn, signUp, user, loading } = useAuth();
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user && mode !== 'reset-password') {
+    if (!authLoading && user && mode !== 'reset-password') {
       navigate('/');
     }
-  }, [user, loading, navigate, mode]);
+  }, [user, authLoading, navigate, mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
