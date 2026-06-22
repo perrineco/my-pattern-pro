@@ -155,26 +155,36 @@ function drawAlignmentMarks(doc: jsPDF, pageCol: number, pageRow: number, totalC
   doc.setDrawColor(100, 100, 100);
   doc.setLineWidth(0.3);
 
+  // TL corner
   if (pageCol > 0 || pageRow > 0) {
     doc.line(MARGIN, MARGIN, MARGIN + MARK_SIZE, MARGIN);
     doc.line(MARGIN, MARGIN, MARGIN, MARGIN + MARK_SIZE);
-    doc.line(MARGIN - MARK_OFFSET, MARGIN - MARK_OFFSET, MARGIN + MARK_OFFSET, MARGIN + MARK_OFFSET);
-    doc.line(MARGIN - MARK_OFFSET, MARGIN + MARK_OFFSET, MARGIN + MARK_OFFSET, MARGIN - MARK_OFFSET);
+    doc.line(MARGIN, MARGIN, MARGIN + MARK_OFFSET * 2, MARGIN + MARK_OFFSET * 2);
+    doc.line(MARGIN + MARK_OFFSET * 2, MARGIN, MARGIN, MARGIN + MARK_OFFSET * 2);
   }
 
+  // TR corner
   if (pageCol < totalCols - 1 || pageRow > 0) {
     doc.line(A4_WIDTH - MARGIN - MARK_SIZE, MARGIN, A4_WIDTH - MARGIN, MARGIN);
     doc.line(A4_WIDTH - MARGIN, MARGIN, A4_WIDTH - MARGIN, MARGIN + MARK_SIZE);
+    doc.line(A4_WIDTH - MARGIN, MARGIN, A4_WIDTH - MARGIN - MARK_OFFSET * 2, MARGIN + MARK_OFFSET * 2);
+    doc.line(A4_WIDTH - MARGIN - MARK_OFFSET * 2, MARGIN, A4_WIDTH - MARGIN, MARGIN + MARK_OFFSET * 2);
   }
 
+  // BL corner
   if (pageCol > 0 || pageRow < totalRows - 1) {
     doc.line(MARGIN, A4_HEIGHT - MARGIN - MARK_SIZE, MARGIN, A4_HEIGHT - MARGIN);
     doc.line(MARGIN, A4_HEIGHT - MARGIN, MARGIN + MARK_SIZE, A4_HEIGHT - MARGIN);
+    doc.line(MARGIN, A4_HEIGHT - MARGIN, MARGIN + MARK_OFFSET * 2, A4_HEIGHT - MARGIN - MARK_OFFSET * 2);
+    doc.line(MARGIN + MARK_OFFSET * 2, A4_HEIGHT - MARGIN, MARGIN, A4_HEIGHT - MARGIN - MARK_OFFSET * 2);
   }
 
+  // BR corner
   if (pageCol < totalCols - 1 || pageRow < totalRows - 1) {
     doc.line(A4_WIDTH - MARGIN - MARK_SIZE, A4_HEIGHT - MARGIN, A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN);
     doc.line(A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN - MARK_SIZE, A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN);
+    doc.line(A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN, A4_WIDTH - MARGIN - MARK_OFFSET * 2, A4_HEIGHT - MARGIN - MARK_OFFSET * 2);
+    doc.line(A4_WIDTH - MARGIN - MARK_OFFSET * 2, A4_HEIGHT - MARGIN, A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN - MARK_OFFSET * 2);
   }
 
   const circleRadius = 2;
