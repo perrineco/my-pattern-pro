@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { SkirtMeasurements, BodiceMeasurements, SleeveMeasurements } from '@/types/sloper';
+import { SkirtMeasurements, BodiceMeasurements, SleeveMeasurements, PantsMeasurements, Category } from '@/types/sloper';
 import { MeasurementUnit, cmToInches } from '@/components/UnitToggle';
 import { Language } from '@/contexts/LanguageContext';
 
@@ -47,9 +47,12 @@ const pdfT = {
   },
   patternLabel: { en: 'Pattern', fr: 'Patron' },
   basicBlock: { en: 'basic block', fr: 'patron de base' },
+  dart: { en: 'dart', fr: 'pince' },
+  outseam: { en: 'Outseam', fr: 'Longueur côté' },
+  inseamWarning: { en: '⚠ Front/back inseam mismatch', fr: '⚠ Entrejambe avant/dos différent' },
   patternTypes: {
-    en: { skirt: 'Skirt', bodice: 'Bodice', 'bodice-dartless': 'Dartless Bodice', 'bodice-with-darts': 'Bodice with Darts', 'bodice-knit': 'Knit Bodice', dress: 'Dress', sleeve: 'Sleeve', pants: 'Pants' },
-    fr: { skirt: 'Jupe', bodice: 'Corsage', 'bodice-dartless': 'Corsage sans pinces', 'bodice-with-darts': 'Corsage avec pinces', 'bodice-knit': 'Corsage jersey', dress: 'Robe', sleeve: 'Manche', pants: 'Pantalon' },
+    en: { skirt: 'Skirt', bodice: 'Bodice', 'bodice-dartless': 'Dartless Bodice', 'bodice-with-darts': 'Bodice with Darts', 'bodice-knit': 'Knit Bodice', dress: 'Dress', sleeve: 'Sleeve', pants: 'Pants', 'pants-dartless': 'Pants (dartless)', 'pants-with-darts': 'Pants (with darts)' },
+    fr: { skirt: 'Jupe', bodice: 'Corsage', 'bodice-dartless': 'Corsage sans pinces', 'bodice-with-darts': 'Corsage avec pinces', 'bodice-knit': 'Corsage jersey', dress: 'Robe', sleeve: 'Manche', pants: 'Pantalon', 'pants-dartless': 'Pantalon (sans pinces)', 'pants-with-darts': 'Pantalon (avec pinces)' },
   },
   totalPages: { en: 'Total pages', fr: 'Total pages' },
   measurementsUsed: { en: 'Measurements used:', fr: 'Mesures utilisées :' },
@@ -578,22 +581,360 @@ function drawDiagramSleeve(
   );
 }
 
+// ─────────────────────────────── PANTS ───────────────────────────────────────
+
+function calculatePantsDimensions(m: PantsMeasurements, category: Category): PatternDimensions {
+  const ease = m.ease ?? 2;
+  const crotchExt = category === 'men' ? m.hip / 16 - 1 : m.hip / 16 + 3;
+  return {
+    widthCm: crotchExt + m.hip / 4 + ease + 4,
+    heightCm: m.outseamLength + 4,
+  };
+}
+
+function drawCubicBezier(
+  doc: jsPDF,
+  x0: number, y0: number,
+  cx1: number, cy1: number,
+  cx2: number, cy2: number,
+  x1: number, y1: number,
+  steps = 8
+) {
+  let px = x0, py = y0;
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    const u = 1 - t;
+    const nx = u*u*u*x0 + 3*u*u*t*cx1 + 3*u*t*t*cx2 + t*t*t*x1;
+    const ny = u*u*u*y0 + 3*u*u*t*cy1 + 3*u*t*t*cy2 + t*t*t*y1;
+    doc.line(px, py, nx, ny);
+    px = nx; py = ny;
+  }
+}
+
+function drawPantsGrainLine(doc: jsPDF, x: number, yTop: number, yBot: number) {
+  doc.setLineDashPattern([3, 2], 0);
+  doc.line(x, yTop, x, yBot);
+  doc.setLineDashPattern([], 0);
+  const a = 4;
+  doc.line(x - a, yTop + a, x, yTop);
+  doc.line(x + a, yTop + a, x, yTop);
+  doc.line(x - a, yBot - a, x, yBot);
+  doc.line(x + a, yBot - a, x, yBot);
+}
+
+// Back panel.
+// offsetX = left edge of pattern piece = innermost crotch point (e1/e2 x-coordinate).
+// Center-back hip line is at offsetX + crotchExtMm.
+function drawPantsBackPanel(
+  doc: jsPDF,
+  m: PantsMeasurements,
+  offsetX: number,
+  offsetY: number,
+  category: Category,
+  hasDarts: boolean,
+  unit: MeasurementUnit,
+  lang: Language
+) {
+  const ease = m.ease ?? 2;
+  const v = (cm: number) => cm * 10;
+
+  const crotchExtMm = category === 'men' ? v(m.hip / 16 - 1) : v(m.hip / 16 + 3);
+  const O = offsetX + crotchExtMm;  // center-back hip reference X
+
+  const hipQ   = v(m.hip / 4 + ease);
+  const waistQ = v(m.waist / 4);
+  const waistEase = category === 'men' ? 40 : 50;  // mm
+  const excedent = hipQ - waistQ - waistEase;
+
+  // Dart widths
+  const dartW = hasDarts
+    ? (category === 'women' ? 10 : category === 'kids' ? 25 : 0)
+    : 0;
+
+  // CB waist shift and side-seam reduction
+  let cbShift: number, sideRed: number;
+  if (category === 'men') {
+    cbShift = Math.max(0, excedent / 2);
+    sideRed = Math.max(0, excedent / 2);
+  } else {
+    cbShift = category === 'kids' ? 15 : 35;   // 1.5 cm kids, 3.5 cm women (mm)
+    sideRed = Math.max(0, excedent - dartW);
+  }
+  const cbRaise = category === 'men' ? 20 : v(m.outseamLength * 0.027);
+
+  const a2X = O + cbShift;
+  const a2Y = offsetY - cbRaise;
+  const b1X = O + hipQ - sideRed;
+  const b1Y = category === 'women' ? offsetY - 10 : offsetY;
+
+  const hipSideX = O + hipQ;
+  const hipY   = offsetY + v(m.hipHeight);
+  const crotchY = offsetY + v(m.crotchDepth);
+  const e2Y    = crotchY - 10;
+
+  const centerX = O + (hipQ - crotchExtMm) / 2;
+  const iY      = offsetY + v(m.crotchDepth * (1 + 2 / 3));
+  const hemHalfW = v(m.hip / 10 + 1.5);
+  const thighSpread = hemHalfW + 10;
+  const hemY     = offsetY + v(m.outseamLength);
+  const hemSideX  = (centerX - 10) + hemHalfW;
+  const hemInnerX = (centerX - 10) - hemHalfW;
+  const thighSideX  = centerX + thighSpread;
+  const thighInnerX = centerX - thighSpread;
+
+  // Dart position
+  let dartCX = 0, dartTipY = 0;
+  if (dartW > 0) {
+    if (category === 'women') {
+      dartCX   = a2X + 10;       // 10 mm from CB waist (spreadsheet spec)
+      dartTipY = a2Y + 120;      // 120 mm below waist  (spreadsheet spec)
+    } else {
+      dartCX   = (a2X + b1X) / 2;
+      dartTipY = a2Y + v(m.hipHeight) * 0.75;
+    }
+  }
+  const dHalf = dartW / 2;
+
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+
+  // ── Waist line (with or without dart) ──
+  if (dartW > 0) {
+    doc.line(a2X, a2Y, dartCX - dHalf, a2Y);
+    doc.line(dartCX - dHalf, a2Y, dartCX, dartTipY);   // left side of dart
+    doc.line(dartCX, dartTipY, dartCX + dHalf, a2Y);   // right side
+    doc.line(dartCX + dHalf, a2Y, b1X, b1Y);
+    // notch at dart tip
+    doc.setLineWidth(0.25);
+    doc.line(dartCX - 3, dartTipY, dartCX + 3, dartTipY);
+    doc.setLineWidth(0.5);
+  } else {
+    doc.line(a2X, a2Y, b1X, b1Y);
+  }
+
+  // ── Side seam ──
+  doc.line(b1X, b1Y, hipSideX, hipY);
+  doc.line(hipSideX, hipY, hipSideX, crotchY);
+  doc.line(hipSideX, crotchY, thighSideX, iY);
+  doc.line(thighSideX, iY, hemSideX, hemY);
+
+  // ── Hem ──
+  doc.line(hemSideX, hemY, hemInnerX, hemY);
+
+  // ── Inner seam ──
+  doc.line(hemInnerX, hemY, thighInnerX, iY);
+  doc.line(thighInnerX, iY, offsetX, e2Y);
+
+  // ── Crotch curve (cubic Bezier) ──
+  drawCubicBezier(doc,
+    offsetX, e2Y,
+    offsetX + (O - offsetX) * 0.8, crotchY - (hipY - crotchY) / 8,
+    O - (a2X - O) / 4, hipY - (a2Y - hipY) / 4,
+    O, hipY
+  );
+
+  // ── Center-back seam ──
+  doc.line(O, hipY, a2X, a2Y);
+
+  // ── Reference lines ──
+  doc.setLineWidth(0.2);
+  doc.setLineDashPattern([2, 2], 0);
+  doc.setDrawColor(160, 160, 160);
+  doc.line(offsetX, hipY, hipSideX, hipY);
+  doc.line(offsetX, crotchY, hipSideX, crotchY);
+  doc.setLineDashPattern([], 0);
+  doc.setDrawColor(0, 0, 0);
+
+  // ── Grain line ──
+  doc.setLineWidth(0.4);
+  drawPantsGrainLine(doc, centerX, offsetY + 30, hemY - 30);
+
+  // ── Labels ──
+  const midY = offsetY + v(m.outseamLength) / 2;
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text(tr(pdfT.back, lang), centerX, midY - 10, { align: 'center' });
+  doc.setFontSize(8);
+  doc.text(tr(pdfT.cut2, lang), centerX, midY, { align: 'center' });
+
+  if (dartW > 0) {
+    doc.setFontSize(7);
+    doc.setTextColor(80, 80, 80);
+    doc.text(`${tr(pdfT.dart, lang)} = ${dartW}mm`, dartCX + 4, a2Y + (dartTipY - a2Y) / 2);
+  }
+
+  doc.setFontSize(7);
+  doc.setTextColor(80, 80, 80);
+  doc.text(`${tr(pdfT.outseam, lang)} = ${formatMeasurement(m.outseamLength, unit)}`, O - 8, offsetY + v(m.outseamLength) / 2, { angle: 90 });
+}
+
+// Front panel.
+// offsetX = left edge = e1X (innermost crotch). CF seam is at offsetX + crotchExtMm.
+function drawPantsFrontPanel(
+  doc: jsPDF,
+  m: PantsMeasurements,
+  offsetX: number,
+  offsetY: number,
+  category: Category,
+  hasDarts: boolean,
+  unit: MeasurementUnit,
+  lang: Language
+) {
+  const ease = m.ease ?? 2;
+  const v = (cm: number) => cm * 10;
+
+  const crotchExtMm = category === 'men' ? v(m.hip / 20) : v(m.hip / 20);
+  const O = offsetX + crotchExtMm;  // CF seam reference X
+
+  const hipQ   = v(m.hip / 4 + ease);
+  const waistQ = v(m.waist / 4);
+  const waistEase = category === 'men' ? 40 : 50;
+  const excedent = hipQ - waistQ - waistEase;
+
+  // Front dart widths per dart
+  const dartW = hasDarts ? (category === 'kids' ? 10 : category === 'women' ? 10 : 0) : 0;
+  const numDarts = category === 'women' && hasDarts ? 2 : (dartW > 0 ? 1 : 0);
+
+  // Side-seam reduction absorbs remaining excess
+  const totalDartMm = dartW * numDarts;
+  const waistRed = category === 'men' ? Math.max(0, excedent) : Math.max(0, excedent - totalDartMm);
+
+  const b1Rise = category === 'women' ? 10 : 0;
+
+  const a1X = O;
+  const a1Y = offsetY;
+  const b1X = O + hipQ - waistRed;
+  const b1Y = offsetY - b1Rise;
+
+  const hipSideX = O + hipQ;
+  const hipY    = offsetY + v(m.hipHeight);
+  const crotchY  = offsetY + v(m.crotchDepth);
+  const e1X     = offsetX;
+
+  const iY      = offsetY + v(m.crotchDepth * 2);
+  const centerX = O + (hipQ - crotchExtMm) / 2;
+  const hemHalfW  = v(m.hip / 10 + 1.5);
+  const thighSpread = hemHalfW + 10;
+  const hemY      = offsetY + v(m.outseamLength);
+  const hemSideX  = centerX + hemHalfW;
+  const hemInnerX = centerX - hemHalfW;
+  const thighSideX  = centerX + thighSpread;
+  const thighInnerX = centerX - thighSpread;
+  const dartDepth  = v(m.hipHeight * 0.6);
+  const dHalf = dartW / 2;
+
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+
+  // ── Waist line ──
+  if (numDarts === 2) {
+    const d1X = a1X + (b1X - a1X) * 0.35;
+    const d2X = a1X + (b1X - a1X) * 0.65;
+    doc.line(a1X, a1Y, d1X - dHalf, a1Y);
+    doc.line(d1X - dHalf, a1Y, d1X, a1Y + dartDepth);
+    doc.line(d1X, a1Y + dartDepth, d1X + dHalf, a1Y);
+    doc.line(d1X + dHalf, a1Y, d2X - dHalf, a1Y);
+    doc.line(d2X - dHalf, a1Y, d2X, a1Y + dartDepth);
+    doc.line(d2X, a1Y + dartDepth, d2X + dHalf, a1Y);
+    doc.line(d2X + dHalf, a1Y, b1X, b1Y);
+    doc.setLineWidth(0.25);
+    doc.line(d1X - 3, a1Y + dartDepth, d1X + 3, a1Y + dartDepth);
+    doc.line(d2X - 3, a1Y + dartDepth, d2X + 3, a1Y + dartDepth);
+    doc.setLineWidth(0.5);
+  } else if (numDarts === 1) {
+    const dCX = (a1X + b1X) / 2;
+    doc.line(a1X, a1Y, dCX - dHalf, a1Y);
+    doc.line(dCX - dHalf, a1Y, dCX, a1Y + dartDepth);
+    doc.line(dCX, a1Y + dartDepth, dCX + dHalf, a1Y);
+    doc.line(dCX + dHalf, a1Y, b1X, b1Y);
+    doc.setLineWidth(0.25);
+    doc.line(dCX - 3, a1Y + dartDepth, dCX + 3, a1Y + dartDepth);
+    doc.setLineWidth(0.5);
+  } else {
+    doc.line(a1X, a1Y, b1X, b1Y);
+  }
+
+  // ── Side seam ──
+  doc.line(b1X, b1Y, hipSideX, hipY);
+  doc.line(hipSideX, hipY, hipSideX, crotchY);
+  doc.line(hipSideX, crotchY, thighSideX, iY);
+  doc.line(thighSideX, iY, hemSideX, hemY);
+
+  // ── Hem ──
+  doc.line(hemSideX, hemY, hemInnerX, hemY);
+
+  // ── Inner seam with crotch curves ──
+  doc.line(hemInnerX, hemY, thighInnerX, iY);
+  drawCubicBezier(doc,
+    thighInnerX, iY,
+    thighInnerX, iY + (crotchY - iY) * 0.75,
+    e1X, crotchY,
+    e1X, crotchY
+  );
+  drawCubicBezier(doc,
+    e1X, crotchY,
+    e1X + (a1X - e1X) / 2, crotchY + (hipY - crotchY) / 20,
+    a1X - 10, hipY - (hipY - crotchY) / 4,
+    a1X - 10, hipY
+  );
+
+  // ── CF seam ──
+  doc.line(a1X - 10, hipY, a1X, a1Y);
+
+  // ── Reference lines ──
+  doc.setLineWidth(0.2);
+  doc.setLineDashPattern([2, 2], 0);
+  doc.setDrawColor(160, 160, 160);
+  doc.line(e1X, hipY, hipSideX, hipY);
+  doc.line(e1X, crotchY, hipSideX, crotchY);
+  doc.setLineDashPattern([], 0);
+  doc.setDrawColor(0, 0, 0);
+
+  // ── Grain line ──
+  doc.setLineWidth(0.4);
+  drawPantsGrainLine(doc, centerX, offsetY + 30, hemY - 30);
+
+  // ── Labels ──
+  const midY = offsetY + v(m.outseamLength) / 2;
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.text(tr(pdfT.front, lang), centerX, midY - 10, { align: 'center' });
+  doc.setFontSize(8);
+  doc.text(tr(pdfT.cut2, lang), centerX, midY, { align: 'center' });
+
+  doc.setFontSize(7);
+  doc.setTextColor(80, 80, 80);
+  doc.text(`${tr(pdfT.outseam, lang)} = ${formatMeasurement(m.outseamLength, unit)}`, O - 8, offsetY + v(m.outseamLength) / 2, { angle: 90 });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export function generatePatternPDF(
-  measurements: SkirtMeasurements | BodiceMeasurements | SleeveMeasurements,
+  measurements: SkirtMeasurements | BodiceMeasurements | SleeveMeasurements | PantsMeasurements,
   patternType: string = 'skirt',
   unit: MeasurementUnit = 'cm',
   lang: Language = 'en',
-  userName: string = ''
+  userName: string = '',
+  category: Category = 'women'
 ): void {
   const bodiceTypes = ['bodice', 'bodice-dartless', 'bodice-with-darts', 'bodice-knit', 'dress'];
   const isBodice = bodiceTypes.includes(patternType);
   const isSleeve = patternType === 'sleeve';
+  const isPants  = patternType === 'pants' || patternType === 'pants-dartless' || patternType === 'pants-with-darts';
+  const pantsHasDarts = patternType === 'pants-with-darts';
+
+  const sm = measurements as SkirtMeasurements;
+  const bm = measurements as BodiceMeasurements;
+  const slm = measurements as SleeveMeasurements;
+  const pm  = measurements as PantsMeasurements;
 
   const dimensions = isSleeve
-    ? calculateSleeveDimensions(measurements)
+    ? calculateSleeveDimensions(slm)
     : isBodice
-      ? calculateBodiceDimensions(measurements)
-      : calculateSkirtDimensions(measurements as SkirtMeasurements);
+      ? calculateBodiceDimensions(bm)
+      : isPants
+        ? calculatePantsDimensions(pm, category)
+        : calculateSkirtDimensions(sm);
 
   const tiles = calculateTiles(dimensions);
 
@@ -611,9 +952,7 @@ export function generatePatternPDF(
   for (const panel of panels) {
     for (let row = 0; row < tiles.rows; row++) {
       for (let col = 0; col < tiles.cols; col++) {
-        if (pageNum > 0) {
-          doc.addPage();
-        }
+        if (pageNum > 0) doc.addPage();
         pageNum++;
 
         const viewOffsetX = col * PRINTABLE_WIDTH;
@@ -622,9 +961,7 @@ export function generatePatternPDF(
         drawAlignmentMarks(doc, col, row, tiles.cols, tiles.rows);
         drawPageInfo(doc, pageNum, tiles.totalPages * panels.length, col, row, lang);
 
-        if (pageNum === 1) {
-          draw1cmTestSquare(doc, unit, lang);
-        }
+        if (pageNum === 1) draw1cmTestSquare(doc, unit, lang);
 
         doc.saveGraphicsState();
         doc.rect(MARGIN, MARGIN, PRINTABLE_WIDTH, PRINTABLE_HEIGHT);
@@ -633,11 +970,17 @@ export function generatePatternPDF(
         const patternY = patternMarginMm - viewOffsetY + MARGIN;
 
         if (isSleeve) {
-          drawSleevePatternPiece(doc, measurements, patternX, patternY, unit, lang);
+          drawSleevePatternPiece(doc, slm, patternX, patternY, unit, lang);
         } else if (isBodice) {
-          drawBodicePatternPiece(doc, measurements, patternX, patternY, panel, unit, lang);
+          drawBodicePatternPiece(doc, bm, patternX, patternY, panel, unit, lang);
+        } else if (isPants) {
+          if (panel === 'back') {
+            drawPantsBackPanel(doc, pm, patternX, patternY, category, pantsHasDarts, unit, lang);
+          } else {
+            drawPantsFrontPanel(doc, pm, patternX, patternY, category, pantsHasDarts, unit, lang);
+          }
         } else {
-          drawSkirtPatternPiece(doc, measurements as SkirtMeasurements, patternX, patternY, panel, unit, lang);
+          drawSkirtPatternPiece(doc, sm, patternX, patternY, panel, unit, lang);
         }
 
         doc.restoreGraphicsState();
@@ -645,7 +988,7 @@ export function generatePatternPDF(
     }
   }
 
-  // Assembly instruction page
+  // ── Assembly instruction page ──
   doc.addPage();
   doc.setFontSize(16);
   doc.setTextColor(0, 0, 0);
@@ -665,82 +1008,80 @@ export function generatePatternPDF(
 
   const measurementLines = isSleeve
     ? [
-        `  • ${tr(pdfT.upperArm, lang)}: ${formatMeasurement((measurements as SleeveMeasurements).upperArm, unit)}`,
-        `  • ${tr(pdfT.wrist, lang)}: ${formatMeasurement((measurements as SleeveMeasurements).wrist, unit)}`,
-        `  • ${tr(pdfT.sleeveLength, lang)}: ${formatMeasurement((measurements as SleeveMeasurements).sleeveLength, unit)}`,
-        `  • ${tr(pdfT.elbowLength, lang)}: ${formatMeasurement((measurements as SleeveMeasurements).elbowLength, unit)}`,
-        `  • ${tr(pdfT.armholeDepth, lang)}: ${formatMeasurement((measurements as SleeveMeasurements).armholeDepth, unit)}`,
+        `  • ${tr(pdfT.upperArm, lang)}: ${formatMeasurement(slm.upperArm, unit)}`,
+        `  • ${tr(pdfT.wrist, lang)}: ${formatMeasurement(slm.wrist, unit)}`,
+        `  • ${tr(pdfT.sleeveLength, lang)}: ${formatMeasurement(slm.sleeveLength, unit)}`,
+        `  • ${tr(pdfT.elbowLength, lang)}: ${formatMeasurement(slm.elbowLength, unit)}`,
+        `  • ${tr(pdfT.armholeDepth, lang)}: ${formatMeasurement(slm.armholeDepth, unit)}`,
       ]
     : isBodice
       ? [
-          `  • ${tr(pdfT.bust, lang)}: ${formatMeasurement((measurements as BodiceMeasurements).bust, unit)}`,
-          `  • ${tr(pdfT.neckline, lang)}: ${formatMeasurement((measurements as BodiceMeasurements).neckCircumference, unit)}`,
-          `  • ${tr(pdfT.shoulderLength, lang)}: ${formatMeasurement((measurements as BodiceMeasurements).shoulderLength, unit)}`,
-          `  • ${tr(pdfT.backWidth, lang)}: ${formatMeasurement((measurements as BodiceMeasurements).backWidth, unit)}`,
-          `  • ${tr(pdfT.backLength, lang)}: ${formatMeasurement((measurements as BodiceMeasurements).backLength, unit)}`,
+          `  • ${tr(pdfT.bust, lang)}: ${formatMeasurement(bm.bust, unit)}`,
+          `  • ${tr(pdfT.neckline, lang)}: ${formatMeasurement(bm.neckCircumference, unit)}`,
+          `  • ${tr(pdfT.shoulderLength, lang)}: ${formatMeasurement(bm.shoulderLength, unit)}`,
+          `  • ${tr(pdfT.backWidth, lang)}: ${formatMeasurement(bm.backWidth, unit)}`,
+          `  • ${tr(pdfT.backLength, lang)}: ${formatMeasurement(bm.backLength, unit)}`,
         ]
-      : [
-          `  • ${tr(pdfT.waist, lang)}: ${formatMeasurement((measurements as SkirtMeasurements).waist, unit)}`,
-          `  • ${tr(pdfT.hip, lang)}: ${formatMeasurement((measurements as SkirtMeasurements).hip, unit)}`,
-          `  • ${tr(pdfT.waistToHip, lang)}: ${formatMeasurement((measurements as SkirtMeasurements).waistToHip, unit)}`,
-          `  • ${tr(pdfT.skirtLength, lang)}: ${formatMeasurement((measurements as SkirtMeasurements).skirtLength, unit)}`,
-        ];
+      : isPants
+        ? [
+            `  • ${tr(pdfT.waist, lang)}: ${formatMeasurement(pm.waist, unit)}`,
+            `  • ${tr(pdfT.hip, lang)}: ${formatMeasurement(pm.hip, unit)}`,
+            `  • ${tr(pdfT.outseam, lang)}: ${formatMeasurement(pm.outseamLength, unit)}`,
+          ]
+        : [
+            `  • ${tr(pdfT.waist, lang)}: ${formatMeasurement(sm.waist, unit)}`,
+            `  • ${tr(pdfT.hip, lang)}: ${formatMeasurement(sm.hip, unit)}`,
+            `  • ${tr(pdfT.waistToHip, lang)}: ${formatMeasurement(sm.waistToHip, unit)}`,
+            `  • ${tr(pdfT.skirtLength, lang)}: ${formatMeasurement(sm.skirtLength, unit)}`,
+          ];
 
   const allLines = [...baseInstructions, ...measurementLines];
-
   let y = 50;
-  allLines.forEach((line) => {
-    doc.text(line, MARGIN + 10, y);
-    y += 7;
-  });
+  allLines.forEach((line) => { doc.text(line, MARGIN + 10, y); y += 7; });
 
-  // Tile layout diagram — tiles are A4-proportioned so pattern scale is uniform (no distortion)
+  // ── Tile layout diagram ──
   y += 10;
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
   doc.text(tr(pdfT.pageLayout, lang), MARGIN + 10, y);
   y += 8;
 
-  const tileW = 18; // mm per tile (width)
-  const tileH = Math.round(tileW * PRINTABLE_HEIGHT / PRINTABLE_WIDTH); // ≈26mm — proportional to A4
+  const tileW = 18;
+  const tileH = Math.round(tileW * PRINTABLE_HEIGHT / PRINTABLE_WIDTH);
   const panelGap = 12;
-  const diagScale = tileW / PRINTABLE_WIDTH; // uniform scale: same for X and Y
+  const diagScale = tileW / PRINTABLE_WIDTH;
 
   panels.forEach((panel, panelIndex) => {
     const panelDiagramX = MARGIN + 10 + panelIndex * (tiles.cols * tileW + panelGap);
     const panelDiagramY = y;
 
-    // Draw A4-proportioned tile grid
     for (let row = 0; row < tiles.rows; row++) {
       for (let col = 0; col < tiles.cols; col++) {
         const tileX = panelDiagramX + col * tileW;
         const tileY = panelDiagramY + row * tileH;
         const pageNumber = panelIndex * tiles.totalPages + row * tiles.cols + col + 1;
-
         doc.setFillColor(245, 245, 245);
         doc.setDrawColor(160, 160, 160);
         doc.setLineWidth(0.3);
         doc.rect(tileX, tileY, tileW, tileH, 'FD');
-
         doc.setFontSize(7);
         doc.setTextColor(100, 100, 100);
         doc.text(String(pageNumber), tileX + tileW / 2, tileY + tileH / 2 + 2, { align: 'center' });
       }
     }
 
-    // Draw pattern outline — diagScale is uniform so aspect ratio is preserved
     const patternStartX = panelDiagramX + patternMarginMm * diagScale;
     const patternStartY = panelDiagramY + patternMarginMm * diagScale;
 
     if (isSleeve) {
-      drawDiagramSleeve(doc, measurements as SleeveMeasurements, patternStartX, patternStartY, diagScale, diagScale);
+      drawDiagramSleeve(doc, slm, patternStartX, patternStartY, diagScale, diagScale);
     } else if (isBodice) {
-      drawDiagramBodice(doc, measurements as BodiceMeasurements, patternStartX, patternStartY, panel, diagScale, diagScale);
-    } else {
-      drawDiagramSkirt(doc, measurements as SkirtMeasurements, patternStartX, patternStartY, panel, diagScale, diagScale);
+      drawDiagramBodice(doc, bm, patternStartX, patternStartY, panel, diagScale, diagScale);
+    } else if (!isPants) {
+      drawDiagramSkirt(doc, sm, patternStartX, patternStartY, panel, diagScale, diagScale);
     }
+    // Pants diagram: skip (pattern too complex for small tile)
 
-    // Panel label below grid
     doc.setFontSize(8);
     doc.setTextColor(0, 0, 0);
     const panelLabel = isSleeve

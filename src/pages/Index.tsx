@@ -7,6 +7,7 @@ import { useUnit } from '@/contexts/UnitContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
+import { LegalFooter } from '@/components/LegalFooter';
 import { CategorySelector } from '@/components/CategorySelector';
 import { PatternTypeNav } from '@/components/PatternTypeNav';
 import { SkirtMeasurementForm, defaultMeasurements as defaultSkirtMeasurements } from '@/components/SkirtMeasurementForm';
@@ -179,11 +180,22 @@ const Index = () => {
 
   const isPatternLocked = !canAccessPattern(patternType) && patternType !== 'skirt';
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     try {
+      // Server-side quota check (skirt always free, no check needed)
+      if (patternType !== 'skirt') {
+        const { data, error } = await supabase.functions.invoke('record-pattern-generation', {
+          body: { patternType },
+          headers: { Authorization: `Bearer ${session?.access_token}` },
+        });
+        if (error || !data?.ok) {
+          toast.error(data?.error ?? t('toast.pdfError'));
+          return;
+        }
+      }
       const measurements = getCurrentMeasurements();
       const userName = user?.user_metadata?.full_name || user?.email || '';
-      generatePatternPDF(measurements as SkirtMeasurements | BodiceMeasurements, patternType, measurementUnit, language, userName);
+      generatePatternPDF(measurements, patternType, measurementUnit, language, userName, category);
       toast.success(t('toast.pdfDownloaded'));
     } catch {
       toast.error(t('toast.pdfError') ?? 'Failed to generate PDF');
@@ -577,6 +589,7 @@ const Index = () => {
           <p>{t('info.footer')}</p>
         </div>
       </footer>
+      <LegalFooter />
     </div>
   );
 };
