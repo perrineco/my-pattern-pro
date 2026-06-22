@@ -15,7 +15,7 @@ interface AuthContextType {
   loading: boolean;
   subscription: SubscriptionState;
   purchasedPatterns: string[];
-  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: Error | null; userId?: string }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   checkSubscription: () => Promise<void>;
@@ -36,11 +36,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [purchasedPatterns, setPurchasedPatterns] = useState<string[]>([]);
 
   const checkSubscription = async () => {
-    if (!session?.access_token) return;
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (!currentSession?.access_token) return;
 
     try {
       const { data, error } = await supabase.functions.invoke('check-subscription', {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+        headers: { Authorization: `Bearer ${currentSession.access_token}` },
       });
 
       if (error) {
@@ -60,13 +61,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshPurchasedPatterns = async () => {
-    if (!user) return;
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (!currentSession?.user) return;
 
     try {
       const { data, error } = await supabase
         .from('pattern_purchases')
         .select('pattern_type')
-        .eq('user_id', user.id);
+        .eq('user_id', currentSession.user.id);
 
       if (error) {
         console.error('Error fetching purchases:', error);
@@ -131,12 +133,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/`;
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { emailRedirectTo: redirectUrl },
     });
-    return { error };
+    return { error, userId: data?.user?.id };
   };
 
   const signIn = async (email: string, password: string) => {
