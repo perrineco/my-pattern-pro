@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { Scissors, Mail, Lock, Loader2, ArrowLeft } from 'lucide-react';
+import { LegalFooter } from '@/components/LegalFooter';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -28,7 +29,7 @@ const getInitialMode = (): AuthMode => {
   const type = hashParams.get('type');
   const accessToken = hashParams.get('access_token');
   
-  if (type === 'recovery' && accessToken) {
+  if ((type === 'recovery' || type === 'invite') && accessToken) {
     return 'reset-password';
   }
   return 'login';
@@ -41,18 +42,19 @@ export default function Auth() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string; consentTerms?: string; consentMorpho?: string }>({});
+  const [consentTerms, setConsentTerms] = useState(false);
+  const [consentMorpho, setConsentMorpho] = useState(false);
   
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, loading } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Don't redirect if we're in reset-password mode
-    if (user && mode !== 'reset-password') {
+    if (!loading && user && mode !== 'reset-password') {
       navigate('/');
     }
-  }, [user, navigate, mode]);
+  }, [user, loading, navigate, mode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,6 +129,16 @@ export default function Auth() {
       return;
     }
 
+    if (mode === 'signup') {
+      const consentErrors: { consentTerms?: string; consentMorpho?: string } = {};
+      if (!consentTerms) consentErrors.consentTerms = 'Vous devez accepter les CGV et la Politique de confidentialité.';
+      if (!consentMorpho) consentErrors.consentMorpho = 'Vous devez accepter la conservation de vos mensurations.';
+      if (Object.keys(consentErrors).length > 0) {
+        setErrors(prev => ({ ...prev, ...consentErrors }));
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
@@ -143,7 +155,7 @@ export default function Auth() {
           navigate('/');
         }
       } else {
-        const { error } = await signUp(email, password);
+        const { error, userId } = await signUp(email, password);
         if (error) {
           if (error.message.includes('already registered')) {
             toast.error(t('auth.emailRegistered'));
@@ -151,6 +163,15 @@ export default function Auth() {
             toast.error(error.message);
           }
         } else {
+          if (userId) {
+            const now = new Date().toISOString();
+            await supabase.from('profiles').update({
+              consent_terms: true,
+              consent_terms_date: now,
+              consent_morphological_data: true,
+              consent_morphological_data_date: now,
+            }).eq('user_id', userId);
+          }
           toast.success(t('auth.accountCreated'));
           navigate('/');
         }
@@ -181,7 +202,8 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex flex-col">
+      <div className="flex-1 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 space-y-6">
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-2">
@@ -297,6 +319,46 @@ export default function Auth() {
             </div>
           )}
 
+          {mode === 'signup' && (
+            <div className="space-y-3">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consentTerms}
+                  onChange={(e) => { setConsentTerms(e.target.checked); setErrors(prev => ({ ...prev, consentTerms: undefined })); }}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                />
+                <span className="text-sm text-muted-foreground leading-snug">
+                  J'accepte les{' '}
+                  <a href="/cgv" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CGV</a>
+                  {' '}et la{' '}
+                  <a href="/confidentialite" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Politique de confidentialité</a>.
+                  <span className="text-destructive"> *</span>
+                </span>
+              </label>
+              {errors.consentTerms && (
+                <p className="text-sm text-destructive">{errors.consentTerms}</p>
+              )}
+
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consentMorpho}
+                  onChange={(e) => { setConsentMorpho(e.target.checked); setErrors(prev => ({ ...prev, consentMorpho: undefined })); }}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+                />
+                <span className="text-sm text-muted-foreground leading-snug">
+                  J'accepte que Petit Citron Studio conserve mes mensurations corporelles pour générer mes patrons sur mesure. Je peux demander leur suppression à tout moment via{' '}
+                  <a href="mailto:contact@petitcitron.com" className="text-primary hover:underline">contact@petitcitron.com</a>.
+                  <span className="text-destructive"> *</span>
+                </span>
+              </label>
+              {errors.consentMorpho && (
+                <p className="text-sm text-destructive">{errors.consentMorpho}</p>
+              )}
+            </div>
+          )}
+
           <Button type="submit" className="w-full" size="lg" disabled={loading}>
             {loading ? (
               <>
@@ -340,6 +402,8 @@ export default function Auth() {
           )}
         </div>
       </Card>
+      </div>
+      <LegalFooter />
     </div>
   );
 }
