@@ -52,18 +52,7 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
 
   // Filter pattern types based on category
   const filteredPatternTypes = patternTypes
-    .filter(type => !(type.value === 'skirt' && category === 'men'))
-    .map(type => {
-      if (type.value === 'pants' && category === 'men' && type.submenu) {
-        return {
-          ...type,
-          submenu: type.submenu.map(sub =>
-            sub.value === 'pants-with-darts' ? { ...sub, available: false } : sub
-          ),
-        };
-      }
-      return type;
-    });
+    .filter(type => !(type.value === 'skirt' && category === 'men'));
 
   const isBodiceVariant = selected.startsWith('bodice');
   const isPantsVariant = selected.startsWith('pants');
