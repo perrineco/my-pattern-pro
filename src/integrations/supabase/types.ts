@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -70,6 +70,10 @@ export type Database = {
       }
       profiles: {
         Row: {
+          consent_morphological_data: boolean
+          consent_morphological_data_date: string | null
+          consent_terms: boolean
+          consent_terms_date: string | null
           created_at: string
           email: string | null
           full_name: string | null
@@ -78,6 +82,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          consent_morphological_data?: boolean
+          consent_morphological_data_date?: string | null
+          consent_terms?: boolean
+          consent_terms_date?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -86,6 +94,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          consent_morphological_data?: boolean
+          consent_morphological_data_date?: string | null
+          consent_terms?: boolean
+          consent_terms_date?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -133,6 +145,7 @@ export type Database = {
           created_at: string
           id: string
           monthly_patterns_used: number
+          patterns_reset_at: string | null
           period_end: string | null
           period_start: string | null
           stripe_customer_id: string | null
@@ -145,6 +158,7 @@ export type Database = {
           created_at?: string
           id?: string
           monthly_patterns_used?: number
+          patterns_reset_at?: string | null
           period_end?: string | null
           period_start?: string | null
           stripe_customer_id?: string | null
@@ -157,6 +171,7 @@ export type Database = {
           created_at?: string
           id?: string
           monthly_patterns_used?: number
+          patterns_reset_at?: string | null
           period_end?: string | null
           period_start?: string | null
           stripe_customer_id?: string | null

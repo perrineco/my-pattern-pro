@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header';
+import { LegalFooter } from '@/components/LegalFooter';
 import { ArrowLeft, Globe, Ruler, DollarSign } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -117,6 +118,7 @@ export default function Settings() {
           </Card>
         </div>
       </main>
+      <LegalFooter />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { PatternType, BodiceVariant, Category } from '@/types/sloper';
+import { PatternType, Category } from '@/types/sloper';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
@@ -58,7 +58,7 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
         return {
           ...type,
           submenu: type.submenu.map(sub =>
-            sub.value === 'pants-dartless' ? { ...sub, available: false } : sub
+            sub.value === 'pants-with-darts' ? { ...sub, available: false } : sub
           ),
         };
       }

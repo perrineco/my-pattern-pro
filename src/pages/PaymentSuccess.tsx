@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Scissors, CheckCircle, Loader2 } from 'lucide-react';
+import { LegalFooter } from '@/components/LegalFooter';
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
@@ -80,6 +81,7 @@ export default function PaymentSuccess() {
           </div>
         </div>
       </Card>
+      <LegalFooter />
     </div>
   );
 }

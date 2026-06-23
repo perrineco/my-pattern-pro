@@ -20,6 +20,7 @@
  import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
  import { toast } from 'sonner';
  import { ArrowLeft, Send, MessageSquare, Bug, Lightbulb, HelpCircle } from 'lucide-react';
+ import { LegalFooter } from '@/components/LegalFooter';
  
  const contactSchema = z.object({
    name: z.string().trim().min(1, 'Le nom est requis').max(100, 'Le nom doit faire moins de 100 caractères'),
@@ -203,6 +204,7 @@
            </CardContent>
          </Card>
        </div>
+       <LegalFooter />
      </div>
    );
  }

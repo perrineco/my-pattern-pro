@@ -5,21 +5,21 @@ export const STRIPE_CONFIG = {
       productId: 'prod_TpeFl682qnh9TF',
       priceId: 'price_1SryxMClhPrD5Rw6ooyZVYOr',
       name: 'Basic',
-      price: 9.99,
-      patternsPerMonth: 5,
+      price: 9.90,
+      patternsPerMonth: 10,
     },
     pro: {
       productId: 'prod_TpfU3WzHxyWx4X',
       priceId: 'price_1Ss09OClhPrD5Rw68WIwGySA',
       name: 'Pro',
-      price: 19.99,
+      price: 19.90,
       patternsPerMonth: Infinity,
     },
   },
   singlePurchase: {
     productId: 'prod_TpfV8oPBpaUZD2',
     priceId: 'price_1Ss0AiClhPrD5Rw61q8IMbvp',
-    price: 4.99,
+    price: 4.90,
   },
 } as const;
 

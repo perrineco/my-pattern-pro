@@ -22,14 +22,11 @@ interface SkirtBackPanelProps {
   category: Category;
   centerToDartScaled: number;
   mirrored?: boolean;
+  showMeasurements: boolean;
 }
 
 export function SkirtBackPanel({
-  waistQuarter,
-  ease,
-  dartWidth,
   skirtLength,
-  waistToHip,
   scale,
   patternWidth,
   patternHeight,
@@ -41,6 +38,7 @@ export function SkirtBackPanel({
   offsetY,
   centerToDartScaled,
   mirrored,
+  showMeasurements,
 }: SkirtBackPanelProps) {
   const { t } = useLanguage();
   const tm: React.CSSProperties | undefined = mirrored
@@ -63,6 +61,13 @@ export function SkirtBackPanel({
     Z
   `;
 
+  const grainY1 = offsetY + patternHeight * 0.35;
+  const grainY2 = offsetY + patternHeight * 0.65;
+
+  const ml = "hsl(var(--measure-line))";
+  const t6 = 6;
+  const hemY = offsetY + patternHeight;
+
   return (
     <g className="back-panel">
       {/* Pattern piece */}
@@ -74,95 +79,65 @@ export function SkirtBackPanel({
         className="animate-fade-in"
       />
 
-      {/* Grain line */}
+      {/* Grain line — shorter, bidirectional arrows */}
       <line
         x1={offsetX + patternWidth / 2}
-        y1={offsetY + 30}
+        y1={grainY1}
         x2={offsetX + patternWidth / 2}
-        y2={offsetY + patternHeight - 30}
+        y2={grainY2}
         stroke="hsl(var(--pattern-stroke))"
         strokeWidth="1"
         strokeDasharray="8,4"
         markerEnd="url(#arrow)"
-        markerStart="url(#arrow)"
+        markerStart="url(#arrowReverse)"
       />
 
-      {/* Waist measurement */}
-      <g className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
-        <line
-          x1={offsetX - 10}
-          y1={offsetY - 15}
-          x2={offsetX + waistWidthScaled + 10}
-          y2={offsetY - 15}
-          stroke="hsl(var(--measure-line))"
-          strokeWidth="1"
-        />
-        <line
-          x1={offsetX}
-          y1={offsetY - 20}
-          x2={offsetX}
-          y2={offsetY - 10}
-          stroke="hsl(var(--measure-line))"
-          strokeWidth="1"
-        />
-        <line
-          x1={offsetX + waistWidthScaled}
-          y1={offsetY - 20}
-          x2={offsetX + waistWidthScaled}
-          y2={offsetY - 10}
-          stroke="hsl(var(--measure-line))"
-          strokeWidth="1"
-        />
-        <text
-          x={offsetX + waistWidthScaled / 2}
-          y={offsetY - 22}
-          textAnchor="middle"
-          className="fill-primary text-xs font-sans"
-          style={tm}
-        >
-          {t('piece.quarterWaist')} = {(waistQuarter + dartWidth + ease).toFixed(1)}cm
-        </text>
-      </g>
+      {showMeasurements && (
+        <>
+          {/* Waist width — horizontal, above pattern */}
+          <g className="animate-fade-in">
+            <line x1={offsetX} y1={offsetY - 18} x2={offsetX + waistWidthScaled} y2={offsetY - 18} stroke={ml} strokeWidth="1" />
+            <line x1={offsetX} y1={offsetY - 18 - t6} x2={offsetX} y2={offsetY - 18 + t6} stroke={ml} strokeWidth="1" />
+            <line x1={offsetX + waistWidthScaled} y1={offsetY - 18 - t6} x2={offsetX + waistWidthScaled} y2={offsetY - 18 + t6} stroke={ml} strokeWidth="1" />
+            <text x={offsetX + waistWidthScaled / 2} y={offsetY - 26} textAnchor="middle" className="fill-primary text-xs font-sans" style={tm}>
+              {(waistWidthScaled / scale).toFixed(1)}cm
+            </text>
+          </g>
 
-      {/* Hip to hem measurement */}
-      <g className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-        <line
-          x1={offsetX + patternWidth + 15}
-          y1={offsetY + waistToHipScaled}
-          x2={offsetX + patternWidth + 15}
-          y2={offsetY + patternHeight}
-          stroke="hsl(var(--measure-line))"
-          strokeWidth="1"
-        />
-        <text
-          x={offsetX + patternWidth + 25}
-          y={offsetY + waistToHipScaled + (patternHeight - waistToHipScaled) / 2}
-          textAnchor="start"
-          className="fill-primary text-xs font-sans"
-          transform={`rotate(90, ${offsetX + patternWidth + 25}, ${offsetY + waistToHipScaled + (patternHeight - waistToHipScaled) / 2})`}
-          style={tm}
-        >
-          {(skirtLength - waistToHip).toFixed(1)}cm
-        </text>
-      </g>
+          {/* Skirt length — vertical, outer side (local left = visual right after mirror) */}
+          <g className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
+            <line x1={offsetX - 15} y1={offsetY} x2={offsetX - 15} y2={hemY} stroke={ml} strokeWidth="1" />
+            <line x1={offsetX - 15 - t6} y1={offsetY} x2={offsetX - 15 + t6} y2={offsetY} stroke={ml} strokeWidth="1" />
+            <line x1={offsetX - 15 - t6} y1={hemY} x2={offsetX - 15 + t6} y2={hemY} stroke={ml} strokeWidth="1" />
+            <text
+              x={offsetX - 26}
+              y={offsetY + patternHeight / 2}
+              textAnchor="middle"
+              className="fill-primary text-xs font-sans"
+              transform={`rotate(-90, ${offsetX - 26}, ${offsetY + patternHeight / 2})`}
+              style={tm}
+            >
+              {skirtLength}cm
+            </text>
+          </g>
 
-      {/* Label */}
-      <text
-        x={offsetX + patternWidth / 2}
-        y={offsetY + patternHeight / 2}
-        textAnchor="middle"
-        className="fill-foreground font-serif text-sm"
-        style={tm}
-      >
+          {/* Hip width — horizontal, below hem */}
+          <g className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+            <line x1={offsetX} y1={hemY + 15} x2={offsetX + patternWidth} y2={hemY + 15} stroke={ml} strokeWidth="1" />
+            <line x1={offsetX} y1={hemY + 15 - t6} x2={offsetX} y2={hemY + 15 + t6} stroke={ml} strokeWidth="1" />
+            <line x1={offsetX + patternWidth} y1={hemY + 15 - t6} x2={offsetX + patternWidth} y2={hemY + 15 + t6} stroke={ml} strokeWidth="1" />
+            <text x={offsetX + patternWidth / 2} y={hemY + 32} textAnchor="middle" className="fill-primary text-xs font-sans" style={tm}>
+              {(patternWidth / scale).toFixed(1)}cm
+            </text>
+          </g>
+        </>
+      )}
+
+      {/* Labels */}
+      <text x={offsetX + patternWidth / 2} y={offsetY + patternHeight / 2} textAnchor="middle" className="fill-foreground font-serif text-sm" style={tm}>
         {t('piece.back')}
       </text>
-      <text
-        x={offsetX + patternWidth / 2}
-        y={offsetY + patternHeight / 2 + 18}
-        textAnchor="middle"
-        className="fill-muted-foreground text-xs font-sans"
-        style={tm}
-      >
+      <text x={offsetX + patternWidth / 2} y={offsetY + patternHeight / 2 + 18} textAnchor="middle" className="fill-muted-foreground text-xs font-sans" style={tm}>
         {t('piece.cutOnFold')}
       </text>
     </g>

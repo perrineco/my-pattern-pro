@@ -1,5 +1,6 @@
 import { BodiceMeasurements, Category } from "@/types/sloper";
 import { useDartlessBodicePath } from "./DartlessBodicePanelPath";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface DartlessBodicePanelProps {
   measurements: BodiceMeasurements;
@@ -20,6 +21,7 @@ export function DartlessBodicePanel({
   category,
   mirrored,
 }: DartlessBodicePanelProps) {
+  const { t } = useLanguage();
   const { bust, backWidth, backLength } = measurements;
 
   const { path, bustQuarterScaled, armholeDepthScaled, backLengthScaled, ease } = useDartlessBodicePath({
@@ -124,14 +126,14 @@ export function DartlessBodicePanel({
             y={offsetY + armholeDepthScaled + 4}
             className="fill-muted-foreground text-[10px]"
           >
-            Bust: {(bust / 4 + ease).toFixed(1)}cm
+            {t('piece.bust')}: {(bust / 4 + ease).toFixed(1)}cm
           </text>
           <text
             x={offsetX + bustQuarterScaled + 10}
             y={offsetY + backLengthScaled - 5}
             className="fill-muted-foreground text-[10px]"
           >
-            Back width: {(backWidth / 2).toFixed(1)}cm
+            {t('piece.backWidth')}: {(backWidth / 2).toFixed(1)}cm
           </text>
         </>
       )}
@@ -156,7 +158,7 @@ export function DartlessBodicePanel({
         transform={`rotate(-90 ${offsetX + 3} ${offsetY + backLengthScaled / 2})`}
         style={tm}
       >
-        FOLD
+        {t('piece.fold')}
       </text>
     </g>
   );

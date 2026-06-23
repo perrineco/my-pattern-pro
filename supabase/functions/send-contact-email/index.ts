@@ -30,7 +30,7 @@ serve(async (req) => {
         Authorization: `Bearer ${resendKey}`,
       },
       body: JSON.stringify({
-        from: "Petit Citron Studio <noreply@studio.petitcitron.com>",
+        from: "Petit Citron Studio <noreply@petitcitron.com>",
         to: ["perrine.cc@gmail.com"],
         reply_to: email,
         subject: `[Contact] ${categoryLabels[category] ?? category} — ${name}`,

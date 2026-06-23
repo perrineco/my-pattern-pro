@@ -5,7 +5,8 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import { STRIPE_CONFIG } from '@/lib/stripe-config';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Scissors, Ruler, Download, Users, Crown, Star, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Scissors, Ruler, Download, Users, Star, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { LegalFooter } from '@/components/LegalFooter';
 
 export default function Welcome() {
   const navigate = useNavigate();
@@ -20,8 +21,8 @@ export default function Welcome() {
   };
 
   const fmt = (price: number) => currency === 'USD' || currency === 'CAD'
-    ? `${symbol}${price}`
-    : `${price}${symbol}`;
+    ? `${symbol}${price.toFixed(2)}`
+    : `${price.toFixed(2)}${symbol}`;
 
   const features = [
     { icon: Ruler, title: t('welcome.feat.measurements'), description: t('welcome.feat.measurementsDesc') },
@@ -32,26 +33,21 @@ export default function Welcome() {
 
   const plans = [
     {
-      name: t('welcome.plan.free'), price: fmt(0), period: '',
-      features: [t('welcome.plan.feat.skirt'), t('welcome.plan.feat.allCategories'), t('welcome.plan.feat.pdfExport'), t('welcome.plan.feat.livePreview')],
+      name: t('welcome.plan.free'), desc: t('welcome.plan.freeDesc'), price: fmt(0), period: '',
+      features: [t('welcome.plan.feat.skirt'), t('welcome.plan.feat.pdfExport'), t('welcome.plan.feat.livePreview')],
       cta: t('welcome.plan.getStarted'), highlighted: false,
+      note: 'Ou achetez un patron individuel à 4,99 € depuis l\'application.',
     },
     {
-      name: t('welcome.plan.basic'), price: fmt(STRIPE_CONFIG.subscriptions.basic.price), period: '/mo',
-      features: [t('welcome.plan.feat.allPatterns'), t('welcome.plan.feat.saveProfiles'), t('welcome.plan.feat.tenPatterns'), t('welcome.plan.feat.prioritySupport')],
+      name: t('welcome.plan.basic'), desc: t('welcome.plan.basicDesc'), price: fmt(STRIPE_CONFIG.subscriptions.basic.price), period: '/mo',
+      features: [t('welcome.plan.feat.tenPatterns'), t('welcome.plan.feat.allPatterns'), t('welcome.plan.feat.saveProfiles'), t('welcome.plan.feat.pdfExport'), t('welcome.plan.feat.adjustmentGuide')],
       cta: t('welcome.plan.startBasic'), highlighted: false,
     },
     {
-      name: t('welcome.plan.pro'), price: fmt(STRIPE_CONFIG.subscriptions.pro.price), period: '/mo',
-      features: [t('welcome.plan.feat.unlimited'), t('welcome.plan.feat.unlimitedProfiles'), t('welcome.plan.feat.allFuture'), t('welcome.plan.feat.earlyAccess')],
-      cta: t('welcome.plan.goPro'), highlighted: true,
+      name: t('welcome.plan.pro'), desc: t('welcome.plan.proDesc'), price: fmt(STRIPE_CONFIG.subscriptions.pro.price), period: '/mo',
+      features: [t('welcome.plan.feat.unlimited'), t('welcome.plan.feat.allPatterns'), t('welcome.plan.feat.unlimitedProfiles'), t('welcome.plan.feat.pdfExport'), t('welcome.plan.feat.adjustmentGuide'), t('welcome.plan.feat.earlyAccess'), t('welcome.plan.feat.prioritySupport')],
+      cta: t('welcome.plan.goPro'), highlighted: false,
     },
-  ];
-
-  const testimonials = [
-    { quote: t('welcome.testimonial1'), author: t('welcome.testimonial1Author'), role: t('welcome.testimonial1Role') },
-    { quote: t('welcome.testimonial2'), author: t('welcome.testimonial2Author'), role: t('welcome.testimonial2Role') },
-    { quote: t('welcome.testimonial3'), author: t('welcome.testimonial3Author'), role: t('welcome.testimonial3Role') },
   ];
 
   return (
@@ -125,6 +121,42 @@ export default function Welcome() {
         </div>
       </section>
 
+      {/* Demo preview */}
+      <section className="bg-secondary/30 py-16">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="text-center mb-10">
+            <h3 className="font-serif text-3xl font-semibold text-foreground mb-3">Ce que vous obtenez</h3>
+            <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              Un patron de base précis, annoté, prêt à imprimer, généré en quelques secondes à partir de vos mesures.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center gap-4">
+            <img
+              src="/demo-skirt-pattern.png"
+              alt="Aperçu du patron jupe"
+              className="w-full max-w-2xl rounded-xl border border-border shadow-lg"
+            />
+            <p className="text-xs text-muted-foreground text-center italic">
+              Aperçu du patron jupe de base — devant et dos, avec annotations des mesures clés
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10">
+            {[
+              'Prêt à imprimer en A4',
+              'Droit-fil et repères d\'assemblage inclus',
+              'Téléchargement instantané en PDF',
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-2 text-sm text-foreground">
+                <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Preview */}
       <section className="bg-secondary/30 py-16">
         <div className="container mx-auto px-4">
@@ -134,14 +166,9 @@ export default function Welcome() {
           </div>
           <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {plans.map((plan) => (
-              <Card key={plan.name} className={`p-6 flex flex-col ${plan.highlighted ? 'border-primary shadow-lg ring-2 ring-primary/20' : ''}`}>
-                {plan.highlighted && (
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-primary mb-3">
-                    <Crown className="w-3.5 h-3.5" />
-                    {t('welcome.plan.mostPopular')}
-                  </div>
-                )}
+              <Card key={plan.name} className="p-6 flex flex-col">
                 <h4 className="font-serif text-xl font-semibold text-foreground">{plan.name}</h4>
+                {'desc' in plan && <p className="text-sm text-muted-foreground mt-0.5 mb-1">{plan.desc}</p>}
                 <div className="mt-2 mb-4">
                   <span className="text-3xl font-bold text-foreground">{plan.price}</span>
                   <span className="text-muted-foreground text-sm">{plan.period}</span>
@@ -157,29 +184,16 @@ export default function Welcome() {
                 <Button variant={plan.highlighted ? 'default' : 'outline'} className="w-full" onClick={() => navigate('/pricing')}>
                   {plan.cta}
                 </Button>
+                {'note' in plan && plan.note && (
+                  <p className="text-xs text-muted-foreground text-center mt-3 leading-snug">{plan.note}</p>
+                )}
               </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h3 className="font-serif text-3xl font-semibold text-foreground mb-3">{t('welcome.testimonialsTitle')}</h3>
-        </div>
-        <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {testimonials.map((tst) => (
-            <Card key={tst.author} className="p-6">
-              <p className="text-sm text-muted-foreground leading-relaxed italic mb-4">"{tst.quote}"</p>
-              <div>
-                <p className="text-sm font-medium text-foreground">{tst.author}</p>
-                <p className="text-xs text-muted-foreground">{tst.role}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </section>
+      {/* Testimonials — hidden until real users available */}
 
       {/* CTA */}
       <section className="container mx-auto px-4 py-16 text-center">
@@ -193,16 +207,7 @@ export default function Welcome() {
         </Card>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-8">
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>{t('welcome.footer')}</p>
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/pricing')} className="hover:text-foreground transition-colors">{t('action.pricing')}</button>
-            <button onClick={() => navigate('/contact')} className="hover:text-foreground transition-colors">{t('action.contact')}</button>
-          </div>
-        </div>
-      </footer>
+      <LegalFooter />
     </div>
   );
 }

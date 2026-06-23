@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { STRIPE_CONFIG, getPatternsLimit } from '@/lib/stripe-config';
 import { Header } from '@/components/Header';
 import { Check, Crown, Sparkles, ShoppingCart, ChevronDown } from 'lucide-react';
+import { LegalFooter } from '@/components/LegalFooter';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -120,7 +121,7 @@ export default function Pricing() {
               {(expanded['single'] || true) && <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.single.desc')}</p>}
             </div>
             <div className="mb-2 sm:mb-6">
-              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.singlePurchase.price}{symbol}</span>
+              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.singlePurchase.price.toFixed(2)}{symbol}</span>
               <span className="text-xs sm:text-base text-muted-foreground"> {t('pricing.perPattern')}</span>
             </div>
             <ul className="space-y-1 sm:space-y-3 mb-2 sm:mb-6">
@@ -165,7 +166,7 @@ export default function Pricing() {
               <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.basic.desc')}</p>
             </div>
             <div className="mb-2 sm:mb-6">
-              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.subscriptions.basic.price}{symbol}</span>
+              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.subscriptions.basic.price.toFixed(2)}{symbol}</span>
               <span className="text-xs sm:text-base text-muted-foreground"> {t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-1 sm:space-y-3 mb-2 sm:mb-6">
@@ -187,11 +188,16 @@ export default function Pricing() {
                     <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
                     <span>{t('pricing.basic.f4')}</span>
                   </li>
+                  <li className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
+                    <span>{t('pricing.basic.f5')}</span>
+                  </li>
                 </>
               ) : (
                 <>
                   <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.basic.f3')}</span></li>
                   <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.basic.f4')}</span></li>
+                  <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.basic.f5')}</span></li>
                 </>
               )}
             </ul>
@@ -224,7 +230,7 @@ export default function Pricing() {
               <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.pro.desc')}</p>
             </div>
             <div className="mb-2 sm:mb-6">
-              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.subscriptions.pro.price}{symbol}</span>
+              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.subscriptions.pro.price.toFixed(2)}{symbol}</span>
               <span className="text-xs sm:text-base text-muted-foreground"> {t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-1 sm:space-y-3 mb-2 sm:mb-6">
@@ -238,19 +244,21 @@ export default function Pricing() {
               </li>
               {expanded['pro'] ? (
                 <>
-                  <li className="flex items-center gap-2 text-xs sm:text-sm">
-                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
-                    <span>{t('pricing.pro.f3')}</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-xs sm:text-sm">
-                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
-                    <span>{t('pricing.pro.f4')}</span>
-                  </li>
+                  {(['f3','f4','f5','f6','f7'] as const).map(k => (
+                    <li key={k} className="flex items-center gap-2 text-xs sm:text-sm">
+                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary shrink-0" />
+                      <span>{t(`pricing.pro.${k}`)}</span>
+                    </li>
+                  ))}
                 </>
               ) : (
                 <>
-                  <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.pro.f3')}</span></li>
-                  <li className="hidden sm:flex items-center gap-2 text-sm"><Check className="w-4 h-4 text-primary shrink-0" /><span>{t('pricing.pro.f4')}</span></li>
+                  {(['f3','f4','f5','f6','f7'] as const).map(k => (
+                    <li key={k} className="hidden sm:flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-primary shrink-0" />
+                      <span>{t(`pricing.pro.${k}`)}</span>
+                    </li>
+                  ))}
                 </>
               )}
             </ul>
@@ -289,9 +297,30 @@ export default function Pricing() {
               <h3 className="font-medium mb-2">{t('pricing.faq.q3')}</h3>
               <p className="text-sm text-muted-foreground">{t('pricing.faq.a3')}</p>
             </div>
+            <div>
+              <h3 className="font-medium mb-2">{t('pricing.faq.q4')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.faq.a4')}</p>
+            </div>
+            <div>
+              <h3 className="font-medium mb-2">{t('pricing.faq.q5')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.faq.a5')}</p>
+            </div>
+            <div>
+              <h3 className="font-medium mb-2">{t('pricing.faq.q6')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.faq.a6')}</p>
+            </div>
+            <div>
+              <h3 className="font-medium mb-2">{t('pricing.faq.q7')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.faq.a7')}</p>
+            </div>
+            <div>
+              <h3 className="font-medium mb-2">{t('pricing.faq.q8')}</h3>
+              <p className="text-sm text-muted-foreground">{t('pricing.faq.a8')}</p>
+            </div>
           </div>
         </div>
       </main>
+      <LegalFooter />
     </div>
   );
 }
