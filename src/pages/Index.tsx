@@ -274,7 +274,7 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="w-full lg:w-auto overflow-x-auto">
+              <div className="w-full lg:w-auto">
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">
                   {t('label.garmentType')}
                 </label>
