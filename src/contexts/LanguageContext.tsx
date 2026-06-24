@@ -86,7 +86,7 @@ const translations: Record<string, Record<Language, string>> = {
   'hint.measureAtFullestPart': { en: 'Measure at fullest part', fr: 'Mesurer à l\'endroit le plus large' },
   'hint.distanceBetweenWaistAndHip': { en: 'Distance between waist and hip', fr: 'Distance entre la taille et les hanches' },
   'hint.fromWaistToHem': { en: 'From waist to hem', fr: 'De la taille à l\'ourlet' },
-  'hint.wearingEaseAllowance': { en: 'Wearing ease allowance', fr: 'Tolérance d\'aisance' },
+  'hint.wearingEaseAllowance': { en: 'Wearing ease allowance', fr: 'Valeur d\'aisance' },
   // Unified form hints
   'hint.waist': { en: 'Measure at natural waist', fr: 'Mesurer à la taille naturelle' },
   'hint.hip': { en: 'Measure at fullest part', fr: 'Mesurer à l\'endroit le plus large' },
