@@ -15,7 +15,7 @@ interface AuthContextType {
   loading: boolean;
   subscription: SubscriptionState;
   purchasedPatterns: string[];
-  signUp: (email: string, password: string) => Promise<{ error: Error | null; userId?: string }>;
+  signUp: (email: string, password: string) => Promise<{ error: Error | null; userId?: string; sessionCreated: boolean }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   checkSubscription: () => Promise<void>;
@@ -138,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: { emailRedirectTo: redirectUrl },
     });
-    return { error, userId: data?.user?.id };
+    return { error, userId: data?.user?.id, sessionCreated: !!data?.session };
   };
 
   const signIn = async (email: string, password: string) => {

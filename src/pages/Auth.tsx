@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { Scissors, Mail, Lock, Loader2, ArrowLeft } from 'lucide-react';
+import { Mail, Lock, Loader2, ArrowLeft } from 'lucide-react';
 import { LegalFooter } from '@/components/LegalFooter';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,7 +21,7 @@ const emailSchema = (t: (k: string) => string) => z.object({
   email: z.string().email(t('auth.invalidEmail')),
 });
 
-type AuthMode = 'login' | 'signup' | 'forgot-password' | 'reset-password';
+type AuthMode = 'login' | 'signup' | 'forgot-password' | 'reset-password' | 'confirm-email';
 
 // Check for recovery token synchronously before component renders
 const getInitialMode = (): AuthMode => {
@@ -155,7 +155,7 @@ export default function Auth() {
           navigate('/');
         }
       } else {
-        const { error, userId } = await signUp(email, password);
+        const { error, userId, sessionCreated } = await signUp(email, password);
         if (error) {
           if (error.message.includes('already registered')) {
             toast.error(t('auth.emailRegistered'));
@@ -172,8 +172,12 @@ export default function Auth() {
               consent_morphological_data_date: now,
             }).eq('user_id', userId);
           }
-          toast.success(t('auth.accountCreated'));
-          navigate('/');
+          if (sessionCreated) {
+            toast.success(t('auth.accountCreated'));
+            navigate('/');
+          } else {
+            setMode('confirm-email');
+          }
         }
       }
     } catch (err) {
@@ -188,6 +192,7 @@ export default function Auth() {
       case 'signup': return t('auth.createAccount');
       case 'forgot-password': return t('auth.resetPassword');
       case 'reset-password': return t('auth.setNewPassword');
+      case 'confirm-email': return t('auth.confirmEmailTitle');
       default: return t('auth.welcomeBack');
     }
   };
@@ -197,6 +202,7 @@ export default function Auth() {
       case 'signup': return t('auth.createAccountDesc');
       case 'forgot-password': return t('auth.resetPasswordDesc');
       case 'reset-password': return t('auth.setNewPasswordDesc');
+      case 'confirm-email': return t('auth.confirmEmailDesc').replace('{email}', email);
       default: return t('auth.welcomeBackDesc');
     }
   };
@@ -224,7 +230,16 @@ export default function Auth() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {mode === 'confirm-email' ? (
+          <div className="text-center space-y-4">
+            <div className="text-4xl">📬</div>
+            <Button className="w-full" size="lg" onClick={() => setMode('login')}>
+              {t('auth.goToSignIn')}
+            </Button>
+          </div>
+        ) : null}
+
+        <form onSubmit={handleSubmit} className={mode === 'confirm-email' ? 'hidden' : 'space-y-4'}>
           {mode !== 'reset-password' && (
             <div className="space-y-2">
               <Label htmlFor="email">{t('auth.email')}</Label>
@@ -377,28 +392,30 @@ export default function Auth() {
           </Button>
         </form>
 
-        <div className="text-center space-y-2">
-          {mode === 'forgot-password' && (
-            <button
-              type="button"
-              onClick={() => setMode('login')}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1 mx-auto"
-            >
-              <ArrowLeft className="w-3 h-3" />
-              {t('auth.backToSignIn')}
-            </button>
-          )}
+        {mode !== 'confirm-email' && (
+          <div className="text-center space-y-2">
+            {mode === 'forgot-password' && (
+              <button
+                type="button"
+                onClick={() => setMode('login')}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1 mx-auto"
+              >
+                <ArrowLeft className="w-3 h-3" />
+                {t('auth.backToSignIn')}
+              </button>
+            )}
 
-          {(mode === 'login' || mode === 'signup') && (
-            <button
-              type="button"
-              onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              {mode === 'login' ? t('auth.noAccount') : t('auth.hasAccount')}
-            </button>
-          )}
-        </div>
+            {(mode === 'login' || mode === 'signup') && (
+              <button
+                type="button"
+                onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                {mode === 'login' ? t('auth.noAccount') : t('auth.hasAccount')}
+              </button>
+            )}
+          </div>
+        )}
       </Card>
       </div>
       <LegalFooter />

@@ -984,6 +984,9 @@ const translations: Record<string, Record<Language, string>> = {
   'auth.resetEmailSent': { en: 'Password reset email sent! Check your inbox.', fr: 'Email de réinitialisation envoyé ! Vérifiez votre boîte mail.' },
   'auth.passwordUpdated': { en: 'Password updated successfully!', fr: 'Mot de passe mis à jour avec succès !' },
   'auth.unexpectedError': { en: 'An unexpected error occurred', fr: 'Une erreur inattendue s\'est produite' },
+  'auth.confirmEmailTitle': { en: 'Check your inbox', fr: 'Vérifiez votre boîte mail' },
+  'auth.confirmEmailDesc': { en: 'We sent a confirmation link to {email}. Click it to activate your account, then sign in.', fr: 'Nous avons envoyé un lien de confirmation à {email}. Cliquez dessus pour activer votre compte, puis connectez-vous.' },
+  'auth.goToSignIn': { en: 'Go to sign in', fr: 'Aller à la connexion' },
 };
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
