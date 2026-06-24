@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Category, PatternType, SkirtMeasurements, BodiceMeasurements, PantsMeasurements, SleeveMeasurements, Measurements, UnifiedMeasurements, toSkirtMeasurements, toBodiceMeasurements, toPantsMeasurements, toSleeveMeasurements } from '@/types/sloper';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,6 +40,27 @@ import { toast } from 'sonner';
 import { getPatternsLimit, STRIPE_CONFIG } from '@/lib/stripe-config';
 import { generatePatternPDF } from '@/lib/pdf-export';
 
+const DRAFT_KEY = (cat: Category) => `pcs_draft_${cat}`;
+
+interface DraftMeasurements {
+  skirt: SkirtMeasurements;
+  bodice: BodiceMeasurements;
+  dartlessBodice: BodiceMeasurements;
+  knitBodice: BodiceMeasurements;
+  bodiceDarts: BodiceMeasurements;
+  pants: PantsMeasurements;
+  sleeve: SleeveMeasurements;
+}
+
+function loadDraft(cat: Category): DraftMeasurements | null {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY(cat));
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 const Index = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -55,27 +76,27 @@ const Index = () => {
 
   const [category, setCategory] = useState<Category>('women');
   const [patternType, setPatternType] = useState<PatternType>('skirt');
-  const [skirtMeasurements, setSkirtMeasurements] = useState<SkirtMeasurements>(
-    defaultSkirtMeasurements.women
-  );
-  const [bodiceMeasurements, setBodiceMeasurements] = useState<BodiceMeasurements>(
-    defaultBodiceMeasurements.women
-  );
-  const [dartlessBodiceMeasurements, setDartlessBodiceMeasurements] = useState<BodiceMeasurements>(
-    defaultDartlessBodiceMeasurements.women
-  );
-  const [knitBodiceMeasurements, setKnitBodiceMeasurements] = useState<BodiceMeasurements>(
-    defaultKnitBodiceMeasurements.women
-  );
-  const [bodiceDartsMeasurements, setBodiceDartsMeasurements] = useState<BodiceMeasurements>(
-    defaultBodiceDartsMeasurements.women
-  );
-  const [pantsMeasurements, setPantsMeasurements] = useState<PantsMeasurements>(
-    defaultPantsMeasurements.women
-  );
-  const [sleeveMeasurements, setSleeveMeasurements] = useState<SleeveMeasurements>(
-    defaultSleeveMeasurements.women
-  );
+  const [skirtMeasurements, setSkirtMeasurements] = useState<SkirtMeasurements>(() => {
+    const d = loadDraft('women'); return d?.skirt ?? defaultSkirtMeasurements.women;
+  });
+  const [bodiceMeasurements, setBodiceMeasurements] = useState<BodiceMeasurements>(() => {
+    const d = loadDraft('women'); return d?.bodice ?? defaultBodiceMeasurements.women;
+  });
+  const [dartlessBodiceMeasurements, setDartlessBodiceMeasurements] = useState<BodiceMeasurements>(() => {
+    const d = loadDraft('women'); return d?.dartlessBodice ?? defaultDartlessBodiceMeasurements.women;
+  });
+  const [knitBodiceMeasurements, setKnitBodiceMeasurements] = useState<BodiceMeasurements>(() => {
+    const d = loadDraft('women'); return d?.knitBodice ?? defaultKnitBodiceMeasurements.women;
+  });
+  const [bodiceDartsMeasurements, setBodiceDartsMeasurements] = useState<BodiceMeasurements>(() => {
+    const d = loadDraft('women'); return d?.bodiceDarts ?? defaultBodiceDartsMeasurements.women;
+  });
+  const [pantsMeasurements, setPantsMeasurements] = useState<PantsMeasurements>(() => {
+    const d = loadDraft('women'); return d?.pants ?? defaultPantsMeasurements.women;
+  });
+  const [sleeveMeasurements, setSleeveMeasurements] = useState<SleeveMeasurements>(() => {
+    const d = loadDraft('women'); return d?.sleeve ?? defaultSleeveMeasurements.women;
+  });
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
   const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null);
   
@@ -87,16 +108,32 @@ const Index = () => {
 
   const handleCategoryChange = (newCategory: Category) => {
     setCategory(newCategory);
-    setSkirtMeasurements(defaultSkirtMeasurements[newCategory]);
-    setBodiceMeasurements(defaultBodiceMeasurements[newCategory]);
-    setDartlessBodiceMeasurements(defaultDartlessBodiceMeasurements[newCategory]);
-    setKnitBodiceMeasurements(defaultKnitBodiceMeasurements[newCategory]);
-    setBodiceDartsMeasurements(defaultBodiceDartsMeasurements[newCategory]);
-    setPantsMeasurements(defaultPantsMeasurements[newCategory]);
-    setSleeveMeasurements(defaultSleeveMeasurements[newCategory]);
+    const d = loadDraft(newCategory);
+    setSkirtMeasurements(d?.skirt ?? defaultSkirtMeasurements[newCategory]);
+    setBodiceMeasurements(d?.bodice ?? defaultBodiceMeasurements[newCategory]);
+    setDartlessBodiceMeasurements(d?.dartlessBodice ?? defaultDartlessBodiceMeasurements[newCategory]);
+    setKnitBodiceMeasurements(d?.knitBodice ?? defaultKnitBodiceMeasurements[newCategory]);
+    setBodiceDartsMeasurements(d?.bodiceDarts ?? defaultBodiceDartsMeasurements[newCategory]);
+    setPantsMeasurements(d?.pants ?? defaultPantsMeasurements[newCategory]);
+    setSleeveMeasurements(d?.sleeve ?? defaultSleeveMeasurements[newCategory]);
     setUnifiedMeasurements(defaultUnifiedMeasurements[newCategory]);
     setSelectedProfileId(null);
   };
+
+  useEffect(() => {
+    try {
+      const draft: DraftMeasurements = {
+        skirt: skirtMeasurements,
+        bodice: bodiceMeasurements,
+        dartlessBodice: dartlessBodiceMeasurements,
+        knitBodice: knitBodiceMeasurements,
+        bodiceDarts: bodiceDartsMeasurements,
+        pants: pantsMeasurements,
+        sleeve: sleeveMeasurements,
+      };
+      localStorage.setItem(DRAFT_KEY(category), JSON.stringify(draft));
+    } catch { /* localStorage unavailable */ }
+  }, [category, skirtMeasurements, bodiceMeasurements, dartlessBodiceMeasurements, knitBodiceMeasurements, bodiceDartsMeasurements, pantsMeasurements, sleeveMeasurements]);
 
   const handlePatternTypeChange = (type: PatternType) => {
     setPatternType(type);
