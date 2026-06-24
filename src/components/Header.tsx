@@ -12,6 +12,7 @@ import {
 import { Scissors, User, LogOut, CreditCard, MessageSquare, Wrench, Settings } from 'lucide-react';
 
 
+
 export function Header() {
   const navigate = useNavigate();
   const { user, subscription, signOut, loading } = useAuth();
@@ -27,9 +28,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-2">
           <button onClick={() => navigate('/')} className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-lg bg-primary flex items-center justify-center">
-              <Scissors className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <img src="/logo-petitcitron.gif" alt="Petit Citron" className="h-9 sm:h-10 w-auto shrink-0" />
             <div className="min-w-0">
               <h1 className="font-serif text-base sm:text-xl font-semibold text-foreground tracking-tight truncate">
                 Petit Citron Studio

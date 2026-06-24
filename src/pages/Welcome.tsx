@@ -56,9 +56,7 @@ export default function Welcome() {
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <button onClick={() => navigate('/')} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <Scissors className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <img src="/logo-petitcitron.gif" alt="Petit Citron" className="h-10 w-auto" />
             <div>
               <h1 className="font-serif text-xl font-semibold text-foreground tracking-tight">Petit Citron Studio</h1>
               <p className="text-xs text-muted-foreground">{t('misc.createPatterns')}</p>

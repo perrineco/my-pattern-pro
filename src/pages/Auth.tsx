@@ -207,9 +207,7 @@ export default function Auth() {
       <Card className="w-full max-w-md p-8 space-y-6">
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-2">
-          <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
-            <Scissors className="w-6 h-6 text-primary-foreground" />
-          </div>
+          <img src="/logo-petitcitron.gif" alt="Petit Citron" className="h-12 w-auto" />
           <div>
             <h1 className="font-serif text-2xl font-semibold text-foreground">
               Petit Citron Studio
