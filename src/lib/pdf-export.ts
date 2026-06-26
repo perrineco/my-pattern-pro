@@ -226,7 +226,9 @@ function drawSkirtPatternPiece(
   offsetY: number,
   panel: 'front' | 'back' = 'front',
   unit: MeasurementUnit = 'cm',
-  lang: Language = 'en'
+  lang: Language = 'en',
+  tileCol: number = 0,
+  tileRow: number = 0
 ) {
   const { waist, hip, waistToHip, skirtLength } = measurements;
   const waistQuarter = (waist / 4) * 10;
@@ -278,19 +280,21 @@ function drawSkirtPatternPiece(
   doc.line(grainX - arrowSize, grainBottom - arrowSize, grainX, grainBottom);
   doc.line(grainX + arrowSize, grainBottom - arrowSize, grainX, grainBottom);
 
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + patternWidth / 2, offsetY + lengthMm / 2 - 5, { align: 'center' });
+  if (tileCol === 0 && tileRow === 0) {
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + patternWidth / 2, offsetY + lengthMm / 2 - 5, { align: 'center' });
 
-  doc.setFontSize(8);
-  doc.text(tr(pdfT.cut1OnFold, lang), offsetX + patternWidth / 2, offsetY + lengthMm / 2 + 5, { align: 'center' });
+    doc.setFontSize(8);
+    doc.text(tr(pdfT.cut1OnFold, lang), offsetX + patternWidth / 2, offsetY + lengthMm / 2 + 5, { align: 'center' });
 
-  doc.setFontSize(7);
-  doc.setTextColor(80, 80, 80);
-  const dartWidthCm = isFront ? dartWidthBase : dartWidthBase * 1.2;
-  doc.text(`${tr(pdfT.quarterWaistDart, lang)} = ${formatMeasurement(waist / 4 + dartWidthCm + 1, unit)}`, offsetX + waistWidth / 2, offsetY - 5, { align: 'center' });
-  doc.text(`${tr(pdfT.length, lang)} = ${formatMeasurement(skirtLength, unit)}`, offsetX - 8, offsetY + lengthMm / 2, { angle: 90 });
-  doc.text(`${tr(pdfT.quarterHip, lang)} = ${formatMeasurement(hip / 4 + 1, unit)}`, offsetX + patternWidth + 8, offsetY + waistToHipMm + (lengthMm - waistToHipMm) / 2, { angle: 270 });
+    doc.setFontSize(7);
+    doc.setTextColor(80, 80, 80);
+    const dartWidthCm = isFront ? dartWidthBase : dartWidthBase * 1.2;
+    doc.text(`${tr(pdfT.quarterWaistDart, lang)} = ${formatMeasurement(waist / 4 + dartWidthCm + 1, unit)}`, offsetX + waistWidth / 2, offsetY - 5, { align: 'center' });
+    doc.text(`${tr(pdfT.length, lang)} = ${formatMeasurement(skirtLength, unit)}`, offsetX - 8, offsetY + lengthMm / 2, { angle: 90 });
+    doc.text(`${tr(pdfT.quarterHip, lang)} = ${formatMeasurement(hip / 4 + 1, unit)}`, offsetX + patternWidth + 8, offsetY + waistToHipMm + (lengthMm - waistToHipMm) / 2, { angle: 270 });
+  }
 }
 
 function drawBodicePatternPiece(
@@ -998,7 +1002,7 @@ export function generatePatternPDF(
             drawPantsFrontPanel(doc, pm, patternX, patternY, category, pantsHasDarts, unit, lang);
           }
         } else {
-          drawSkirtPatternPiece(doc, sm, patternX, patternY, panel, unit, lang);
+          drawSkirtPatternPiece(doc, sm, patternX, patternY, panel, unit, lang, col, row);
         }
 
         doc.restoreGraphicsState();
