@@ -300,7 +300,9 @@ function drawBodicePatternPiece(
   offsetY: number,
   panel: 'front' | 'back' = 'front',
   unit: MeasurementUnit = 'cm',
-  lang: Language = 'en'
+  lang: Language = 'en',
+  tileCol: number = 0,
+  tileRow: number = 0
 ) {
   const {
     bust,
@@ -354,17 +356,22 @@ function drawBodicePatternPiece(
   doc.line(grainX - arrowSize, grainBottom - arrowSize, grainX, grainBottom);
   doc.line(grainX + arrowSize, grainBottom - arrowSize, grainX, grainBottom);
 
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 - 5, { align: 'center' });
+  // Text labels only on the top-left tile of each panel.
+  if (tileCol === 0 && tileRow === 0) {
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 - 5, { align: 'center' });
 
-  doc.setFontSize(8);
-  doc.text(tr(pdfT.cut1OnFold, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 5, { align: 'center' });
+    doc.setFontSize(8);
+    doc.text(tr(pdfT.cut1OnFold, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 5, { align: 'center' });
 
-  doc.setFontSize(7);
-  doc.setTextColor(80, 80, 80);
-  doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + 1, unit)}`, sideX + 8, offsetY + armholeDepthMm + (backLengthMm - armholeDepthMm) / 2, { angle: 270 });
-  doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
+    doc.setFontSize(7);
+    doc.setTextColor(80, 80, 80);
+    // quarterBust centered below the name label (stays within this tile's bounds)
+    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + 1, unit)}`, offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 18, { align: 'center' });
+    // backLength along the fold edge (left margin)
+    doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
+  }
 }
 
 function drawSleevePatternPiece(
@@ -983,7 +990,7 @@ export function generatePatternPDF(
         if (isSleeve) {
           drawSleevePatternPiece(doc, slm, patternX, patternY, unit, lang);
         } else if (isBodice) {
-          drawBodicePatternPiece(doc, bm, patternX, patternY, panel, unit, lang);
+          drawBodicePatternPiece(doc, bm, patternX, patternY, panel, unit, lang, col, row);
         } else if (isPants) {
           if (panel === 'back') {
             drawPantsBackPanel(doc, pm, patternX, patternY, category, pantsHasDarts, unit, lang);
