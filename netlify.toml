@@ -6,13 +6,10 @@
   # Ne builder que si des fichiers dans src/ ont changé.
   # git diff --quiet → exit 0 (pas de diff) = build annulé
   #                   exit 1 (diff détecté)  = build lancé
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- src/"
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- src/ netlify.toml"
 
 [build.environment]
-  NODE_VERSION = "22"
-  # npm ci utilise ~/.npm (mis en cache automatiquement par Netlify)
-  # pour éviter de retélécharger les paquets à chaque build.
-  NPM_FLAGS = "--prefer-offline"
+  NODE_VERSION = "20"
 
 # ─── Deploy previews (Pull Requests) ─────────────────────────────────────────
 # exit 0 = build toujours annulé → plus aucune preview générée sur les PRs
