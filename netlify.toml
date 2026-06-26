@@ -1,6 +1,6 @@
 # ─── Build principal (branche main uniquement) ────────────────────────────────
 [build]
-  command = "npm ci && npm run build"
+  command = "npm install && npm run build"
   publish = "dist"
 
   # Ne builder que si des fichiers dans src/ ont changé.
