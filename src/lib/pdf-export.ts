@@ -29,7 +29,7 @@ const pdfT = {
     en: [
       '1. Print all pages at 100% scale (no scaling/fit to page).',
       '2. Verify the 1cm test square on the first page measures exactly 1cm x 1cm.',
-      '3. Cut along the outer edges of each page, leaving the alignment marks intact.',
+      '3. Cut along the right and top edges of each page only (keep the left and bottom margins for taping pages together).',
       '4. Match up the alignment marks and circles from adjacent pages.',
       '5. Tape or glue pages together, starting from the top-left corner.',
       '6. Once assembled, cut out the pattern piece along the solid black line.',
@@ -38,7 +38,7 @@ const pdfT = {
     fr: [
       "1. Imprimez toutes les pages à 100% (sans mise à l'échelle).",
       '2. Vérifiez que le carré test de 1cm mesure exactement 1cm x 1cm.',
-      '3. Découpez les bords extérieurs de chaque page en conservant les repères.',
+      "3. Découpez le bord droit et le bord supérieur de chaque feuille uniquement (conserver les marges gauche et bas pour coller les feuilles ensemble).",
       '4. Alignez les repères et cercles des pages adjacentes.',
       '5. Collez ou scotchez les pages en commençant par le coin supérieur gauche.',
       '6. Une fois assemblé, découpez le patron le long du trait plein noir.',
@@ -214,7 +214,9 @@ function drawPageInfo(doc: jsPDF, pageNum: number, totalPages: number, col: numb
   const rowColStr = tr(pdfT.rowCol, lang)(row + 1, col + 1);
   doc.text(`${pageStr} ${rowColStr}`, A4_WIDTH / 2, A4_HEIGHT - 3, { align: 'center' });
   doc.text('Petit Citron Studio', MARGIN, A4_HEIGHT - 3);
-  doc.text(tr(pdfT.cutOnFold, lang), A4_WIDTH - MARGIN, A4_HEIGHT - 3, { align: 'right' });
+  if (col === 0) {
+    doc.text(tr(pdfT.cutOnFold, lang), A4_WIDTH - MARGIN, A4_HEIGHT - 3, { align: 'right' });
+  }
 }
 
 function drawSkirtPatternPiece(
@@ -313,7 +315,7 @@ function drawBodicePatternPiece(
   const backLengthMm = backLength * 10;
   const shoulderSlopeMm = 40;
 
-  const armholeDepthMm = backLength * 0.5 * 10;
+  const armholeDepthMm = backLength * 0.5 * 10 + 10;
 
   const isFront = panel === 'front';
   const neckDropMm = isFront ? 15 : 0;
@@ -361,7 +363,7 @@ function drawBodicePatternPiece(
 
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
-  doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + 1, unit)}`, offsetX + bustQuarterMm / 2, offsetY + armholeDepthMm + 5);
+  doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + 1, unit)}`, sideX + 8, offsetY + armholeDepthMm + (backLengthMm - armholeDepthMm) / 2, { angle: 270 });
   doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
 }
 
@@ -964,7 +966,16 @@ export function generatePatternPDF(
         if (pageNum === 1) draw1cmTestSquare(doc, unit, lang);
 
         doc.saveGraphicsState();
-        doc.rect(MARGIN, MARGIN, PRINTABLE_WIDTH, PRINTABLE_HEIGHT);
+        // Clip content to the printable tile so pattern lines never bleed across pages.
+        // jsPDF internal coords: y-up from bottom, scaleFactor converts mm → PDF pts.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const pdfInt = (doc as any).internal;
+        const k: number = pdfInt.scaleFactor;
+        const pH: number = pdfInt.pageSize.getHeight(); // mm
+        pdfInt.write(
+          `${(MARGIN * k).toFixed(3)} ${((pH - MARGIN - PRINTABLE_HEIGHT) * k).toFixed(3)} ` +
+          `${(PRINTABLE_WIDTH * k).toFixed(3)} ${(PRINTABLE_HEIGHT * k).toFixed(3)} re W n`
+        );
 
         const patternX = patternMarginMm - viewOffsetX + MARGIN;
         const patternY = patternMarginMm - viewOffsetY + MARGIN;

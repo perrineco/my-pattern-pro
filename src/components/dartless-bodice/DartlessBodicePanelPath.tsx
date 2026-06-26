@@ -151,7 +151,7 @@ export function useDartlessBodicePath({
     points.push(`C ${cp1_1x} ${cp1_1y}, ${cp1_2x} ${cp1_2y}, ${midPointX} ${midPointY}`);
 
     const ArmholeDendX = offsetX + bustQuarterScaled;
-    const ArmholeDendY = newoffsetY + backLengthScaled - s(backLength) / 2;
+    const ArmholeDendY = newoffsetY + backLengthScaled - s(backLength) / 2 + s(1);
 
     const cp2_1x = midPointX;
     const cp2_1y = midPointY + (ArmholeDendY - midPointY) * 0.8;

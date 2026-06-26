@@ -178,7 +178,7 @@ export function BodiceMeasurementGuide({ category }: BodiceMeasurementGuideProps
           <div className="mt-6 p-4 bg-secondary/50 rounded-lg">
             <h4 className="font-medium text-foreground mb-2">{t("guide.tipsForAccurate")}</h4>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• {t("guide.tip.bodice1")}</li>
+              {category !== 'men' && <li>• {t("guide.tip.bodice1")}</li>}
               <li>• {t("guide.tip.bodice2")}</li>
               <li>• {t("guide.tip.bodice3")}</li>
               <li>• {t("guide.tip.bodice4")}</li>
