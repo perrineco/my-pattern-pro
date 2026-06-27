@@ -378,6 +378,169 @@ function drawBodicePatternPiece(
   }
 }
 
+// Mirrors categoryConfig in DartlessBodicePanelPath.tsx
+const dartlessBodiceConfig: Record<string, {
+  ease: number; neckWidthDivisor: number; neckWidthAdd: number;
+  frontNeckDepthDivisor: number; frontNeckDepthAdd: number;
+  backNeckDepthDivisor: number; backNeckDepthAdd: number;
+  armholeDepthRatio: number; midpointFrontAdd: number; midpointBackAdd: number;
+  riseBack: number; extraDropFront: number;
+  frontShoulderAdd: number; backShoulderAdd: number;
+}> = {
+  women: {
+    ease: 2, neckWidthDivisor: 6, neckWidthAdd: 1.6,
+    frontNeckDepthDivisor: 6, frontNeckDepthAdd: 2,
+    backNeckDepthDivisor: 16, backNeckDepthAdd: 0,
+    armholeDepthRatio: 0.5, midpointFrontAdd: -1.3, midpointBackAdd: 0,
+    riseBack: 4, extraDropFront: 5, frontShoulderAdd: 0, backShoulderAdd: 0,
+  },
+  men: {
+    ease: 3, neckWidthDivisor: 5, neckWidthAdd: 0,
+    frontNeckDepthDivisor: 5, frontNeckDepthAdd: 0.5,
+    backNeckDepthDivisor: 20, backNeckDepthAdd: 0,
+    armholeDepthRatio: 0.48, midpointFrontAdd: 0.25, midpointBackAdd: 0,
+    riseBack: 5, extraDropFront: 6, frontShoulderAdd: 0, backShoulderAdd: 0,
+  },
+  kids: {
+    ease: 2.5, neckWidthDivisor: 6, neckWidthAdd: 0.2,
+    frontNeckDepthDivisor: 6, frontNeckDepthAdd: 0.2,
+    backNeckDepthDivisor: 18, backNeckDepthAdd: 0,
+    armholeDepthRatio: 0.52, midpointFrontAdd: 0, midpointBackAdd: 0,
+    riseBack: 3.2, extraDropFront: 2.5, frontShoulderAdd: 0, backShoulderAdd: 0,
+  },
+};
+
+function drawDartlessBodicePiece(
+  doc: jsPDF,
+  measurements: BodiceMeasurements,
+  category: Category,
+  offsetX: number,
+  offsetY: number,
+  panel: 'front' | 'back',
+  unit: MeasurementUnit,
+  lang: Language,
+  tileCol: number = 0,
+  tileRow: number = 0
+) {
+  const { bust, neckCircumference, shoulderLength, backWidth, backLength, ease: customEase } = measurements;
+  const cfg = dartlessBodiceConfig[category] ?? dartlessBodiceConfig['women'];
+  const mm = (cm: number) => cm * 10;
+  const ease = customEase ?? cfg.ease;
+
+  // Neckline dimensions (same formulas as DartlessBodicePanelPath)
+  const neckHalfWidthCm = neckCircumference / cfg.neckWidthDivisor + cfg.neckWidthAdd;
+  const neckHalfWidthMm = mm(neckHalfWidthCm);
+  const frontNeckDepthCm = neckCircumference / cfg.frontNeckDepthDivisor + cfg.frontNeckDepthAdd;
+  const backNeckDepthCm  = neckCircumference / cfg.backNeckDepthDivisor  + cfg.backNeckDepthAdd;
+  const neckHalfHeightMm = panel === 'front' ? mm(frontNeckDepthCm) : mm(backNeckDepthCm);
+
+  // Front panel starts lower so both panels share the same waist Y
+  const newOffsetY = panel === 'front'
+    ? offsetY + mm(frontNeckDepthCm - backNeckDepthCm)
+    : offsetY;
+
+  // Shoulder slope — trig-based (same as SVG component)
+  const angleBack  = Math.atan2(cfg.riseBack,       backWidth / 2 + cfg.midpointBackAdd  - neckHalfWidthCm);
+  const angleFront = Math.atan2(cfg.extraDropFront, backWidth / 2 + cfg.midpointFrontAdd - neckHalfWidthCm);
+  const angle = panel === 'back' ? angleBack : angleFront;
+  const L     = panel === 'back'
+    ? shoulderLength + cfg.backShoulderAdd
+    : shoulderLength + cfg.backShoulderAdd + cfg.frontShoulderAdd;
+
+  const shoulderWidthX = mm(Math.cos(angle) * L);
+  const shoulderSlopeY = mm(Math.sin(angle) * L);
+
+  const bustQuarterMm = mm(bust / 4 + ease);
+  const backLengthMm  = panel === 'front'
+    ? mm(backLength) + mm(backNeckDepthCm) - mm(frontNeckDepthCm)
+    : mm(backLength);
+
+  // Key geometry points
+  const neckEndX     = offsetX + neckHalfWidthMm;
+  const neckEndY     = newOffsetY - neckHalfHeightMm;
+  const shoulderEndX = neckEndX + shoulderWidthX;
+  const shoulderEndY = neckEndY + shoulderSlopeY;
+
+  const armholeRetreatX = mm(bust / 4 + ease - backWidth / 2 - cfg.midpointFrontAdd);
+  const midPointX = offsetX + bustQuarterMm - armholeRetreatX;
+  const midPointY = newOffsetY + backLengthMm / 3;   // 1/3 down from neck baseline
+
+  const armholeEndX = offsetX + bustQuarterMm;
+  const armholeEndY = newOffsetY + backLengthMm - mm(backLength) / 2 + mm(1);
+
+  const waistY = newOffsetY + backLengthMm;
+
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+
+  // Fold edge (center front / center back)
+  doc.line(offsetX, newOffsetY, offsetX, waistY);
+
+  // Neckline bezier curve
+  drawCubicBezier(doc,
+    offsetX, newOffsetY,
+    offsetX + neckHalfWidthMm * 0.65, newOffsetY,
+    offsetX + neckHalfWidthMm * 0.85, newOffsetY - neckHalfHeightMm * 0.5,
+    neckEndX, neckEndY,
+    12
+  );
+
+  // Shoulder line
+  doc.line(neckEndX, neckEndY, shoulderEndX, shoulderEndY);
+
+  // Armhole — first bezier (shoulder → midpoint)
+  drawCubicBezier(doc,
+    shoulderEndX, shoulderEndY,
+    shoulderEndX, shoulderEndY,
+    midPointX, midPointY + (shoulderEndY - midPointY) * 0.5,
+    midPointX, midPointY,
+    10
+  );
+
+  // Armhole — second bezier (midpoint → side seam)
+  drawCubicBezier(doc,
+    midPointX, midPointY,
+    midPointX, midPointY + (armholeEndY - midPointY) * 0.8,
+    armholeEndX - (armholeEndX - midPointX) * 0.5, armholeEndY,
+    armholeEndX, armholeEndY,
+    10
+  );
+
+  // Side seam
+  doc.line(armholeEndX, armholeEndY, offsetX + bustQuarterMm, waistY);
+
+  // Waist
+  doc.line(offsetX + bustQuarterMm, waistY, offsetX, waistY);
+
+  // Grain line
+  const grainX = offsetX + bustQuarterMm * 0.4;
+  const grainTop = newOffsetY + backLengthMm * 0.2;
+  const grainBot = newOffsetY + backLengthMm * 0.8;
+  doc.setLineDashPattern([3, 2], 0);
+  doc.line(grainX, grainTop, grainX, grainBot);
+  doc.setLineDashPattern([], 0);
+  const a = 4;
+  doc.line(grainX - a, grainTop + a, grainX, grainTop);
+  doc.line(grainX + a, grainTop + a, grainX, grainTop);
+  doc.line(grainX - a, grainBot - a, grainX, grainBot);
+  doc.line(grainX + a, grainBot - a, grainX, grainBot);
+
+  if (tileCol === 0 && tileRow === 0) {
+    const isFront = panel === 'front';
+    const cx = offsetX + bustQuarterMm / 2;
+    const cy = newOffsetY + backLengthMm / 2;
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), cx, cy - 5, { align: 'center' });
+    doc.setFontSize(8);
+    doc.text(tr(pdfT.cut1OnFold, lang), cx, cy + 5, { align: 'center' });
+    doc.setFontSize(7);
+    doc.setTextColor(80, 80, 80);
+    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + ease, unit)}`, cx, cy + 18, { align: 'center' });
+    doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, newOffsetY + backLengthMm / 2, { angle: 90 });
+  }
+}
+
 function drawSleevePatternPiece(
   doc: jsPDF,
   measurements: SleeveMeasurements,
@@ -994,7 +1157,11 @@ export function generatePatternPDF(
         if (isSleeve) {
           drawSleevePatternPiece(doc, slm, patternX, patternY, unit, lang);
         } else if (isBodice) {
-          drawBodicePatternPiece(doc, bm, patternX, patternY, panel, unit, lang, col, row);
+          if (patternType === 'bodice-dartless') {
+            drawDartlessBodicePiece(doc, bm, category, patternX, patternY, panel, unit, lang, col, row);
+          } else {
+            drawBodicePatternPiece(doc, bm, patternX, patternY, panel, unit, lang, col, row);
+          }
         } else if (isPants) {
           if (panel === 'back') {
             drawPantsBackPanel(doc, pm, patternX, patternY, category, pantsHasDarts, unit, lang);
