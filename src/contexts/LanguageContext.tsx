@@ -86,7 +86,7 @@ const translations: Record<string, Record<Language, string>> = {
   'hint.measureAtFullestPart': { en: 'Measure at fullest part', fr: 'Mesurer à l\'endroit le plus large' },
   'hint.distanceBetweenWaistAndHip': { en: 'Distance between waist and hip', fr: 'Distance entre la taille et les hanches' },
   'hint.fromWaistToHem': { en: 'From waist to hem', fr: 'De la taille à l\'ourlet' },
-  'hint.wearingEaseAllowance': { en: 'Wearing ease allowance', fr: 'Valeur d\'aisance' },
+  'hint.wearingEaseAllowance': { en: 'Added to each quarter panel (front and back separately)', fr: 'Ajoutée à chaque quart de pièce (devant et dos séparément)' },
   // Unified form hints
   'hint.waist': { en: 'Measure at natural waist', fr: 'Mesurer à la taille naturelle' },
   'hint.hip': { en: 'Measure at fullest part', fr: 'Mesurer à l\'endroit le plus large' },
@@ -118,7 +118,7 @@ const translations: Record<string, Record<Language, string>> = {
   'hint.longueurEpaule': { en: 'From neck point to shoulder tip', fr: 'Du point de cou à la pointe d\'épaule' },
   'hint.carrureDos': { en: 'Across back between armholes', fr: 'Carrure dos entre les emmanchures' },
   'hint.longueurTailleDos': { en: 'From neck base to waist', fr: 'De la base du cou à la taille' },
-  'hint.addedWearingRoom': { en: 'Added wearing room', fr: 'Aisance de confort' },
+  'hint.addedWearingRoom': { en: 'Added to each quarter panel (front and back separately)', fr: 'Ajoutée à chaque quart de pièce (devant et dos séparément)' },
 
   // Measurement hints - Pants
   'hint.measureFullestThigh': { en: 'Measure at fullest part of thigh', fr: 'Mesurer à l\'endroit le plus large de la cuisse' },
@@ -142,8 +142,14 @@ const translations: Record<string, Record<Language, string>> = {
   'note.allMeasurementsIn': { en: 'All measurements in', fr: 'Toutes les mesures en' },
   'note.centimeters': { en: 'centimeters', fr: 'centimètres' },
   'note.inches': { en: 'inches', fr: 'pouces' },
-  'note.standardEase': { en: 'The pattern includes standard ease allowances.', fr: 'Le patron inclut les marges d\'aisance standard.' },
+  'note.standardEase': { en: 'The pattern includes ease.', fr: 'Le patron inclut de l\'aisance.' },
   'note.optimizedKnit': { en: 'Optimized for stretch knit fabrics.', fr: 'Optimisé pour les tissus maille extensibles.' },
+  'tooltip.ease': {
+    en: "Ease is the difference between your body measurements and the finished garment.\nIt's added to each quarter panel (front and back separately).\nExample: 2 cm ease per quarter = 8 cm extra around the full circumference.",
+    fr: "L'aisance est l'écart entre vos mesures corporelles et le patron fini.\nElle est ajoutée sur chaque quart de pièce (devant et dos séparément).\nUne aisance de 2 cm par quart = 8 cm de plus sur le tour total."
+  },
+  'note.easeFitted': { en: 'Fitted: 1–2 cm/quarter.', fr: 'Près du corps : 1–2 cm/quart.' },
+  'note.easeLoose': { en: 'Loose: 3–4 cm/quarter.', fr: 'Ample : 3–4 cm/quart.' },
   'note.simpleBodice': { en: 'Simple bodice block without bust darts', fr: 'Corsage de base sans pinces de poitrine' },
 
    // Buttons & actions

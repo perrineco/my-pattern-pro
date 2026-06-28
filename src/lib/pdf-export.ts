@@ -29,7 +29,8 @@ const pdfT = {
     en: [
       '1. Print all pages at 100% scale (no scaling/fit to page).',
       '2. Verify the 1cm test square on the first page measures exactly 1cm x 1cm.',
-      '3. Cut along the right and top edges of each page only (keep the left and bottom margins for taping pages together).',
+      '3. Cut along the right and top edges of each page only',
+      '   (keep the left and bottom margins for taping pages together).',
       '4. Match up the alignment marks and circles from adjacent pages.',
       '5. Tape or glue pages together, starting from the top-left corner.',
       '6. Once assembled, cut out the pattern piece along the solid black line.',
@@ -38,7 +39,8 @@ const pdfT = {
     fr: [
       "1. Imprimez toutes les pages à 100% (sans mise à l'échelle).",
       '2. Vérifiez que le carré test de 1cm mesure exactement 1cm x 1cm.',
-      "3. Découpez le bord droit et le bord supérieur de chaque feuille uniquement (conserver les marges gauche et bas pour coller les feuilles ensemble).",
+      "3. Découpez le bord droit et le bord supérieur de chaque feuille uniquement",
+      "   (conserver les marges gauche et bas pour coller les feuilles ensemble).",
       '4. Alignez les repères et cercles des pages adjacentes.',
       '5. Collez ou scotchez les pages en commençant par le coin supérieur gauche.',
       '6. Une fois assemblé, découpez le patron le long du trait plein noir.',
@@ -214,7 +216,7 @@ function drawPageInfo(doc: jsPDF, pageNum: number, totalPages: number, col: numb
   const rowColStr = tr(pdfT.rowCol, lang)(row + 1, col + 1);
   doc.text(`${pageStr} ${rowColStr}`, A4_WIDTH / 2, A4_HEIGHT - 3, { align: 'center' });
   doc.text('Petit Citron Studio', MARGIN, A4_HEIGHT - 3);
-  if (col === 0) {
+  if (col === 0 && row === 0) {
     doc.text(tr(pdfT.cutOnFold, lang), A4_WIDTH - MARGIN, A4_HEIGHT - 3, { align: 'right' });
   }
 }
@@ -228,7 +230,8 @@ function drawSkirtPatternPiece(
   unit: MeasurementUnit = 'cm',
   lang: Language = 'en',
   tileCol: number = 0,
-  tileRow: number = 0
+  tileRow: number = 0,
+  category: Category = 'women'
 ) {
   const { waist, hip, waistToHip, skirtLength } = measurements;
   const waistQuarter = (waist / 4) * 10;
@@ -244,27 +247,50 @@ function drawSkirtPatternPiece(
 
   const waistWidth = waistQuarter + ease + dartWidth;
   const patternWidth = hipQuarter + ease;
-
   const centerToDart = patternWidth * (isFront ? 0.4 : 0.35);
+  const waistRiseMm = category === 'kids' ? 10 : 12.5;
 
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.5);
 
-  const points: [number, number][] = [
-    [offsetX, offsetY],
-    [offsetX + centerToDart, offsetY],
-    [offsetX + centerToDart + dartWidth / 2, offsetY + dartLength],
-    [offsetX + centerToDart + dartWidth, offsetY],
-    [offsetX + waistWidth, offsetY],
-    [offsetX + patternWidth, offsetY + waistToHipMm],
-    [offsetX + patternWidth, offsetY + lengthMm],
-    [offsetX, offsetY + lengthMm],
-  ];
+  // Fold edge (center)
+  doc.line(offsetX, offsetY, offsetX, offsetY + lengthMm);
 
-  for (let i = 0; i < points.length; i++) {
-    const next = (i + 1) % points.length;
-    doc.line(points[i][0], points[i][1], points[next][0], points[next][1]);
-  }
+  // Waist: center → dart start
+  doc.line(offsetX, offsetY, offsetX + centerToDart, offsetY);
+
+  // Dart
+  const afterDartX = offsetX + centerToDart + dartWidth;
+  doc.line(offsetX + centerToDart, offsetY, offsetX + centerToDart + dartWidth / 2, offsetY + dartLength);
+  doc.line(offsetX + centerToDart + dartWidth / 2, offsetY + dartLength, afterDartX, offsetY);
+
+  // Waist curve: after dart → waist end (raised by waistRiseMm)
+  const waistEndX = offsetX + waistWidth;
+  const waistEndY = offsetY - waistRiseMm;
+  drawCubicBezier(doc,
+    afterDartX, offsetY,
+    afterDartX + (waistEndX - afterDartX) / 2, offsetY,
+    waistEndX, waistEndY,
+    waistEndX, waistEndY,
+    8
+  );
+
+  // Side seam bezier: waist end → hip level
+  const hipEndX = offsetX + patternWidth;
+  const hipEndY = offsetY + waistToHipMm + waistRiseMm;
+  drawCubicBezier(doc,
+    waistEndX, waistEndY,
+    waistEndX, waistEndY,
+    hipEndX, offsetY + waistToHipMm / 4,
+    hipEndX, hipEndY,
+    10
+  );
+
+  // Hip → hem (straight)
+  doc.line(hipEndX, hipEndY, hipEndX, offsetY + lengthMm);
+
+  // Hem
+  doc.line(hipEndX, offsetY + lengthMm, offsetX, offsetY + lengthMm);
 
   const grainX = offsetX + patternWidth / 2;
   const grainTop = offsetY + 30;
@@ -283,9 +309,10 @@ function drawSkirtPatternPiece(
   if (tileCol === 0 && tileRow === 0) {
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + patternWidth / 2, offsetY + lengthMm / 2 - 5, { align: 'center' });
+    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + patternWidth / 2, offsetY + lengthMm / 2, { align: 'center' });
 
     doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
     doc.text(tr(pdfT.cut1OnFold, lang), offsetX + patternWidth / 2, offsetY + lengthMm / 2 + 5, { align: 'center' });
 
     doc.setFontSize(7);
@@ -364,15 +391,16 @@ function drawBodicePatternPiece(
   if (tileCol === 0 && tileRow === 0) {
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 - 5, { align: 'center' });
+    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2, { align: 'center' });
 
     doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
     doc.text(tr(pdfT.cut1OnFold, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 5, { align: 'center' });
 
     doc.setFontSize(7);
     doc.setTextColor(80, 80, 80);
     // quarterBust centered below the name label (stays within this tile's bounds)
-    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + 1, unit)}`, offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 18, { align: 'center' });
+    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + 1, unit)}`, offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 13, { align: 'center' });
     // backLength along the fold edge (left margin)
     doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
   }
@@ -434,10 +462,14 @@ function drawDartlessBodicePiece(
   const backNeckDepthCm  = neckCircumference / cfg.backNeckDepthDivisor  + cfg.backNeckDepthAdd;
   const neckHalfHeightMm = panel === 'front' ? mm(frontNeckDepthCm) : mm(backNeckDepthCm);
 
-  // Front panel starts lower so both panels share the same waist Y
+  // Shift the whole pattern down so the neckline arc peak (which goes
+  // backNeckDepthCm above the neck centre) lands at offsetY, not above the clip margin.
+  const neckShiftY = mm(backNeckDepthCm);
+
+  // Front panel also shifted so both panels share the same waist Y
   const newOffsetY = panel === 'front'
-    ? offsetY + mm(frontNeckDepthCm - backNeckDepthCm)
-    : offsetY;
+    ? offsetY + neckShiftY + mm(frontNeckDepthCm - backNeckDepthCm)
+    : offsetY + neckShiftY;
 
   // Shoulder slope — trig-based (same as SVG component)
   const angleBack  = Math.atan2(cfg.riseBack,       backWidth / 2 + cfg.midpointBackAdd  - neckHalfWidthCm);
@@ -463,7 +495,7 @@ function drawDartlessBodicePiece(
 
   const armholeRetreatX = mm(bust / 4 + ease - backWidth / 2 - cfg.midpointFrontAdd);
   const midPointX = offsetX + bustQuarterMm - armholeRetreatX;
-  const midPointY = newOffsetY + backLengthMm / 3;   // 1/3 down from neck baseline
+  const midPointY = offsetY + backLengthMm / 3;
 
   const armholeEndX = offsetX + bustQuarterMm;
   const armholeEndY = newOffsetY + backLengthMm - mm(backLength) / 2 + mm(1);
@@ -531,12 +563,13 @@ function drawDartlessBodicePiece(
     const cy = newOffsetY + backLengthMm / 2;
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), cx, cy - 5, { align: 'center' });
+    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), cx, cy, { align: 'center' });
     doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
     doc.text(tr(pdfT.cut1OnFold, lang), cx, cy + 5, { align: 'center' });
     doc.setFontSize(7);
     doc.setTextColor(80, 80, 80);
-    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + ease, unit)}`, cx, cy + 18, { align: 'center' });
+    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + ease, unit)}`, cx, cy + 13, { align: 'center' });
     doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, newOffsetY + backLengthMm / 2, { angle: 90 });
   }
 }
@@ -622,9 +655,9 @@ function drawSleevePatternPiece(
 
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.sleeve, lang), centerX, underarmY + totalLengthMm / 2 - 5, { align: 'center' });
-
+  doc.text(tr(pdfT.sleeve, lang), centerX, underarmY + totalLengthMm / 2, { align: 'center' });
   doc.setFontSize(8);
+  doc.setTextColor(0, 0, 0);
   doc.text(tr(pdfT.cut2, lang), centerX, underarmY + totalLengthMm / 2 + 5, { align: 'center' });
 
   doc.setFontSize(7);
@@ -652,7 +685,8 @@ function drawDiagramSkirt(
   startY: number,
   panel: 'front' | 'back',
   scaleX: number,
-  scaleY: number
+  scaleY: number,
+  category: Category = 'women'
 ) {
   const isFront = panel === 'front';
   const waistQuarter = (m.waist / 4) * 10;
@@ -666,20 +700,37 @@ function drawDiagramSkirt(
   const waistWidth = waistQuarter + ease + dartWidth;
   const patternWidth = hipQuarter + ease;
   const centerToDart = patternWidth * (isFront ? 0.4 : 0.35);
+  const afterDart = centerToDart + dartWidth;
+  const waistRise = category === 'kids' ? 10 : 12.5;
+
+  // Waist bezier: cp1 at mid-x same Y, cp2=end at waistWidth raised by waistRise
+  const wCp1x = (waistWidth - afterDart) / 2; // relative half-distance
+  const wDx = waistWidth - afterDart;
+
+  // Side seam bezier: from (waistWidth, -waistRise) to (patternWidth, waistToHipMm + waistRise)
+  const sDx = patternWidth - waistWidth;
 
   doc.setFillColor(238, 246, 225);
   doc.setDrawColor(110, 150, 60);
   doc.setLineWidth(0.3);
   doc.lines(
     [
+      // Center → dart start
       [centerToDart * scaleX, 0],
+      // Dart down
       [(dartWidth / 2) * scaleX, dartLength * scaleY],
+      // Dart up
       [(dartWidth / 2) * scaleX, -dartLength * scaleY],
-      [(waistWidth - centerToDart - dartWidth) * scaleX, 0],
-      [(patternWidth - waistWidth) * scaleX, waistToHipMm * scaleY],
-      [0, (lengthMm - waistToHipMm) * scaleY],
+      // Waist bezier: after dart → waist end (raised)
+      [wCp1x * scaleX, 0, wDx * scaleX, -waistRise * scaleY, wDx * scaleX, -waistRise * scaleY],
+      // Side seam bezier: waist end → hip level
+      [0, 0, sDx * scaleX, (waistToHipMm / 4 + waistRise) * scaleY, sDx * scaleX, (waistToHipMm + 2 * waistRise) * scaleY],
+      // Hip → hem
+      [0, (lengthMm - waistToHipMm - waistRise) * scaleY],
+      // Hem
       [-patternWidth * scaleX, 0],
-    ] as [number, number][],
+      // Fold edge closed automatically
+    ] as number[][],
     startX, startY, [1, 1], 'FD', true
   );
 }
@@ -714,6 +765,79 @@ function drawDiagramBodice(
       [-bustQuarterMm * scaleX, 0],
     ] as [number, number][],
     startX, startY + neckDropMm * scaleY, [1, 1], 'FD', true
+  );
+}
+
+function drawDiagramDartlessBodice(
+  doc: jsPDF,
+  m: BodiceMeasurements,
+  category: Category,
+  startX: number,
+  startY: number,
+  panel: 'front' | 'back',
+  scaleX: number,
+  scaleY: number
+) {
+  const cfg = dartlessBodiceConfig[category] ?? dartlessBodiceConfig['women'];
+  const mm = (cm: number) => cm * 10;
+  const ease = m.ease ?? cfg.ease;
+  const { bust, neckCircumference, shoulderLength, backWidth, backLength } = m;
+
+  const neckHalfWidthCm = neckCircumference / cfg.neckWidthDivisor + cfg.neckWidthAdd;
+  const nW = mm(neckHalfWidthCm);
+  const frontNeckDepthCm = neckCircumference / cfg.frontNeckDepthDivisor + cfg.frontNeckDepthAdd;
+  const backNeckDepthCm  = neckCircumference / cfg.backNeckDepthDivisor  + cfg.backNeckDepthAdd;
+  const nH = panel === 'front' ? mm(frontNeckDepthCm) : mm(backNeckDepthCm);
+
+  // Shift down so the neckline arc peak aligns with startY (arc goes up by backNeckDepth)
+  const topOffset = mm(backNeckDepthCm) * scaleY;
+  const newOffsetY = panel === 'front'
+    ? startY + topOffset + mm(frontNeckDepthCm - backNeckDepthCm) * scaleY
+    : startY + topOffset;
+
+  const angleBack  = Math.atan2(cfg.riseBack,       backWidth / 2 + cfg.midpointBackAdd  - neckHalfWidthCm);
+  const angleFront = Math.atan2(cfg.extraDropFront,  backWidth / 2 + cfg.midpointFrontAdd - neckHalfWidthCm);
+  const angle = panel === 'back' ? angleBack : angleFront;
+  const L = panel === 'back'
+    ? shoulderLength + cfg.backShoulderAdd
+    : shoulderLength + cfg.backShoulderAdd + cfg.frontShoulderAdd;
+  const sWx = mm(Math.cos(angle) * L);
+  const sWy = mm(Math.sin(angle) * L);
+
+  const bqMm = mm(bust / 4 + ease);
+  const blMm = panel === 'front'
+    ? mm(backLength) + mm(backNeckDepthCm) - mm(frontNeckDepthCm)
+    : mm(backLength);
+
+  const arX = mm(bust / 4 + ease - backWidth / 2 - cfg.midpointFrontAdd);
+  const mPx = bqMm - arX;
+  const mPy = blMm / 3;
+  const aEy = blMm - mm(backLength) / 2 + mm(1);
+
+  // Relative coordinates in mm for each intermediate point (from neck-center origin)
+  const sEndX = nW + sWx;
+  const sEndY = -nH + sWy;
+
+  doc.setFillColor(238, 246, 225);
+  doc.setDrawColor(110, 150, 60);
+  doc.setLineWidth(0.3);
+  doc.lines(
+    [
+      // Neckline bezier: neck center → shoulder start
+      [nW * 0.65 * scaleX, 0, nW * 0.85 * scaleX, -nH * 0.5 * scaleY, nW * scaleX, -nH * scaleY],
+      // Shoulder line
+      [sWx * scaleX, sWy * scaleY],
+      // Armhole part 1: shoulder → midpoint
+      [0, 0, (mPx - sEndX) * scaleX, (mPy - sEndY) * 0.5 * scaleY, (mPx - sEndX) * scaleX, (mPy - sEndY) * scaleY],
+      // Armhole part 2: midpoint → armhole end
+      [0, (aEy - mPy) * 0.8 * scaleY, (bqMm - mPx) * 0.5 * scaleX, (aEy - mPy) * scaleY, (bqMm - mPx) * scaleX, (aEy - mPy) * scaleY],
+      // Side seam (straight down)
+      [0, (blMm - aEy) * scaleY],
+      // Waist
+      [-bqMm * scaleX, 0],
+      // Fold edge closed automatically
+    ] as number[][],
+    startX, newOffsetY, [1, 1], 'FD', true
   );
 }
 
@@ -929,9 +1053,10 @@ function drawPantsBackPanel(
   const midY = offsetY + v(m.outseamLength) / 2;
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.back, lang), centerX, midY - 10, { align: 'center' });
+  doc.text(tr(pdfT.back, lang), centerX, midY - 5, { align: 'center' });
   doc.setFontSize(8);
-  doc.text(tr(pdfT.cut2, lang), centerX, midY, { align: 'center' });
+  doc.setTextColor(0, 0, 0);
+  doc.text(tr(pdfT.cut2, lang), centerX, midY + 3, { align: 'center' });
 
   if (dartW > 0) {
     doc.setFontSize(7);
@@ -1074,9 +1199,10 @@ function drawPantsFrontPanel(
   const midY = offsetY + v(m.outseamLength) / 2;
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.front, lang), centerX, midY - 10, { align: 'center' });
+  doc.text(tr(pdfT.front, lang), centerX, midY - 5, { align: 'center' });
   doc.setFontSize(8);
-  doc.text(tr(pdfT.cut2, lang), centerX, midY, { align: 'center' });
+  doc.setTextColor(0, 0, 0);
+  doc.text(tr(pdfT.cut2, lang), centerX, midY + 3, { align: 'center' });
 
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
@@ -1169,7 +1295,7 @@ export function generatePatternPDF(
             drawPantsFrontPanel(doc, pm, patternX, patternY, category, pantsHasDarts, unit, lang);
           }
         } else {
-          drawSkirtPatternPiece(doc, sm, patternX, patternY, panel, unit, lang, col, row);
+          drawSkirtPatternPiece(doc, sm, patternX, patternY, panel, unit, lang, col, row, category);
         }
 
         doc.restoreGraphicsState();
@@ -1226,6 +1352,8 @@ export function generatePatternPDF(
 
   const allLines = [...baseInstructions, ...measurementLines];
   let y = 50;
+  doc.setFontSize(10);
+  doc.setTextColor(0, 0, 0);
   allLines.forEach((line) => { doc.text(line, MARGIN + 10, y); y += 7; });
 
   // ── Tile layout diagram ──
@@ -1265,9 +1393,13 @@ export function generatePatternPDF(
     if (isSleeve) {
       drawDiagramSleeve(doc, slm, patternStartX, patternStartY, diagScale, diagScale);
     } else if (isBodice) {
-      drawDiagramBodice(doc, bm, patternStartX, patternStartY, panel, diagScale, diagScale);
+      if (patternType === 'bodice-dartless') {
+        drawDiagramDartlessBodice(doc, bm, category, patternStartX, patternStartY, panel, diagScale, diagScale);
+      } else {
+        drawDiagramBodice(doc, bm, patternStartX, patternStartY, panel, diagScale, diagScale);
+      }
     } else if (!isPants) {
-      drawDiagramSkirt(doc, sm, patternStartX, patternStartY, panel, diagScale, diagScale);
+      drawDiagramSkirt(doc, sm, patternStartX, patternStartY, panel, diagScale, diagScale, category);
     }
     // Pants diagram: skip (pattern too complex for small tile)
 

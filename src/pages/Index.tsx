@@ -557,23 +557,23 @@ const Index = () => {
                   {patternType === 'skirt' ? (
                     <SkirtPatternPreview measurements={skirtMeasurements} category={category} />
                   ) : isBodiceDartless ? (
-                    <DartlessBodicePatternPreview 
+                    <DartlessBodicePatternPreview
                       measurements={dartlessBodiceMeasurements}
                       category={category}
                     />
                   ) : isBodiceWithDarts ? (
-                    <BodiceWithDartsPatternPreview 
+                    <BodiceWithDartsPatternPreview
                       measurements={bodiceDartsMeasurements}
                       category={category}
                     />
                   ) : isBodiceKnit ? (
-                    <KnitBodicePatternPreview 
+                    <KnitBodicePatternPreview
                       measurements={knitBodiceMeasurements}
                       category={category}
                     />
                   ) : patternType === 'bodice' ? (
-                    <BodicePatternPreview 
-                      measurements={bodiceMeasurements} 
+                    <BodicePatternPreview
+                      measurements={bodiceMeasurements}
                       panel={bodicePanel}
                     />
                   ) : isPantsWithDarts ? (

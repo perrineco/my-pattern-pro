@@ -1,6 +1,6 @@
 import { SleeveMeasurements, Category } from "@/types/sloper";
 import { MeasurementInput } from "@/components/MeasurementInput";
-import { MeasurementUnit } from "@/components/UnitToggle";
+import { MeasurementUnit, cmToInches } from "@/components/UnitToggle";
 import { Card } from "@/components/ui/card";
 import { SleeveMeasurementGuide } from "@/components/SleeveMeasurementGuide";
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -19,8 +19,16 @@ export const defaultSleeveMeasurements: Record<Category, SleeveMeasurements> = {
 };
 
 export function SleeveMeasurementForm({ measurements, onChange, category, unit = "cm" }: SleeveMeasurementFormProps) {
-  const { t } = useLanguage();
-  
+  const { t, language } = useLanguage();
+
+  const easeVal = measurements.ease ?? 2;
+  const displayEase = unit === 'inches' ? parseFloat(cmToInches(easeVal).toFixed(1)) : easeVal;
+  const easeTotal = parseFloat((displayEase * 4).toFixed(1));
+  const unitLabel = unit === 'inches' ? 'in' : 'cm';
+  const easeHelper = language === 'fr'
+    ? `→ ${displayEase} ${unitLabel} par quart = ${easeTotal} ${unitLabel} au total`
+    : `→ ${displayEase} ${unitLabel} per quarter = ${easeTotal} ${unitLabel} total`;
+
   const handleChange = (key: keyof SleeveMeasurements, value: number) => {
     onChange({ ...measurements, [key]: value });
   };
@@ -37,7 +45,8 @@ export function SleeveMeasurementForm({ measurements, onChange, category, unit =
         <MeasurementInput label={t('meas.sleeveLength')} value={measurements.sleeveLength} onChange={(v) => handleChange("sleeveLength", v)} min={30} max={80} step={0.5} unit={unit} />
         <MeasurementInput label={t('meas.elbowLength')} value={measurements.elbowLength} onChange={(v) => handleChange("elbowLength", v)} min={20} max={50} step={0.5} unit={unit} />
         <MeasurementInput label={t('meas.armholeDepth')} value={measurements.armholeDepth} onChange={(v) => handleChange("armholeDepth", v)} min={8} max={25} step={0.5} unit={unit} />
-        <MeasurementInput label={t('meas.ease')} value={measurements.ease ?? 2} onChange={(v) => handleChange("ease", v)} min={0} max={8} step={0.5} unit={unit} />
+        <MeasurementInput label={t('meas.ease')} value={measurements.ease ?? 2} onChange={(v) => handleChange("ease", v)} tooltip={t('tooltip.ease')} min={0} max={8} step={0.5} unit={unit} />
+        <p className="text-xs text-primary mt-1">{easeHelper}</p>
       </div>
     </Card>
   );

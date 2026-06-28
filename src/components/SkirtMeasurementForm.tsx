@@ -2,7 +2,7 @@ import { SkirtMeasurements, Category } from '@/types/sloper';
 import { MeasurementInput } from './MeasurementInput';
 import { MeasurementGuide } from './MeasurementGuide';
 import { Card } from '@/components/ui/card';
-import { MeasurementUnit } from './UnitToggle';
+import { MeasurementUnit, cmToInches } from './UnitToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SkirtMeasurementFormProps {
@@ -24,8 +24,19 @@ export function SkirtMeasurementForm({
   category,
   unit = 'cm',
 }: SkirtMeasurementFormProps) {
-  const { t } = useLanguage();
-  
+  const { t, language } = useLanguage();
+
+  const easeVal = measurements.ease ?? (category === 'kids' ? 0.5 : 1);
+  const displayEase = unit === 'inches' ? parseFloat(cmToInches(easeVal).toFixed(1)) : easeVal;
+  const easeTotal = parseFloat((displayEase * 4).toFixed(1));
+  const unitLabel = unit === 'inches' ? 'in' : 'cm';
+  const easeHelper = language === 'fr'
+    ? `→ ${displayEase} ${unitLabel} par quart = ${easeTotal} ${unitLabel} au total`
+    : `→ ${displayEase} ${unitLabel} per quarter = ${easeTotal} ${unitLabel} total`;
+  const easeNote = language === 'fr'
+    ? `Ce patron inclut ${displayEase} ${unitLabel} d'aisance par quart (${easeTotal} ${unitLabel} au total).`
+    : `This pattern includes ${displayEase} ${unitLabel} ease per quarter (${easeTotal} ${unitLabel} total).`;
+
   const handleChange = (key: keyof SkirtMeasurements) => (value: number) => {
     onChange({ ...measurements, [key]: value });
   };
@@ -96,17 +107,20 @@ export function SkirtMeasurementForm({
             value={measurements.ease ?? (category === 'kids' ? 0.5 : 1)}
             onChange={handleChange('ease')}
             hint={t('hint.wearingEaseAllowance')}
+            tooltip={t('tooltip.ease')}
             min={0}
             max={4}
             step={0.5}
             unit={unit}
           />
+          <p className="text-xs text-primary mt-1.5">{easeHelper}</p>
         </div>
       </div>
 
       <div className="pt-4 border-t border-border">
         <p className="text-xs text-muted-foreground">
-          {t('note.allMeasurementsIn')} {unit === 'inches' ? t('note.inches') : t('note.centimeters')}. {t('note.standardEase')}
+          {t('note.allMeasurementsIn')} {unit === 'inches' ? t('note.inches') : t('note.centimeters')}.{' '}
+          {easeNote} {t('note.easeFitted')} {t('note.easeLoose')}
         </p>
       </div>
     </Card>

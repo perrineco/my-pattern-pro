@@ -51,14 +51,18 @@ export function DartlessBodicePatternPreview({ measurements, category }: Dartles
 
   const backPanelWidth = singlePatternWidth * scale;
 
+  // Extra top margin so neckline arcs (which go above offsetY) don't clip
+  const backNeckDepthDivisor = category === "men" ? 20 : category === "kids" ? 18 : 16;
+  const backNeckDepthCm = neckCircumference / backNeckDepthDivisor;
+  const neckTopPadding = backNeckDepthCm * scale;
+
   // Front panel offset (left side)
   const frontOffsetX = padding;
-  const frontOffsetY = padding;
+  const frontOffsetY = padding + neckTopPadding + Math.max(0, (backPatternHeight - frontPatternHeight) * scale);
 
   // Back panel offset (right side) - closer to front, mirrored
   const backOffsetX = frontOffsetX + backPanelWidth + 25;
-  const heightDifference = (frontPatternHeight - backPatternHeight) * scale;
-  const backOffsetY = padding + heightDifference;
+  const backOffsetY = padding + neckTopPadding + Math.max(0, (frontPatternHeight - backPatternHeight) * scale);
   const backMirrorX = 2 * backOffsetX + backPanelWidth;
 
   return (

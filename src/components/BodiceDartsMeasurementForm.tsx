@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MeasurementInput } from '@/components/MeasurementInput';
 import { BodiceMeasurementGuide } from '@/components/BodiceMeasurementGuide';
 import { Category, BodiceMeasurements } from '@/types/sloper';
-import { MeasurementUnit } from './UnitToggle';
+import { MeasurementUnit, cmToInches } from './UnitToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BodiceDartsMeasurementFormProps {
@@ -26,8 +26,16 @@ export function BodiceDartsMeasurementForm({
   category,
   unit = 'cm',
 }: BodiceDartsMeasurementFormProps) {
-  const { t } = useLanguage();
-  
+  const { t, language } = useLanguage();
+
+  const easeVal = measurements.ease ?? 2;
+  const displayEase = unit === 'inches' ? parseFloat(cmToInches(easeVal).toFixed(1)) : easeVal;
+  const easeTotal = parseFloat((displayEase * 4).toFixed(1));
+  const unitLabel = unit === 'inches' ? 'in' : 'cm';
+  const easeHelper = language === 'fr'
+    ? `→ ${displayEase} ${unitLabel} par quart = ${easeTotal} ${unitLabel} au total`
+    : `→ ${displayEase} ${unitLabel} per quarter = ${easeTotal} ${unitLabel} total`;
+
   const handleChange = (key: keyof BodiceMeasurements) => (value: number) => {
     onChange({ ...measurements, [key]: value });
   };
@@ -73,7 +81,8 @@ export function BodiceDartsMeasurementForm({
         <div className="space-y-1">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('meas.ease')}</span>
           <div className="grid gap-3">
-            <MeasurementInput label={t('meas.ease')} value={measurements.ease ?? 2} onChange={handleChange('ease')} hint={t('hint.addedWearingRoom')} min={0} max={10} step={0.5} unit={unit} />
+            <MeasurementInput label={t('meas.ease')} value={measurements.ease ?? 2} onChange={handleChange('ease')} hint={t('hint.addedWearingRoom')} tooltip={t('tooltip.ease')} min={0} max={10} step={0.5} unit={unit} />
+            <p className="text-xs text-primary">{easeHelper}</p>
           </div>
         </div>
       </CardContent>
