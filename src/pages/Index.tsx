@@ -32,13 +32,14 @@ import { UnitToggle, MeasurementUnit } from '@/components/UnitToggle';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Download, Printer, Lock, ArrowLeft, RotateCcw, Wrench } from 'lucide-react';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+import { FileText, File, Scroll, Monitor, Lock, ArrowLeft, RotateCcw, Wrench, HelpCircle } from 'lucide-react';
 import { MeasurementGuide } from '@/components/MeasurementGuide';
 import { BodiceMeasurementGuide } from '@/components/BodiceMeasurementGuide';
 import { SleeveMeasurementGuide } from '@/components/SleeveMeasurementGuide';
 import { toast } from 'sonner';
 import { getPatternsLimit, STRIPE_CONFIG } from '@/lib/stripe-config';
-import { generatePatternPDF } from '@/lib/pdf-export';
+import { generateTiledPDF, generateProjectionPDF } from '@/lib/pdf-export';
 
 const DRAFT_KEY = (cat: Category) => `pcs_draft_${cat}`;
 
@@ -217,9 +218,8 @@ const Index = () => {
 
   const isPatternLocked = !canAccessPattern(patternType) && patternType !== 'skirt';
 
-  const handleExportPDF = async () => {
+  const handleDownload = async (format: 'a4' | 'letter' | 'a0' | 'projection') => {
     try {
-      // Server-side quota check (skirt always free, no check needed)
       if (patternType !== 'skirt') {
         const { data, error } = await supabase.functions.invoke('record-pattern-generation', {
           body: { patternType },
@@ -232,7 +232,11 @@ const Index = () => {
       }
       const measurements = getCurrentMeasurements();
       const userName = user?.user_metadata?.full_name || user?.email || '';
-      await generatePatternPDF(measurements, patternType, measurementUnit, language, userName, category);
+      if (format === 'projection') {
+        await generateProjectionPDF(measurements, patternType, measurementUnit, language, userName, category);
+      } else {
+        await generateTiledPDF(format, measurements, patternType, measurementUnit, language, userName, category);
+      }
       toast.success(t('toast.pdfDownloaded'));
     } catch {
       toast.error(t('toast.pdfError') ?? 'Failed to generate PDF');
@@ -403,27 +407,62 @@ const Index = () => {
                   {t('action.adjustments')}
                 </button>
 
-                {/* Action buttons */}
-                <div className="flex flex-col gap-3">
-                  <div className="flex gap-3">
+                {/* Format d'impression */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    {t('pdf.formatLabel')}
+                  </span>
+                  <div className="grid grid-cols-4 gap-2">
                     <Button
-                      className="flex-1 gap-2"
-                      size="lg"
+                      className="flex flex-col h-auto py-3 gap-0.5 min-w-0"
                       disabled={isPatternLocked}
-                      onClick={handleExportPDF}
+                      onClick={() => handleDownload('a4')}
                     >
-                      <Download className="w-4 h-4" />
-                      {t('action.exportPdf')}
+                      <FileText className="w-4 h-4 shrink-0" />
+                      <span className="text-sm font-semibold">A4</span>
                     </Button>
                     <Button
                       variant="outline"
-                      size="lg"
-                      className="gap-2"
+                      className="flex flex-col h-auto py-3 gap-0.5 min-w-0"
                       disabled={isPatternLocked}
-                      onClick={handleExportPDF}
+                      onClick={() => handleDownload('letter')}
                     >
-                      <Printer className="w-4 h-4" />
-                      {t('action.print')}
+                      <File className="w-4 h-4 shrink-0" />
+                      <span className="text-sm font-semibold">Lettre US</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex flex-col h-auto py-3 gap-0.5 min-w-0"
+                      disabled={isPatternLocked}
+                      onClick={() => handleDownload('a0')}
+                    >
+                      <Scroll className="w-4 h-4 shrink-0" />
+                      <span className="text-sm font-semibold">A0</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex flex-col h-auto py-3 gap-0.5 min-w-0"
+                      disabled={isPatternLocked}
+                      onClick={() => handleDownload('projection')}
+                    >
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Monitor className="w-4 h-4" />
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button
+                              type="button"
+                              className="text-muted-foreground hover:text-foreground transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <HelpCircle className="w-3 h-3" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="text-xs whitespace-pre-line leading-relaxed w-64">
+                            {t('pdf.projectionTooltip')}
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <span className="text-sm font-semibold">Projection</span>
                     </Button>
                   </div>
                 </div>

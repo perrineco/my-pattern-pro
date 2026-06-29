@@ -105,6 +105,13 @@ const MARGIN = 10;
 const PRINTABLE_WIDTH = A4_WIDTH - (MARGIN * 2);
 const PRINTABLE_HEIGHT = A4_HEIGHT - (MARGIN * 2);
 
+const PAGE_FORMATS = {
+  a4:     { width: 210, height: 297 },
+  letter: { width: 216, height: 279 },
+  a0:     { width: 841, height: 1189 },
+} as const;
+type TiledFormat = keyof typeof PAGE_FORMATS;
+
 // Alignment mark size
 const MARK_SIZE = 8;
 const MARK_OFFSET = 5;
@@ -155,17 +162,17 @@ function calculateSleeveDimensions(measurements: SleeveMeasurements): PatternDim
   return { widthCm, heightCm };
 }
 
-function calculateTiles(dimensions: PatternDimensions): TileInfo {
+function calculateTiles(dimensions: PatternDimensions, printableW = PRINTABLE_WIDTH, printableH = PRINTABLE_HEIGHT): TileInfo {
   const widthMm = dimensions.widthCm * 10;
   const heightMm = dimensions.heightCm * 10;
 
-  const cols = Math.ceil(widthMm / PRINTABLE_WIDTH);
-  const rows = Math.ceil(heightMm / PRINTABLE_HEIGHT);
+  const cols = Math.ceil(widthMm / printableW);
+  const rows = Math.ceil(heightMm / printableH);
 
   return { cols, rows, totalPages: cols * rows };
 }
 
-function drawAlignmentMarks(doc: jsPDF, pageCol: number, pageRow: number, totalCols: number, totalRows: number) {
+function drawAlignmentMarks(doc: jsPDF, pageCol: number, pageRow: number, totalCols: number, totalRows: number, pageW = A4_WIDTH, pageH = A4_HEIGHT) {
   doc.setDrawColor(100, 100, 100);
   doc.setLineWidth(0.3);
 
@@ -179,26 +186,26 @@ function drawAlignmentMarks(doc: jsPDF, pageCol: number, pageRow: number, totalC
 
   // TR corner
   if (pageCol < totalCols - 1 || pageRow > 0) {
-    doc.line(A4_WIDTH - MARGIN - MARK_SIZE, MARGIN, A4_WIDTH - MARGIN, MARGIN);
-    doc.line(A4_WIDTH - MARGIN, MARGIN, A4_WIDTH - MARGIN, MARGIN + MARK_SIZE);
-    doc.line(A4_WIDTH - MARGIN, MARGIN, A4_WIDTH - MARGIN - MARK_OFFSET * 2, MARGIN + MARK_OFFSET * 2);
-    doc.line(A4_WIDTH - MARGIN - MARK_OFFSET * 2, MARGIN, A4_WIDTH - MARGIN, MARGIN + MARK_OFFSET * 2);
+    doc.line(pageW - MARGIN - MARK_SIZE, MARGIN, pageW - MARGIN, MARGIN);
+    doc.line(pageW - MARGIN, MARGIN, pageW - MARGIN, MARGIN + MARK_SIZE);
+    doc.line(pageW - MARGIN, MARGIN, pageW - MARGIN - MARK_OFFSET * 2, MARGIN + MARK_OFFSET * 2);
+    doc.line(pageW - MARGIN - MARK_OFFSET * 2, MARGIN, pageW - MARGIN, MARGIN + MARK_OFFSET * 2);
   }
 
   // BL corner
   if (pageCol > 0 || pageRow < totalRows - 1) {
-    doc.line(MARGIN, A4_HEIGHT - MARGIN - MARK_SIZE, MARGIN, A4_HEIGHT - MARGIN);
-    doc.line(MARGIN, A4_HEIGHT - MARGIN, MARGIN + MARK_SIZE, A4_HEIGHT - MARGIN);
-    doc.line(MARGIN, A4_HEIGHT - MARGIN, MARGIN + MARK_OFFSET * 2, A4_HEIGHT - MARGIN - MARK_OFFSET * 2);
-    doc.line(MARGIN + MARK_OFFSET * 2, A4_HEIGHT - MARGIN, MARGIN, A4_HEIGHT - MARGIN - MARK_OFFSET * 2);
+    doc.line(MARGIN, pageH - MARGIN - MARK_SIZE, MARGIN, pageH - MARGIN);
+    doc.line(MARGIN, pageH - MARGIN, MARGIN + MARK_SIZE, pageH - MARGIN);
+    doc.line(MARGIN, pageH - MARGIN, MARGIN + MARK_OFFSET * 2, pageH - MARGIN - MARK_OFFSET * 2);
+    doc.line(MARGIN + MARK_OFFSET * 2, pageH - MARGIN, MARGIN, pageH - MARGIN - MARK_OFFSET * 2);
   }
 
   // BR corner
   if (pageCol < totalCols - 1 || pageRow < totalRows - 1) {
-    doc.line(A4_WIDTH - MARGIN - MARK_SIZE, A4_HEIGHT - MARGIN, A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN);
-    doc.line(A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN - MARK_SIZE, A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN);
-    doc.line(A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN, A4_WIDTH - MARGIN - MARK_OFFSET * 2, A4_HEIGHT - MARGIN - MARK_OFFSET * 2);
-    doc.line(A4_WIDTH - MARGIN - MARK_OFFSET * 2, A4_HEIGHT - MARGIN, A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN - MARK_OFFSET * 2);
+    doc.line(pageW - MARGIN - MARK_SIZE, pageH - MARGIN, pageW - MARGIN, pageH - MARGIN);
+    doc.line(pageW - MARGIN, pageH - MARGIN - MARK_SIZE, pageW - MARGIN, pageH - MARGIN);
+    doc.line(pageW - MARGIN, pageH - MARGIN, pageW - MARGIN - MARK_OFFSET * 2, pageH - MARGIN - MARK_OFFSET * 2);
+    doc.line(pageW - MARGIN - MARK_OFFSET * 2, pageH - MARGIN, pageW - MARGIN, pageH - MARGIN - MARK_OFFSET * 2);
   }
 
   const circleRadius = 2;
@@ -208,25 +215,25 @@ function drawAlignmentMarks(doc: jsPDF, pageCol: number, pageRow: number, totalC
     doc.circle(MARGIN, MARGIN, circleRadius, 'FD');
   }
   if (pageCol < totalCols - 1 && pageRow > 0) {
-    doc.circle(A4_WIDTH - MARGIN, MARGIN, circleRadius, 'FD');
+    doc.circle(pageW - MARGIN, MARGIN, circleRadius, 'FD');
   }
   if (pageCol > 0 && pageRow < totalRows - 1) {
-    doc.circle(MARGIN, A4_HEIGHT - MARGIN, circleRadius, 'FD');
+    doc.circle(MARGIN, pageH - MARGIN, circleRadius, 'FD');
   }
   if (pageCol < totalCols - 1 && pageRow < totalRows - 1) {
-    doc.circle(A4_WIDTH - MARGIN, A4_HEIGHT - MARGIN, circleRadius, 'FD');
+    doc.circle(pageW - MARGIN, pageH - MARGIN, circleRadius, 'FD');
   }
 }
 
-function drawPageInfo(doc: jsPDF, pageNum: number, totalPages: number, col: number, row: number, lang: Language) {
+function drawPageInfo(doc: jsPDF, pageNum: number, totalPages: number, col: number, row: number, lang: Language, pageW = A4_WIDTH, pageH = A4_HEIGHT) {
   doc.setFontSize(8);
   doc.setTextColor(120, 120, 120);
   const pageStr = tr(pdfT.pageOf, lang)(pageNum, totalPages);
   const rowColStr = tr(pdfT.rowCol, lang)(row + 1, col + 1);
-  doc.text(`${pageStr} ${rowColStr}`, A4_WIDTH / 2, A4_HEIGHT - 3, { align: 'center' });
-  doc.text('Petit Citron Studio', MARGIN, A4_HEIGHT - 3);
+  doc.text(`${pageStr} ${rowColStr}`, pageW / 2, pageH - 3, { align: 'center' });
+  doc.text('Petit Citron Studio', MARGIN, pageH - 3);
   if (col === 0 && row === 0) {
-    doc.text(tr(pdfT.cutOnFold, lang), A4_WIDTH - MARGIN, A4_HEIGHT - 3, { align: 'right' });
+    doc.text(tr(pdfT.cutOnFold, lang), pageW - MARGIN, pageH - 3, { align: 'right' });
   }
 }
 
@@ -1255,14 +1262,15 @@ async function loadLogoBase64(): Promise<string | null> {
         resolve(canvas.toDataURL('image/png'));
       };
       img.onerror = () => reject(new Error('logo load failed'));
-      img.src = '/logo-petitcitron.gif';
+      img.src = '/logo-petitcitron-new.png.png';
     });
   } catch {
     return null;
   }
 }
 
-export async function generatePatternPDF(
+export async function generateTiledPDF(
+  format: TiledFormat,
   measurements: SkirtMeasurements | BodiceMeasurements | SleeveMeasurements | PantsMeasurements,
   patternType: string = 'skirt',
   unit: MeasurementUnit = 'cm',
@@ -1289,20 +1297,26 @@ export async function generatePatternPDF(
         ? calculatePantsDimensions(pm, category)
         : calculateSkirtDimensions(sm);
 
-  const tiles = calculateTiles(dimensions);
+  const fmt = PAGE_FORMATS[format];
+  const fmtW = fmt.width;
+  const fmtH = fmt.height;
+  const printableW = fmtW - MARGIN * 2;
+  const printableH = fmtH - MARGIN * 2;
 
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const tiles = calculateTiles(dimensions, printableW, printableH);
+  const isA0 = format === 'a0';
+
+  // Cover page always A4; tile pages use the target format
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 297] });
 
   const patternMarginMm = 20;
   const panels: ('front' | 'back')[] = isSleeve ? ['front'] : ['front', 'back'];
 
   const logoBase64 = await loadLogoBase64();
-  // Font setup — swap to custom fonts when /public/fonts/ files are present:
-  // CormorantGaramond-Bold.ttf → titleFont,  DMSans-Regular.ttf → bodyFont
+
   const titleFont = 'times';
   const bodyFont = 'helvetica';
 
-  // ── COVER PAGE (page 1, already created by jsPDF constructor) ────────────────
   const OLIVE:  [number,number,number] = [144, 155,  27];
   const RASP:   [number,number,number] = [178,  75, 113];
   const CREAM:  [number,number,number] = [250, 247, 240];
@@ -1317,46 +1331,42 @@ export async function generatePatternPDF(
   const panelDescription = isSleeve ? tr(pdfT.singlePanel, lang) : tr(pdfT.frontBackPanels, lang);
   const dateStr = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB');
 
-  // 1. Header — olive band
-  fill(OLIVE);
-  doc.rect(0, 0, A4_WIDTH, 25, 'F');
+  // ── COVER PAGE (A4 format, toujours en première page) ───────────────────────
+  // 1. Header — cream band
   fill(CREAM);
-  doc.rect(10, 2.5, 42, 20, 'F');
-  if (logoBase64) doc.addImage(logoBase64, 'PNG', 11, 3, 40, 19);
+  doc.rect(0, 0, 210, 25, 'F');
+  if (logoBase64) doc.addImage(logoBase64, 'PNG', 10, 1, 34, 23);
   doc.setFont(bodyFont, 'normal');
   doc.setFontSize(8);
-  doc.setTextColor(255, 255, 255);
-  doc.text('studio.petitcitron.com', A4_WIDTH - MARGIN, 16, { align: 'right' });
+  color(OLIVE);
+  doc.text('studio.petitcitron.com', 200, 16, { align: 'right' });
 
   // 2. Title zone — cream band
   fill(CREAM);
-  doc.rect(0, 25, A4_WIDTH, 33, 'F');
+  doc.rect(0, 25, 210, 33, 'F');
   doc.setFont(titleFont, 'bold');
   doc.setFontSize(24);
   doc.setTextColor(30, 30, 30);
-  doc.text(patternName.toUpperCase(), A4_WIDTH / 2, 42, { align: 'center' });
+  doc.text(patternName.toUpperCase(), 105, 42, { align: 'center' });
   doc.setFont(bodyFont, 'normal');
   doc.setFontSize(9);
   color(GRAY88);
   const subtitleLine = userName
     ? `${panelDescription} · ${dateStr} · ${userName}`
     : `${panelDescription} · ${dateStr}`;
-  doc.text(doc.splitTextToSize(subtitleLine, 170) as string[], A4_WIDTH / 2, 52, { align: 'center' });
+  doc.text(doc.splitTextToSize(subtitleLine, 170) as string[], 105, 52, { align: 'center' });
 
   // 3. Warning box — raspberry left border
   fill(PINKBG);
   doc.rect(MARGIN, 62, 190, 20, 'F');
   fill(RASP);
   doc.rect(MARGIN, 62, 4, 20, 'F');
-  // Warning icon: filled raspberry triangle (⚠ unicode unsupported in standard PDF fonts)
-  // lines(segments, x, y, scale, style, closed): start at top-center, two sides, close
   fill(RASP);
   doc.lines([[2.5, 5], [-5, 0]], MARGIN + 9.5, 65, [1, 1], 'F', true);
   doc.setTextColor(255, 255, 255);
   doc.setFont(bodyFont, 'normal');
   doc.setFontSize(7);
   doc.text('!', MARGIN + 9.5, 69.5, { align: 'center' });
-  // Warning text — normal weight only (helvetica bold causes letter-spacing artifact in jsPDF)
   doc.setFont(bodyFont, 'normal');
   doc.setFontSize(10);
   color(RASP);
@@ -1448,7 +1458,7 @@ export async function generatePatternPDF(
     if (!step) { measY += 3; continue; }
     const stepLines = doc.splitTextToSize(step, leftColW - 2) as string[];
     for (const line of stepLines) {
-      if (measY < 265) doc.text(line, leftColX, measY);
+      if (measY < 267) doc.text(line, leftColX, measY);
       measY += 5.5;
     }
   }
@@ -1466,8 +1476,8 @@ export async function generatePatternPDF(
   const tileWDiag = Math.max(6, Math.min(18,
     Math.floor((rightColW - (panels.length - 1) * panelGapDiag) / (panels.length * tiles.cols))
   ));
-  const tileHDiag = Math.round(tileWDiag * PRINTABLE_HEIGHT / PRINTABLE_WIDTH);
-  const diagScaleDiag = tileWDiag / PRINTABLE_WIDTH;
+  const tileHDiag = Math.round(tileWDiag * printableH / printableW);
+  const diagScaleDiag = tileWDiag / printableW;
   const diagStartY = colY + 10;
 
   panels.forEach((diagPanel, panelIndex) => {
@@ -1521,7 +1531,7 @@ export async function generatePatternPDF(
   // 5. Footer
   stroke(OLIVE);
   doc.setLineWidth(0.5);
-  doc.line(MARGIN, 272, MARGIN + 190, 272);
+  doc.line(MARGIN, 272, 200, 272);
   doc.setFont(bodyFont, 'normal');
   doc.setFontSize(8);
   color(GRAY88);
@@ -1529,36 +1539,51 @@ export async function generatePatternPDF(
     `Petit Citron Studio — patron généré le ${dateStr}`,
     `Petit Citron Studio — pattern generated on ${dateStr}`
   );
-  doc.text(footerCenter, A4_WIDTH / 2, 280, { align: 'center' });
-  doc.text('studio.petitcitron.com', MARGIN + 190, 280, { align: 'right' });
+  doc.text(footerCenter, 105, 280, { align: 'center' });
+  doc.text('studio.petitcitron.com', 200, 280, { align: 'right' });
   // ── End cover page ────────────────────────────────────────────────────────────
 
-  // ── PATTERN TILE PAGES (pages 2..N) ──────────────────────────────────────────
+  // ── PATTERN TILE PAGES ────────────────────────────────────────────────────────
   let pageNum = 0;
 
   for (const panel of panels) {
     for (let row = 0; row < tiles.rows; row++) {
       for (let col = 0; col < tiles.cols; col++) {
-        doc.addPage();
+        doc.addPage([fmtW, fmtH]);
         pageNum++;
 
-        const viewOffsetX = col * PRINTABLE_WIDTH;
-        const viewOffsetY = row * PRINTABLE_HEIGHT;
+        const viewOffsetX = col * printableW;
+        const viewOffsetY = row * printableH;
 
-        drawAlignmentMarks(doc, col, row, tiles.cols, tiles.rows);
-        drawPageInfo(doc, pageNum, tiles.totalPages * panels.length, col, row, lang);
+        const totalTilePages = tiles.totalPages * panels.length;
+        const showAlignmentMarks = !isA0 || totalTilePages > 1;
+        if (showAlignmentMarks) {
+          drawAlignmentMarks(doc, col, row, tiles.cols, tiles.rows, fmtW, fmtH);
+        }
+        drawPageInfo(doc, pageNum, totalTilePages, col, row, lang, fmtW, fmtH);
 
         if (pageNum === 1) draw1cmTestSquare(doc, unit, lang);
 
+        // A0 traceur footer
+        if (isA0) {
+          doc.setFont(bodyFont, 'normal');
+          doc.setFontSize(7);
+          doc.setTextColor(120, 120, 120);
+          const traceurFooter = s(
+            'Impression traceur A0 recommandée — 100% sans mise à l\'échelle',
+            'A0 plotter printing recommended — 100% no scaling'
+          );
+          doc.text(traceurFooter, fmtW / 2, fmtH - 5, { align: 'center' });
+        }
+
         doc.saveGraphicsState();
-        // Clip content to the printable tile so pattern lines never bleed across pages.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const pdfInt = (doc as any).internal;
         const k: number = pdfInt.scaleFactor;
         const pH: number = pdfInt.pageSize.getHeight();
         pdfInt.write(
-          `${(MARGIN * k).toFixed(3)} ${((pH - MARGIN - PRINTABLE_HEIGHT) * k).toFixed(3)} ` +
-          `${(PRINTABLE_WIDTH * k).toFixed(3)} ${(PRINTABLE_HEIGHT * k).toFixed(3)} re W n`
+          `${(MARGIN * k).toFixed(3)} ${((pH - MARGIN - printableH) * k).toFixed(3)} ` +
+          `${(printableW * k).toFixed(3)} ${(printableH * k).toFixed(3)} re W n`
         );
 
         const patternX = patternMarginMm - viewOffsetX + MARGIN;
@@ -1591,5 +1616,316 @@ export async function generatePatternPDF(
   const typeLabel = pdfT.patternTypes[lang][patternType] ?? patternType;
   const prefix = lang === 'fr' ? 'patron de base' : 'basic block';
   const namePart = userName ? ` - ${userName}` : '';
-  doc.save(`${prefix} - ${typeLabel.toLowerCase()} - ${date}${namePart}.pdf`);
+  doc.save(`${prefix} - ${typeLabel.toLowerCase()} - ${format} - ${date}${namePart}.pdf`);
+}
+
+export async function generateProjectionPDF(
+  measurements: SkirtMeasurements | BodiceMeasurements | SleeveMeasurements | PantsMeasurements,
+  patternType: string = 'skirt',
+  unit: MeasurementUnit = 'cm',
+  lang: Language = 'en',
+  userName: string = '',
+  category: Category = 'women'
+): Promise<void> {
+  const bodiceTypes = ['bodice', 'bodice-dartless', 'bodice-with-darts', 'bodice-knit', 'dress'];
+  const isBodice = bodiceTypes.includes(patternType);
+  const isSleeve = patternType === 'sleeve';
+  const isPants  = patternType === 'pants' || patternType === 'pants-dartless' || patternType === 'pants-with-darts';
+  const pantsHasDarts = patternType === 'pants-with-darts';
+
+  const sm = measurements as SkirtMeasurements;
+  const bm = measurements as BodiceMeasurements;
+  const slm = measurements as SleeveMeasurements;
+  const pm  = measurements as PantsMeasurements;
+
+  const dimensions = isSleeve
+    ? calculateSleeveDimensions(slm)
+    : isBodice
+      ? calculateBodiceDimensions(bm)
+      : isPants
+        ? calculatePantsDimensions(pm, category)
+        : calculateSkirtDimensions(sm);
+
+  const pieceW = dimensions.widthCm * 10;
+  const pieceH = dimensions.heightCm * 10;
+  const panels: ('front' | 'back')[] = isSleeve ? ['front'] : ['front', 'back'];
+  const gap = 30;
+
+  const totalPatternW = panels.length === 1 ? pieceW : pieceW * 2 + gap;
+  const projMargin = 40;
+  const projHeaderH = 20;
+  const projFooterH = 15;
+  const projW = totalPatternW + projMargin * 2;
+  const projH = pieceH + projMargin * 2 + projHeaderH + projFooterH;
+
+  // ── COVER PAGE (A4 format, première page) ─────────────────────────────────────
+  const doc = new jsPDF({ unit: 'mm', format: [210, 297] });
+  const logoBase64 = await loadLogoBase64();
+  const titleFont = 'times';
+  const bodyFont = 'helvetica';
+  const OLIVE:  [number,number,number] = [144, 155,  27];
+  const RASP:   [number,number,number] = [178,  75, 113];
+  const CREAM:  [number,number,number] = [250, 247, 240];
+  const PINKBG: [number,number,number] = [255, 240, 243];
+  const GRAY88: [number,number,number] = [136, 136, 136];
+  const fill   = (c: [number,number,number]) => doc.setFillColor(c[0], c[1], c[2]);
+  const stroke = (c: [number,number,number]) => doc.setDrawColor(c[0], c[1], c[2]);
+  const color  = (c: [number,number,number]) => doc.setTextColor(c[0], c[1], c[2]);
+  const s = (fr: string, en: string) => lang === 'fr' ? fr : en;
+
+  const patternName = pdfT.patternTypes[lang][patternType] ?? patternType.charAt(0).toUpperCase() + patternType.slice(1);
+  const panelDescription = s('Page unique · Projection', 'Single page · Projection');
+  const dateStr = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB');
+
+  // 1. Header
+  fill(CREAM);
+  doc.rect(0, 0, 210, 25, 'F');
+  if (logoBase64) doc.addImage(logoBase64, 'PNG', 10, 1, 34, 23);
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(8);
+  color(OLIVE);
+  doc.text('studio.petitcitron.com', 200, 16, { align: 'right' });
+
+  // 2. Title zone
+  fill(CREAM);
+  doc.rect(0, 25, 210, 33, 'F');
+  doc.setFont(titleFont, 'bold');
+  doc.setFontSize(24);
+  doc.setTextColor(30, 30, 30);
+  doc.text(patternName.toUpperCase(), 105, 42, { align: 'center' });
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(9);
+  color(GRAY88);
+  const projSubtitle = userName ? `${panelDescription} · ${dateStr} · ${userName}` : `${panelDescription} · ${dateStr}`;
+  doc.text(doc.splitTextToSize(projSubtitle, 170) as string[], 105, 52, { align: 'center' });
+
+  // 3. Warning box
+  fill(PINKBG);
+  doc.rect(MARGIN, 62, 190, 20, 'F');
+  fill(RASP);
+  doc.rect(MARGIN, 62, 4, 20, 'F');
+  fill(RASP);
+  doc.lines([[2.5, 5], [-5, 0]], MARGIN + 9.5, 65, [1, 1], 'F', true);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(7);
+  doc.text('!', MARGIN + 9.5, 69.5, { align: 'center' });
+  doc.setFontSize(10);
+  color(RASP);
+  const projWarn1 = tr(pdfT.seamWarnLine1, lang).replace(/^[^\w]*/, '');
+  doc.text(projWarn1, MARGIN + 15, 70);
+  doc.setFontSize(9);
+  doc.text(tr(pdfT.seamWarnLine2, lang), MARGIN + 15, 78);
+
+  // 4. Two columns
+  const colY = 88;
+  const leftColX = MARGIN;
+  const leftColW = 104;
+  const rightColX = MARGIN + leftColW + 11;
+  const rightColW = 75;
+
+  doc.setFont(titleFont, 'bold');
+  doc.setFontSize(12);
+  color(OLIVE);
+  doc.text(s('Vos mesures', 'Your measurements'), leftColX, colY);
+  stroke(OLIVE);
+  doc.setLineWidth(0.5);
+  doc.line(leftColX, colY + 3, leftColX + leftColW, colY + 3);
+
+  const projMeasPairs: { key: string; val: string }[] = isSleeve
+    ? [
+        { key: tr(pdfT.upperArm, lang), val: formatMeasurement(slm.upperArm, unit) },
+        { key: tr(pdfT.wrist, lang), val: formatMeasurement(slm.wrist, unit) },
+        { key: tr(pdfT.sleeveLength, lang), val: formatMeasurement(slm.sleeveLength, unit) },
+        { key: tr(pdfT.elbowLength, lang), val: formatMeasurement(slm.elbowLength, unit) },
+        { key: tr(pdfT.armholeDepth, lang), val: formatMeasurement(slm.armholeDepth, unit) },
+      ]
+    : isBodice
+      ? [
+          { key: tr(pdfT.bust, lang), val: formatMeasurement(bm.bust, unit) },
+          { key: tr(pdfT.neckline, lang), val: formatMeasurement(bm.neckCircumference, unit) },
+          { key: tr(pdfT.shoulderLength, lang), val: formatMeasurement(bm.shoulderLength, unit) },
+          { key: tr(pdfT.backWidth, lang), val: formatMeasurement(bm.backWidth, unit) },
+          { key: tr(pdfT.backLength, lang), val: formatMeasurement(bm.backLength, unit) },
+        ]
+      : isPants
+        ? [
+            { key: tr(pdfT.waist, lang), val: formatMeasurement(pm.waist, unit) },
+            { key: tr(pdfT.hip, lang), val: formatMeasurement(pm.hip, unit) },
+            { key: tr(pdfT.outseam, lang), val: formatMeasurement(pm.outseamLength, unit) },
+          ]
+        : [
+            { key: tr(pdfT.waist, lang), val: formatMeasurement(sm.waist, unit) },
+            { key: tr(pdfT.hip, lang), val: formatMeasurement(sm.hip, unit) },
+            { key: tr(pdfT.waistToHip, lang), val: formatMeasurement(sm.waistToHip, unit) },
+            { key: tr(pdfT.skirtLength, lang), val: formatMeasurement(sm.skirtLength, unit) },
+          ];
+
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(40, 40, 40);
+  let measY = colY + 10;
+  for (const pair of projMeasPairs) {
+    doc.text(pair.key, leftColX, measY);
+    doc.text(pair.val, leftColX + leftColW, measY, { align: 'right' });
+    doc.setDrawColor(210, 210, 210);
+    doc.setLineWidth(0.2);
+    doc.line(leftColX, measY + 2, leftColX + leftColW, measY + 2);
+    measY += 7;
+  }
+  measY += 2;
+  doc.setFontSize(9);
+  color(GRAY88);
+  doc.text(`${tr(pdfT.totalPages, lang)}: 1`, leftColX, measY);
+  measY += 10;
+
+  stroke(OLIVE);
+  doc.setLineWidth(0.5);
+  doc.line(leftColX, measY, leftColX + leftColW, measY);
+  measY += 8;
+
+  doc.setFont(titleFont, 'bold');
+  doc.setFontSize(12);
+  color(OLIVE);
+  doc.text(s('Format projection', 'Projection format'), leftColX, measY);
+  doc.setLineWidth(0.5);
+  doc.line(leftColX, measY + 3, leftColX + leftColW, measY + 3);
+  measY += 10;
+
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(40, 40, 40);
+  const projInfo = s(
+    [
+      `Dimensions page : ${Math.round(projW)} × ${Math.round(projH)} mm`,
+      'Ouvrir dans un logiciel de projection',
+      '(BenQ, Ishow) ou de découpe numérique.',
+      'Ne pas imprimer à l\'échelle.',
+      'Grille 10 cm (olive) et 2 pouces (rose)',
+      'pour calibrage / alignement.',
+    ],
+    [
+      `Page size: ${Math.round(projW)} × ${Math.round(projH)} mm`,
+      'Open in a projection app (BenQ, Ishow)',
+      'or digital cutting software.',
+      'Do not print to scale.',
+      '10 cm grid (olive) and 2-inch grid (pink)',
+      'for calibration / alignment.',
+    ]
+  );
+  for (const line of projInfo) {
+    if (measY < 267) doc.text(line, leftColX, measY);
+    measY += 5.5;
+  }
+
+  // Right column — single projection page diagram
+  doc.setFont(titleFont, 'bold');
+  doc.setFontSize(12);
+  color(OLIVE);
+  doc.text(tr(pdfT.pageLayout, lang), rightColX, colY);
+  stroke(OLIVE);
+  doc.setLineWidth(0.5);
+  doc.line(rightColX, colY + 3, rightColX + rightColW, colY + 3);
+
+  const diagBoxW = rightColW - 4;
+  const diagBoxH = Math.min(80, diagBoxW * projH / projW);
+  const diagBoxX = rightColX + 2;
+  const diagBoxY = colY + 10;
+  doc.setFillColor(245, 245, 245);
+  doc.setDrawColor(160, 160, 160);
+  doc.setLineWidth(0.3);
+  doc.rect(diagBoxX, diagBoxY, diagBoxW, diagBoxH, 'FD');
+  doc.setFontSize(6);
+  doc.setTextColor(100, 100, 100);
+  doc.text('2', diagBoxX + diagBoxW / 2, diagBoxY + diagBoxH / 2 + 2, { align: 'center' });
+  doc.setFontSize(7);
+  doc.setTextColor(50, 50, 50);
+  doc.text(s('PROJECTION', 'PROJECTION'), diagBoxX + diagBoxW / 2, diagBoxY + diagBoxH + 5, { align: 'center' });
+
+  // 5. Footer
+  stroke(OLIVE);
+  doc.setLineWidth(0.5);
+  doc.line(MARGIN, 272, 200, 272);
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(8);
+  color(GRAY88);
+  doc.text(
+    s(`Petit Citron Studio — patron généré le ${dateStr}`, `Petit Citron Studio — pattern generated on ${dateStr}`),
+    105, 280, { align: 'center' }
+  );
+  doc.text('studio.petitcitron.com', 200, 280, { align: 'right' });
+
+  // ── PAGE PROJECTION (page 2, format dynamique) ───────────────────────────────
+  doc.addPage([projW, projH]);
+
+  // Grid layers — drawn first so pattern pieces appear on top
+  doc.setLineWidth(0.2);
+  doc.setDrawColor(195, 205, 130);
+  for (let x = 0; x <= projW + 1; x += 100) { doc.line(x, 0, x, projH); }
+  for (let y = 0; y <= projH + 1; y += 100) { doc.line(0, y, projW, y); }
+
+  const twoInchMm = 2 * 25.4;
+  doc.setLineWidth(0.15);
+  doc.setDrawColor(225, 185, 200);
+  for (let x = 0; x <= projW + 1; x += twoInchMm) { doc.line(x, 0, x, projH); }
+  for (let y = 0; y <= projH + 1; y += twoInchMm) { doc.line(0, y, projW, y); }
+
+  // Header
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(60, 60, 60);
+  const headerText = `Petit Citron Studio — ${patternName} — ${dateStr}${userName ? ` — ${userName}` : ''}`;
+  doc.text(headerText, projW / 2, 12, { align: 'center' });
+
+  // Pattern pieces side by side
+  const startY = projHeaderH + projMargin;
+  panels.forEach((panel, panelIndex) => {
+    const startX = projMargin + panelIndex * (pieceW + gap);
+    if (isSleeve) {
+      drawSleevePatternPiece(doc, slm, startX, startY, unit, lang);
+    } else if (isBodice) {
+      if (patternType === 'bodice-dartless') {
+        drawDartlessBodicePiece(doc, bm, category, startX, startY, panel, unit, lang, 0, 0);
+      } else {
+        drawBodicePatternPiece(doc, bm, startX, startY, panel, unit, lang, 0, 0);
+      }
+    } else if (isPants) {
+      if (panel === 'back') {
+        drawPantsBackPanel(doc, pm, startX, startY, category, pantsHasDarts, unit, lang);
+      } else {
+        drawPantsFrontPanel(doc, pm, startX, startY, category, pantsHasDarts, unit, lang);
+      }
+    } else {
+      drawSkirtPatternPiece(doc, sm, startX, startY, panel, unit, lang, 0, 0, category);
+    }
+  });
+
+  // 10 cm ruler (bottom left)
+  const rulerX = projMargin;
+  const rulerY = projH - projFooterH - 10;
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+  doc.line(rulerX, rulerY, rulerX + 100, rulerY);
+  for (let i = 0; i <= 10; i++) {
+    const tickX = rulerX + i * 10;
+    const tickH = i % 5 === 0 ? 3 : 1.5;
+    doc.line(tickX, rulerY - tickH, tickX, rulerY);
+  }
+  doc.setFontSize(7);
+  doc.setTextColor(0, 0, 0);
+  doc.text('10 cm', rulerX + 50, rulerY + 4, { align: 'center' });
+
+  // Footer
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(120, 120, 120);
+  doc.text(
+    s("Projection uniquement — ne pas imprimer à l'échelle", 'Projection only — do not print to scale'),
+    projW / 2, projH - 5, { align: 'center' }
+  );
+
+  const date = new Date().toISOString().slice(0, 10);
+  const typeLabel = pdfT.patternTypes[lang][patternType] ?? patternType;
+  const namePart = userName ? ` - ${userName}` : '';
+  doc.save(`projection - ${typeLabel.toLowerCase()} - ${date}${namePart}.pdf`);
 }
