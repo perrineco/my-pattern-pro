@@ -232,7 +232,7 @@ const Index = () => {
       }
       const measurements = getCurrentMeasurements();
       const userName = user?.user_metadata?.full_name || user?.email || '';
-      generatePatternPDF(measurements, patternType, measurementUnit, language, userName, category);
+      await generatePatternPDF(measurements, patternType, measurementUnit, language, userName, category);
       toast.success(t('toast.pdfDownloaded'));
     } catch {
       toast.error(t('toast.pdfError') ?? 'Failed to generate PDF');
@@ -585,6 +585,10 @@ const Index = () => {
                   ) : (
                     <SkirtPatternPreview measurements={skirtMeasurements} category={category} />
                   )}
+                </div>
+                <div className="mx-4 mb-4 flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200">
+                  <span className="shrink-0 text-base">⚠️</span>
+                  <span>{t('warn.noSeamAllowance')}</span>
                 </div>
               </div>
             </div>

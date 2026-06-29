@@ -73,6 +73,15 @@ const pdfT = {
   hip: { en: 'Hip', fr: 'Hanches' },
   waistToHip: { en: 'Waist to Hip', fr: 'Taille aux hanches' },
   skirtLength: { en: 'Skirt Length', fr: 'Longueur jupe' },
+  noSeamAllowance: { en: 'No seam allowances', fr: 'Sans marges de couture' },
+  seamWarnLine1: {
+    en: '⚠ WARNING: This pattern contains no seam allowances.',
+    fr: '⚠ ATTENTION : ce patron ne contient pas de marges de couture.',
+  },
+  seamWarnLine2: {
+    en: 'Add seam allowances (typically 1–1.5 cm) when transferring to fabric.',
+    fr: 'Ajoutez vos marges (généralement 1 à 1,5 cm) lors du transfert sur le tissu.',
+  },
 };
 
 function tr<T>(key: { en: T; fr: T }, lang: Language): T {
@@ -307,19 +316,25 @@ function drawSkirtPatternPiece(
   doc.line(grainX + arrowSize, grainBottom - arrowSize, grainX, grainBottom);
 
   if (tileCol === 0 && tileRow === 0) {
+    // Clamp label Y so it stays within the first tile even for long skirts
+    const labelY = offsetY + Math.min(lengthMm / 2, PRINTABLE_HEIGHT * 0.45);
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + patternWidth / 2, offsetY + lengthMm / 2, { align: 'center' });
+    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + patternWidth / 2, labelY, { align: 'center' });
+
+    doc.setFontSize(7);
+    doc.setTextColor(80, 80, 80);
+    doc.text(tr(pdfT.noSeamAllowance, lang), offsetX + patternWidth / 2, labelY + 5, { align: 'center' });
 
     doc.setFontSize(8);
     doc.setTextColor(0, 0, 0);
-    doc.text(tr(pdfT.cut1OnFold, lang), offsetX + patternWidth / 2, offsetY + lengthMm / 2 + 5, { align: 'center' });
+    doc.text(tr(pdfT.cut1OnFold, lang), offsetX + patternWidth / 2, labelY + 10, { align: 'center' });
 
     doc.setFontSize(7);
     doc.setTextColor(80, 80, 80);
     const dartWidthCm = isFront ? dartWidthBase : dartWidthBase * 1.2;
     doc.text(`${tr(pdfT.quarterWaistDart, lang)} = ${formatMeasurement(waist / 4 + dartWidthCm + 1, unit)}`, offsetX + waistWidth / 2, offsetY - 5, { align: 'center' });
-    doc.text(`${tr(pdfT.length, lang)} = ${formatMeasurement(skirtLength, unit)}`, offsetX - 8, offsetY + lengthMm / 2, { angle: 90 });
+    doc.text(`${tr(pdfT.length, lang)} = ${formatMeasurement(skirtLength, unit)}`, offsetX - 8, labelY, { angle: 90 });
     doc.text(`${tr(pdfT.quarterHip, lang)} = ${formatMeasurement(hip / 4 + 1, unit)}`, offsetX + patternWidth + 8, offsetY + waistToHipMm + (lengthMm - waistToHipMm) / 2, { angle: 270 });
   }
 }
@@ -393,14 +408,18 @@ function drawBodicePatternPiece(
     doc.setTextColor(0, 0, 0);
     doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2, { align: 'center' });
 
+    doc.setFontSize(7);
+    doc.setTextColor(80, 80, 80);
+    doc.text(tr(pdfT.noSeamAllowance, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 5, { align: 'center' });
+
     doc.setFontSize(8);
     doc.setTextColor(0, 0, 0);
-    doc.text(tr(pdfT.cut1OnFold, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 5, { align: 'center' });
+    doc.text(tr(pdfT.cut1OnFold, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 10, { align: 'center' });
 
     doc.setFontSize(7);
     doc.setTextColor(80, 80, 80);
     // quarterBust centered below the name label (stays within this tile's bounds)
-    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + 1, unit)}`, offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 13, { align: 'center' });
+    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + 1, unit)}`, offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 18, { align: 'center' });
     // backLength along the fold edge (left margin)
     doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
   }
@@ -564,12 +583,15 @@ function drawDartlessBodicePiece(
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
     doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), cx, cy, { align: 'center' });
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    doc.text(tr(pdfT.cut1OnFold, lang), cx, cy + 5, { align: 'center' });
     doc.setFontSize(7);
     doc.setTextColor(80, 80, 80);
-    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + ease, unit)}`, cx, cy + 13, { align: 'center' });
+    doc.text(tr(pdfT.noSeamAllowance, lang), cx, cy + 5, { align: 'center' });
+    doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
+    doc.text(tr(pdfT.cut1OnFold, lang), cx, cy + 10, { align: 'center' });
+    doc.setFontSize(7);
+    doc.setTextColor(80, 80, 80);
+    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + ease, unit)}`, cx, cy + 18, { align: 'center' });
     doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, newOffsetY + backLengthMm / 2, { angle: 90 });
   }
 }
@@ -656,9 +678,12 @@ function drawSleevePatternPiece(
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
   doc.text(tr(pdfT.sleeve, lang), centerX, underarmY + totalLengthMm / 2, { align: 'center' });
+  doc.setFontSize(7);
+  doc.setTextColor(80, 80, 80);
+  doc.text(tr(pdfT.noSeamAllowance, lang), centerX, underarmY + totalLengthMm / 2 + 5, { align: 'center' });
   doc.setFontSize(8);
   doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.cut2, lang), centerX, underarmY + totalLengthMm / 2 + 5, { align: 'center' });
+  doc.text(tr(pdfT.cut2, lang), centerX, underarmY + totalLengthMm / 2 + 10, { align: 'center' });
 
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
@@ -1050,13 +1075,16 @@ function drawPantsBackPanel(
   drawPantsGrainLine(doc, centerX, offsetY + 30, hemY - 30);
 
   // ── Labels ──
-  const midY = offsetY + v(m.outseamLength) / 2;
+  const midY = offsetY + Math.min(v(m.outseamLength) / 2, PRINTABLE_HEIGHT * 0.45);
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
   doc.text(tr(pdfT.back, lang), centerX, midY - 5, { align: 'center' });
+  doc.setFontSize(7);
+  doc.setTextColor(80, 80, 80);
+  doc.text(tr(pdfT.noSeamAllowance, lang), centerX, midY, { align: 'center' });
   doc.setFontSize(8);
   doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.cut2, lang), centerX, midY + 3, { align: 'center' });
+  doc.text(tr(pdfT.cut2, lang), centerX, midY + 8, { align: 'center' });
 
   if (dartW > 0) {
     doc.setFontSize(7);
@@ -1196,13 +1224,16 @@ function drawPantsFrontPanel(
   drawPantsGrainLine(doc, centerX, offsetY + 30, hemY - 30);
 
   // ── Labels ──
-  const midY = offsetY + v(m.outseamLength) / 2;
+  const midY = offsetY + Math.min(v(m.outseamLength) / 2, PRINTABLE_HEIGHT * 0.45);
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
   doc.text(tr(pdfT.front, lang), centerX, midY - 5, { align: 'center' });
+  doc.setFontSize(7);
+  doc.setTextColor(80, 80, 80);
+  doc.text(tr(pdfT.noSeamAllowance, lang), centerX, midY, { align: 'center' });
   doc.setFontSize(8);
   doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.cut2, lang), centerX, midY + 3, { align: 'center' });
+  doc.text(tr(pdfT.cut2, lang), centerX, midY + 8, { align: 'center' });
 
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
@@ -1211,14 +1242,34 @@ function drawPantsFrontPanel(
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function generatePatternPDF(
+async function loadLogoBase64(): Promise<string | null> {
+  try {
+    return await new Promise<string>((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => reject(new Error('logo load failed'));
+      img.src = '/logo-petitcitron.gif';
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function generatePatternPDF(
   measurements: SkirtMeasurements | BodiceMeasurements | SleeveMeasurements | PantsMeasurements,
   patternType: string = 'skirt',
   unit: MeasurementUnit = 'cm',
   lang: Language = 'en',
   userName: string = '',
   category: Category = 'women'
-): void {
+): Promise<void> {
   const bodiceTypes = ['bodice', 'bodice-dartless', 'bodice-with-darts', 'bodice-knit', 'dress'];
   const isBodice = bodiceTypes.includes(patternType);
   const isSleeve = patternType === 'sleeve';
@@ -1240,21 +1291,255 @@ export function generatePatternPDF(
 
   const tiles = calculateTiles(dimensions);
 
-  const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
-  });
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
   const patternMarginMm = 20;
-  let pageNum = 0;
-
   const panels: ('front' | 'back')[] = isSleeve ? ['front'] : ['front', 'back'];
+
+  const logoBase64 = await loadLogoBase64();
+  // Font setup — swap to custom fonts when /public/fonts/ files are present:
+  // CormorantGaramond-Bold.ttf → titleFont,  DMSans-Regular.ttf → bodyFont
+  const titleFont = 'times';
+  const bodyFont = 'helvetica';
+
+  // ── COVER PAGE (page 1, already created by jsPDF constructor) ────────────────
+  const OLIVE:  [number,number,number] = [144, 155,  27];
+  const RASP:   [number,number,number] = [178,  75, 113];
+  const CREAM:  [number,number,number] = [250, 247, 240];
+  const PINKBG: [number,number,number] = [255, 240, 243];
+  const GRAY88: [number,number,number] = [136, 136, 136];
+  const fill   = (c: [number,number,number]) => doc.setFillColor(c[0], c[1], c[2]);
+  const stroke = (c: [number,number,number]) => doc.setDrawColor(c[0], c[1], c[2]);
+  const color  = (c: [number,number,number]) => doc.setTextColor(c[0], c[1], c[2]);
+  const s = (fr: string, en: string) => lang === 'fr' ? fr : en;
+
+  const patternName = pdfT.patternTypes[lang][patternType] ?? patternType.charAt(0).toUpperCase() + patternType.slice(1);
+  const panelDescription = isSleeve ? tr(pdfT.singlePanel, lang) : tr(pdfT.frontBackPanels, lang);
+  const dateStr = new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-GB');
+
+  // 1. Header — olive band
+  fill(OLIVE);
+  doc.rect(0, 0, A4_WIDTH, 25, 'F');
+  fill(CREAM);
+  doc.rect(10, 2.5, 42, 20, 'F');
+  if (logoBase64) doc.addImage(logoBase64, 'PNG', 11, 3, 40, 19);
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(255, 255, 255);
+  doc.text('studio.petitcitron.com', A4_WIDTH - MARGIN, 16, { align: 'right' });
+
+  // 2. Title zone — cream band
+  fill(CREAM);
+  doc.rect(0, 25, A4_WIDTH, 33, 'F');
+  doc.setFont(titleFont, 'bold');
+  doc.setFontSize(24);
+  doc.setTextColor(30, 30, 30);
+  doc.text(patternName.toUpperCase(), A4_WIDTH / 2, 42, { align: 'center' });
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(9);
+  color(GRAY88);
+  const subtitleLine = userName
+    ? `${panelDescription} · ${dateStr} · ${userName}`
+    : `${panelDescription} · ${dateStr}`;
+  doc.text(doc.splitTextToSize(subtitleLine, 170) as string[], A4_WIDTH / 2, 52, { align: 'center' });
+
+  // 3. Warning box — raspberry left border
+  fill(PINKBG);
+  doc.rect(MARGIN, 62, 190, 20, 'F');
+  fill(RASP);
+  doc.rect(MARGIN, 62, 4, 20, 'F');
+  // Warning icon: filled raspberry triangle (⚠ unicode unsupported in standard PDF fonts)
+  // lines(segments, x, y, scale, style, closed): start at top-center, two sides, close
+  fill(RASP);
+  doc.lines([[2.5, 5], [-5, 0]], MARGIN + 9.5, 65, [1, 1], 'F', true);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(7);
+  doc.text('!', MARGIN + 9.5, 69.5, { align: 'center' });
+  // Warning text — normal weight only (helvetica bold causes letter-spacing artifact in jsPDF)
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(10);
+  color(RASP);
+  const warn1 = tr(pdfT.seamWarnLine1, lang).replace(/^[^\w]*/, '');
+  doc.text(warn1, MARGIN + 15, 70);
+  doc.setFontSize(9);
+  doc.text(tr(pdfT.seamWarnLine2, lang), MARGIN + 15, 78);
+
+  // 4. Two columns
+  const colY = 88;
+  const leftColX = MARGIN;
+  const leftColW = 104;
+  const rightColX = MARGIN + leftColW + 11;
+  const rightColW = 75;
+
+  // Left column — measurements
+  doc.setFont(titleFont, 'bold');
+  doc.setFontSize(12);
+  color(OLIVE);
+  doc.text(s('Vos mesures', 'Your measurements'), leftColX, colY);
+  stroke(OLIVE);
+  doc.setLineWidth(0.5);
+  doc.line(leftColX, colY + 3, leftColX + leftColW, colY + 3);
+
+  const measPairs: { key: string; val: string }[] = isSleeve
+    ? [
+        { key: tr(pdfT.upperArm, lang), val: formatMeasurement(slm.upperArm, unit) },
+        { key: tr(pdfT.wrist, lang), val: formatMeasurement(slm.wrist, unit) },
+        { key: tr(pdfT.sleeveLength, lang), val: formatMeasurement(slm.sleeveLength, unit) },
+        { key: tr(pdfT.elbowLength, lang), val: formatMeasurement(slm.elbowLength, unit) },
+        { key: tr(pdfT.armholeDepth, lang), val: formatMeasurement(slm.armholeDepth, unit) },
+      ]
+    : isBodice
+      ? [
+          { key: tr(pdfT.bust, lang), val: formatMeasurement(bm.bust, unit) },
+          { key: tr(pdfT.neckline, lang), val: formatMeasurement(bm.neckCircumference, unit) },
+          { key: tr(pdfT.shoulderLength, lang), val: formatMeasurement(bm.shoulderLength, unit) },
+          { key: tr(pdfT.backWidth, lang), val: formatMeasurement(bm.backWidth, unit) },
+          { key: tr(pdfT.backLength, lang), val: formatMeasurement(bm.backLength, unit) },
+        ]
+      : isPants
+        ? [
+            { key: tr(pdfT.waist, lang), val: formatMeasurement(pm.waist, unit) },
+            { key: tr(pdfT.hip, lang), val: formatMeasurement(pm.hip, unit) },
+            { key: tr(pdfT.outseam, lang), val: formatMeasurement(pm.outseamLength, unit) },
+          ]
+        : [
+            { key: tr(pdfT.waist, lang), val: formatMeasurement(sm.waist, unit) },
+            { key: tr(pdfT.hip, lang), val: formatMeasurement(sm.hip, unit) },
+            { key: tr(pdfT.waistToHip, lang), val: formatMeasurement(sm.waistToHip, unit) },
+            { key: tr(pdfT.skirtLength, lang), val: formatMeasurement(sm.skirtLength, unit) },
+          ];
+
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(40, 40, 40);
+  let measY = colY + 10;
+  for (const pair of measPairs) {
+    doc.text(pair.key, leftColX, measY);
+    doc.text(pair.val, leftColX + leftColW, measY, { align: 'right' });
+    doc.setDrawColor(210, 210, 210);
+    doc.setLineWidth(0.2);
+    doc.line(leftColX, measY + 2, leftColX + leftColW, measY + 2);
+    measY += 7;
+  }
+  measY += 2;
+  doc.setFontSize(9);
+  color(GRAY88);
+  doc.text(`${tr(pdfT.totalPages, lang)}: ${tiles.totalPages * panels.length}`, leftColX, measY);
+  measY += 10;
+
+  stroke(OLIVE);
+  doc.setLineWidth(0.5);
+  doc.line(leftColX, measY, leftColX + leftColW, measY);
+  measY += 8;
+
+  doc.setFont(titleFont, 'bold');
+  doc.setFontSize(12);
+  color(OLIVE);
+  doc.text(s("Instructions d'assemblage", 'Assembly instructions'), leftColX, measY);
+  doc.setLineWidth(0.5);
+  doc.line(leftColX, measY + 3, leftColX + leftColW, measY + 3);
+  measY += 10;
+
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(40, 40, 40);
+  for (const step of tr(pdfT.instructions, lang)) {
+    if (!step) { measY += 3; continue; }
+    const stepLines = doc.splitTextToSize(step, leftColW - 2) as string[];
+    for (const line of stepLines) {
+      if (measY < 265) doc.text(line, leftColX, measY);
+      measY += 5.5;
+    }
+  }
+
+  // Right column — page diagram
+  doc.setFont(titleFont, 'bold');
+  doc.setFontSize(12);
+  color(OLIVE);
+  doc.text(tr(pdfT.pageLayout, lang), rightColX, colY);
+  stroke(OLIVE);
+  doc.setLineWidth(0.5);
+  doc.line(rightColX, colY + 3, rightColX + rightColW, colY + 3);
+
+  const panelGapDiag = 8;
+  const tileWDiag = Math.max(6, Math.min(18,
+    Math.floor((rightColW - (panels.length - 1) * panelGapDiag) / (panels.length * tiles.cols))
+  ));
+  const tileHDiag = Math.round(tileWDiag * PRINTABLE_HEIGHT / PRINTABLE_WIDTH);
+  const diagScaleDiag = tileWDiag / PRINTABLE_WIDTH;
+  const diagStartY = colY + 10;
+
+  panels.forEach((diagPanel, panelIndex) => {
+    const panelDiagramX = rightColX + panelIndex * (tiles.cols * tileWDiag + panelGapDiag);
+    const panelDiagramY = diagStartY;
+
+    for (let row = 0; row < tiles.rows; row++) {
+      for (let col = 0; col < tiles.cols; col++) {
+        const tileX = panelDiagramX + col * tileWDiag;
+        const tileY = panelDiagramY + row * tileHDiag;
+        const pageNumber = panelIndex * tiles.totalPages + row * tiles.cols + col + 2;
+        doc.setFillColor(245, 245, 245);
+        doc.setDrawColor(160, 160, 160);
+        doc.setLineWidth(0.3);
+        doc.rect(tileX, tileY, tileWDiag, tileHDiag, 'FD');
+        doc.setFontSize(6);
+        doc.setTextColor(100, 100, 100);
+        doc.text(String(pageNumber), tileX + tileWDiag / 2, tileY + tileHDiag / 2 + 2, { align: 'center' });
+      }
+    }
+
+    const patternStartX = panelDiagramX + patternMarginMm * diagScaleDiag;
+    const patternStartY = panelDiagramY + patternMarginMm * diagScaleDiag;
+
+    if (isSleeve) {
+      drawDiagramSleeve(doc, slm, patternStartX, patternStartY, diagScaleDiag, diagScaleDiag);
+    } else if (isBodice) {
+      if (patternType === 'bodice-dartless') {
+        drawDiagramDartlessBodice(doc, bm, category, patternStartX, patternStartY, diagPanel, diagScaleDiag, diagScaleDiag);
+      } else {
+        drawDiagramBodice(doc, bm, patternStartX, patternStartY, diagPanel, diagScaleDiag, diagScaleDiag);
+      }
+    } else if (!isPants) {
+      drawDiagramSkirt(doc, sm, patternStartX, patternStartY, diagPanel, diagScaleDiag, diagScaleDiag, category);
+    }
+
+    doc.setFontSize(7);
+    doc.setTextColor(50, 50, 50);
+    const panelLabel = (isSleeve
+      ? tr(pdfT.sleeve, lang)
+      : diagPanel === 'front' ? tr(pdfT.front, lang) : tr(pdfT.back, lang)
+    ).toUpperCase();
+    doc.text(
+      panelLabel,
+      panelDiagramX + (tiles.cols * tileWDiag) / 2,
+      panelDiagramY + tiles.rows * tileHDiag + 5,
+      { align: 'center' }
+    );
+  });
+
+  // 5. Footer
+  stroke(OLIVE);
+  doc.setLineWidth(0.5);
+  doc.line(MARGIN, 272, MARGIN + 190, 272);
+  doc.setFont(bodyFont, 'normal');
+  doc.setFontSize(8);
+  color(GRAY88);
+  const footerCenter = s(
+    `Petit Citron Studio — patron généré le ${dateStr}`,
+    `Petit Citron Studio — pattern generated on ${dateStr}`
+  );
+  doc.text(footerCenter, A4_WIDTH / 2, 280, { align: 'center' });
+  doc.text('studio.petitcitron.com', MARGIN + 190, 280, { align: 'right' });
+  // ── End cover page ────────────────────────────────────────────────────────────
+
+  // ── PATTERN TILE PAGES (pages 2..N) ──────────────────────────────────────────
+  let pageNum = 0;
 
   for (const panel of panels) {
     for (let row = 0; row < tiles.rows; row++) {
       for (let col = 0; col < tiles.cols; col++) {
-        if (pageNum > 0) doc.addPage();
+        doc.addPage();
         pageNum++;
 
         const viewOffsetX = col * PRINTABLE_WIDTH;
@@ -1267,11 +1552,10 @@ export function generatePatternPDF(
 
         doc.saveGraphicsState();
         // Clip content to the printable tile so pattern lines never bleed across pages.
-        // jsPDF internal coords: y-up from bottom, scaleFactor converts mm → PDF pts.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const pdfInt = (doc as any).internal;
         const k: number = pdfInt.scaleFactor;
-        const pH: number = pdfInt.pageSize.getHeight(); // mm
+        const pH: number = pdfInt.pageSize.getHeight();
         pdfInt.write(
           `${(MARGIN * k).toFixed(3)} ${((pH - MARGIN - PRINTABLE_HEIGHT) * k).toFixed(3)} ` +
           `${(PRINTABLE_WIDTH * k).toFixed(3)} ${(PRINTABLE_HEIGHT * k).toFixed(3)} re W n`
@@ -1302,114 +1586,6 @@ export function generatePatternPDF(
       }
     }
   }
-
-  // ── Assembly instruction page ──
-  doc.addPage();
-  doc.setFontSize(16);
-  doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.assemblyTitle, lang), A4_WIDTH / 2, 30, { align: 'center' });
-
-  doc.setFontSize(10);
-  const panelDescription = isSleeve ? tr(pdfT.singlePanel, lang) : tr(pdfT.frontBackPanels, lang);
-  const patternName = pdfT.patternTypes[lang][patternType] ?? patternType.charAt(0).toUpperCase() + patternType.slice(1);
-  const baseInstructions = [
-    ...tr(pdfT.instructions, lang),
-    '',
-    `${tr(pdfT.patternLabel, lang)}: ${patternName} - ${panelDescription}`,
-    `${tr(pdfT.totalPages, lang)}: ${tiles.totalPages * panels.length}`,
-    '',
-    tr(pdfT.measurementsUsed, lang),
-  ];
-
-  const measurementLines = isSleeve
-    ? [
-        `  • ${tr(pdfT.upperArm, lang)}: ${formatMeasurement(slm.upperArm, unit)}`,
-        `  • ${tr(pdfT.wrist, lang)}: ${formatMeasurement(slm.wrist, unit)}`,
-        `  • ${tr(pdfT.sleeveLength, lang)}: ${formatMeasurement(slm.sleeveLength, unit)}`,
-        `  • ${tr(pdfT.elbowLength, lang)}: ${formatMeasurement(slm.elbowLength, unit)}`,
-        `  • ${tr(pdfT.armholeDepth, lang)}: ${formatMeasurement(slm.armholeDepth, unit)}`,
-      ]
-    : isBodice
-      ? [
-          `  • ${tr(pdfT.bust, lang)}: ${formatMeasurement(bm.bust, unit)}`,
-          `  • ${tr(pdfT.neckline, lang)}: ${formatMeasurement(bm.neckCircumference, unit)}`,
-          `  • ${tr(pdfT.shoulderLength, lang)}: ${formatMeasurement(bm.shoulderLength, unit)}`,
-          `  • ${tr(pdfT.backWidth, lang)}: ${formatMeasurement(bm.backWidth, unit)}`,
-          `  • ${tr(pdfT.backLength, lang)}: ${formatMeasurement(bm.backLength, unit)}`,
-        ]
-      : isPants
-        ? [
-            `  • ${tr(pdfT.waist, lang)}: ${formatMeasurement(pm.waist, unit)}`,
-            `  • ${tr(pdfT.hip, lang)}: ${formatMeasurement(pm.hip, unit)}`,
-            `  • ${tr(pdfT.outseam, lang)}: ${formatMeasurement(pm.outseamLength, unit)}`,
-          ]
-        : [
-            `  • ${tr(pdfT.waist, lang)}: ${formatMeasurement(sm.waist, unit)}`,
-            `  • ${tr(pdfT.hip, lang)}: ${formatMeasurement(sm.hip, unit)}`,
-            `  • ${tr(pdfT.waistToHip, lang)}: ${formatMeasurement(sm.waistToHip, unit)}`,
-            `  • ${tr(pdfT.skirtLength, lang)}: ${formatMeasurement(sm.skirtLength, unit)}`,
-          ];
-
-  const allLines = [...baseInstructions, ...measurementLines];
-  let y = 50;
-  doc.setFontSize(10);
-  doc.setTextColor(0, 0, 0);
-  allLines.forEach((line) => { doc.text(line, MARGIN + 10, y); y += 7; });
-
-  // ── Tile layout diagram ──
-  y += 10;
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.pageLayout, lang), MARGIN + 10, y);
-  y += 8;
-
-  const tileW = 18;
-  const tileH = Math.round(tileW * PRINTABLE_HEIGHT / PRINTABLE_WIDTH);
-  const panelGap = 12;
-  const diagScale = tileW / PRINTABLE_WIDTH;
-
-  panels.forEach((panel, panelIndex) => {
-    const panelDiagramX = MARGIN + 10 + panelIndex * (tiles.cols * tileW + panelGap);
-    const panelDiagramY = y;
-
-    for (let row = 0; row < tiles.rows; row++) {
-      for (let col = 0; col < tiles.cols; col++) {
-        const tileX = panelDiagramX + col * tileW;
-        const tileY = panelDiagramY + row * tileH;
-        const pageNumber = panelIndex * tiles.totalPages + row * tiles.cols + col + 1;
-        doc.setFillColor(245, 245, 245);
-        doc.setDrawColor(160, 160, 160);
-        doc.setLineWidth(0.3);
-        doc.rect(tileX, tileY, tileW, tileH, 'FD');
-        doc.setFontSize(7);
-        doc.setTextColor(100, 100, 100);
-        doc.text(String(pageNumber), tileX + tileW / 2, tileY + tileH / 2 + 2, { align: 'center' });
-      }
-    }
-
-    const patternStartX = panelDiagramX + patternMarginMm * diagScale;
-    const patternStartY = panelDiagramY + patternMarginMm * diagScale;
-
-    if (isSleeve) {
-      drawDiagramSleeve(doc, slm, patternStartX, patternStartY, diagScale, diagScale);
-    } else if (isBodice) {
-      if (patternType === 'bodice-dartless') {
-        drawDiagramDartlessBodice(doc, bm, category, patternStartX, patternStartY, panel, diagScale, diagScale);
-      } else {
-        drawDiagramBodice(doc, bm, patternStartX, patternStartY, panel, diagScale, diagScale);
-      }
-    } else if (!isPants) {
-      drawDiagramSkirt(doc, sm, patternStartX, patternStartY, panel, diagScale, diagScale, category);
-    }
-    // Pants diagram: skip (pattern too complex for small tile)
-
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    const panelLabel = isSleeve
-      ? tr(pdfT.sleeve, lang)
-      : panel === 'front' ? tr(pdfT.front, lang) : tr(pdfT.back, lang);
-    doc.text(panelLabel, panelDiagramX + (tiles.cols * tileW) / 2, panelDiagramY + tiles.rows * tileH + 6, { align: 'center' });
-  });
 
   const date = new Date().toISOString().slice(0, 10);
   const typeLabel = pdfT.patternTypes[lang][patternType] ?? patternType;

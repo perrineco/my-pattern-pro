@@ -151,6 +151,10 @@ const translations: Record<string, Record<Language, string>> = {
   'note.easeFitted': { en: 'Fitted: 1–2 cm/quarter.', fr: 'Près du corps : 1–2 cm/quart.' },
   'note.easeLoose': { en: 'Loose: 3–4 cm/quarter.', fr: 'Ample : 3–4 cm/quart.' },
   'note.simpleBodice': { en: 'Simple bodice block without bust darts', fr: 'Corsage de base sans pinces de poitrine' },
+  'warn.noSeamAllowance': {
+    en: 'This pattern is a basic block with no seam allowances. Add seam allowances (typically 1–1.5 cm), after any pattern adjustments, when transferring to fabric.',
+    fr: 'Ce patron est un patron de base sans marges de couture. Ajoutez vos marges (généralement 1 à 1,5 cm), après modification éventuelle du patron, lors du transfert sur le tissu.',
+  },
 
    // Buttons & actions
    'action.reset': { en: 'Reset', fr: 'Réinitialiser' },
