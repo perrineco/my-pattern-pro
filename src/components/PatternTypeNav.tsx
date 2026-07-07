@@ -28,7 +28,7 @@ const patternTypes: PatternTypeConfig[] = [
     submenu: [
       { value: 'bodice-dartless', labelKey: 'pattern.dartless', available: true },
       { value: 'bodice-with-darts', labelKey: 'pattern.withDarts', available: true },
-      { value: 'bodice-knit', labelKey: 'pattern.forKnit', available: true },
+      { value: 'bodice-knit', labelKey: 'pattern.forKnit', available: false },
     ]
   },
   { value: 'dress', labelKey: 'pattern.dress', available: false },

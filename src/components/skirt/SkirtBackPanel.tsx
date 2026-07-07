@@ -134,12 +134,10 @@ export function SkirtBackPanel({
       )}
 
       {/* Labels */}
-      <text x={offsetX + patternWidth / 2} y={offsetY + patternHeight / 2} textAnchor="middle" className="fill-foreground font-serif text-sm" style={tm}>
+      <text x={offsetX + patternWidth / 2} y={grainY1 - 22} textAnchor="middle" className="fill-foreground font-serif text-sm" style={tm}>
         {t('piece.back')}
       </text>
-      <text x={offsetX + patternWidth / 2} y={offsetY + patternHeight / 2 + 18} textAnchor="middle" className="fill-muted-foreground text-xs font-sans" style={tm}>
-        {t('piece.cutOnFold')}
-      </text>
+      
     </g>
   );
 }

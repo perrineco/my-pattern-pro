@@ -25,6 +25,11 @@ const categoryConfig = {
     frontDartWidth: 3, // cm - bust dart width
     backDartWidth: 2.5, // cm - back waist dart width
     bustPointRatio: 0.5, // Bust point position from center
+    // Shoulder dart (women only)
+    shoulderDartWidth: 2, // cm - dart intake along the shoulder seam
+    shoulderDartDepth: 7, // cm - how far the dart point extends into the panel
+    shoulderDartPositionFront: 0.4, // ratio along the shoulder line, from neck to armhole
+    shoulderDartPositionBack: 0.5,
   },
   men: {
     ease: 3,
@@ -91,9 +96,24 @@ export function useBodiceDartsPath({ measurements, offsetX, offsetY, scale, pane
   // Dart calculations
   const dartWidth = panel === "front" ? s(config.frontDartWidth) : s(config.backDartWidth);
   const dartDepth = panel === "front" ? armholeDepthScaled * 0.7 : backLengthScaled * 0.4;
-  const dartPositionX = panel === "front" 
-    ? offsetX + bustQuarterScaled * config.bustPointRatio 
+  const dartPositionX = panel === "front"
+    ? offsetX + bustQuarterScaled * config.bustPointRatio
     : offsetX + bustQuarterScaled * 0.5;
+
+  // Shoulder line: from neckline/shoulder corner to armhole/shoulder corner
+  const neckEndX = offsetX + neckHalfWidth;
+  const neckEndY = offsetY - neckHalfHeight;
+  const shoulderEndX = neckEndX + shoulderWidthX;
+  const shoulderEndY = neckEndY + shoulderSlopeY;
+
+  // Armhole curve midpoint
+  const armholeRetreatX = s(bust / 4 + ease - backWidth / 2);
+  const midPointX =
+    panel === "front"
+      ? offsetX + bustQuarterScaled - armholeRetreatX + 1.3
+      : offsetX + bustQuarterScaled - armholeRetreatX;
+  const armholeRiseY = s(backLength / 6);
+  const midPointY = neckEndY + shoulderSlopeY + armholeDepthScaled - armholeRiseY;
 
   const buildPath = () => {
     const points: string[] = [];
@@ -111,22 +131,29 @@ export function useBodiceDartsPath({ measurements, offsetX, offsetY, scale, pane
 
     points.push(`C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`);
 
-    // Shoulder line
-    const neckEndX = offsetX + neckHalfWidth;
-    const neckEndY = offsetY - neckHalfHeight;
-    const shoulderEndX = neckEndX + shoulderWidthX;
-    const shoulderEndY = neckEndY + shoulderSlopeY;
+    // Shoulder line (with shoulder dart for women)
+    if ('shoulderDartWidth' in config) {
+      const shoulderDartRatio = panel === "front" ? config.shoulderDartPositionFront : config.shoulderDartPositionBack;
+      const dartBaseX = neckEndX + shoulderWidthX * shoulderDartRatio;
+      const dartBaseY = neckEndY + shoulderSlopeY * shoulderDartRatio;
+      const shoulderLineLength = Math.sqrt(shoulderWidthX * shoulderWidthX + shoulderSlopeY * shoulderSlopeY);
+      const ux = shoulderWidthX / shoulderLineLength;
+      const uy = shoulderSlopeY / shoulderLineLength;
+      const halfWidth = s(config.shoulderDartWidth) / 2;
+      const dartLegNearNeckX = dartBaseX - ux * halfWidth;
+      const dartLegNearNeckY = dartBaseY - uy * halfWidth;
+      const dartLegNearArmholeX = dartBaseX + ux * halfWidth;
+      const dartLegNearArmholeY = dartBaseY + uy * halfWidth;
+      const dartTipX = dartBaseX;
+      const dartTipY = dartBaseY + s(config.shoulderDartDepth);
+
+      points.push(`L ${dartLegNearNeckX} ${dartLegNearNeckY}`);
+      points.push(`L ${dartTipX} ${dartTipY}`);
+      points.push(`L ${dartLegNearArmholeX} ${dartLegNearArmholeY}`);
+    }
     points.push(`L ${shoulderEndX} ${shoulderEndY}`);
 
     // Armhole curve
-    const armholeRetreatX = s(bust / 4 + ease - backWidth / 2);
-    const midPointX =
-      panel === "front"
-        ? offsetX + bustQuarterScaled - armholeRetreatX + 1.3
-        : offsetX + bustQuarterScaled - armholeRetreatX;
-    const armholeRiseY = s(backLength / 6);
-    const midPointY = neckEndY + shoulderSlopeY + armholeDepthScaled - armholeRiseY;
-
     const cp1_1x = shoulderEndX;
     const cp1_1y = shoulderEndY;
     const cp1_2x = midPointX;
@@ -226,5 +253,15 @@ export function useBodiceDartsPath({ measurements, offsetX, offsetY, scale, pane
     ease,
     dartWidth,
     dartDepth,
+    neckHalfWidth,
+    neckHalfHeight,
+    shoulderWidthX,
+    shoulderSlopeY,
+    neckEndX,
+    neckEndY,
+    shoulderEndX,
+    shoulderEndY,
+    midPointX,
+    midPointY,
   };
 }

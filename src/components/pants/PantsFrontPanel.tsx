@@ -7,11 +7,19 @@ interface PantsFrontPanelProps {
   offsetY: number;
   scale: number;
   category: Category;
+  showMeasurements?: boolean;
 }
 
-export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, category }: PantsFrontPanelProps) {
-  const { t } = useLanguage();
-  const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
+// Shared geometry — also consumed by the PDF export (src/lib/pdf-export.ts) so the
+// printed pattern always matches this preview exactly.
+export function computePantsFrontDartlessGeometry(
+  measurements: PantsMeasurements,
+  offsetX: number,
+  offsetY: number,
+  scale: number,
+  category: Category,
+) {
+  const { waist, hip, knee, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
   const ease = measurements.ease ?? 2;
 
   const s = (v: number) => v * scale;
@@ -27,29 +35,20 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   // E-E1: crotch extension
   const crotchExtension = category === "women" ? hip / 20 : hip / 16 - 1;
 
-  // A-G: hip height — from measurements
-  // A-E: crotch height — from measurements
-
-  // I-L line:  (thigh reference)
-  //  const iLineY = crotchDepth + (2 / 3) * crotchDepth;
+  // I-L line: (thigh reference)
   const iLineY = crotchDepth * 2;
 
   // X = midpoint of E1-F on crotch line
   const xCenter = (-crotchExtension + hipQuarter) / 2;
 
-  // M-N: vertical grain line through X
-  // M at top, N at bottom
-
   // M-O: knee height — approximate from measurements
   const kneeY = crotchDepth + inseamLength * 0.4;
 
-  // B-B1 = 2cm (waist reduction at side)
+  // B-B1 (waist reduction at side)
   const waistReduction = hipQuarter - waist / 4 - 5;
 
   // B1 raised by 1cm for women only
   const b1Rise = category === "women" ? 1 : 0;
-
-  // X1-L1 = 1/4 thigh circumference + 0.5 (each side of center)
 
   // Hem: N-C1 = N-D1 ≈ ankle/4 + 0.5 each side (or custom)
   const hemHalfWidth = hip / 10 + 1.5;
@@ -60,9 +59,9 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
 
   // Waist points
   const a1X = offsetX;
-  const a1Y = offsetY; // en vrai baisser un peu pour la femme
+  const a1Y = offsetY;
   const b1X = offsetX + s(hipQuarter - waistReduction);
-  const b1Y = offsetY - s(b1Rise); // en vrai offset Y
+  const b1Y = offsetY - s(b1Rise);
 
   // Hip level
   const hipSideX = offsetX + s(hipQuarter);
@@ -90,146 +89,123 @@ export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, categor
   const hemSideX = centerX + s(hemHalfWidth);
   const hemInnerX = centerX - s(hemHalfWidth);
 
-  // Build the front panel outline
   const buildPath = () => {
     let path = "";
-
-    // Start at A1 — center front, waist
     path += `M ${a1X} ${a1Y}`;
-
-    // Waist: A1 → B1 (slight curve for waist shaping)
-    //  path += ` C ${(a1X} ${a1Y}, ${(a1X + b1X) / 2} ${a1Y+b1Y/2}, ${b1X} ${b1Y}`;
     path += ` L ${b1X} ${b1Y}`;
-
-    // Side seam: B1 → H (hip, side) with curve
     path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
-
-    // Side seam: H → F
     path += ` L ${hipSideX} ${crotchY}`;
-
-    // Side seam: F → thigh level (L1)
     path += ` L ${thighSideX} ${iY}`;
-
-    // Side seam: thigh → knee
-    //   path += ` L ${kneeSideX} ${kneeYPos}`;
-
-    // Side seam: knee → hem (D1)
     path += ` L ${hemSideX} ${hemY}`;
-
-    // Hem line: D1 → C1
     path += ` L ${hemInnerX} ${hemY}`;
-
-    // Inseam: C1 → knee inner
-    //  path += ` L ${kneeInnerX} ${kneeYPos}`;
-
-    // Inseam: knee → thigh inner (C1-I1)
     path += ` L ${thighInnerX} ${iY}`;
-
-    // Inseam: I1-E1
-    //    path += ` L ${e1X} ${crotchY}`;
     path += ` C ${thighInnerX} ${iY + ((crotchY - iY) * 3) / 4}, ${e1X} ${crotchY}, ${e1X} ${crotchY}`;
-
-    // Crotch curve: E1 → G
     path += ` C ${e1X + (a1X - e1X) / 2} ${crotchY + (hipY - crotchY) / 20}, ${a1X - s(1)} ${hipY - (hipY - crotchY) / 4}, ${a1X - s(1)} ${hipY}`;
-    // Center front back to waist G-A
     path += ` L ${a1X} ${a1Y}`;
-
     path += ` Z`;
     return path;
   };
 
   const panelHeight = s(totalLength);
 
+  return {
+    path: buildPath(),
+    totalLength,
+    panelHeight,
+    a1X, a1Y, b1X, b1Y,
+    hipSideX, hipY,
+    crotchY, e1X,
+    centerX,
+    iY, thighSideX, thighInnerX,
+    kneeYPos, kneeSideX, kneeInnerX,
+    hemY, hemSideX, hemInnerX,
+  };
+}
+
+export function PantsFrontPanel({ measurements, offsetX, offsetY, scale, category, showMeasurements = true }: PantsFrontPanelProps) {
+  const { t } = useLanguage();
+
+  const {
+    path,
+    panelHeight,
+    a1X, b1X,
+    hipSideX,
+    crotchY, e1X,
+    centerX,
+    hemY, hemSideX, hemInnerX,
+    totalLength,
+  } = computePantsFrontDartlessGeometry(measurements, offsetX, offsetY, scale, category);
+
+  const ml = "hsl(var(--measure-line))";
+
   return (
     <g>
       {/* Main pattern piece */}
-      <path d={buildPath()} fill="hsl(var(--pattern-fill))" stroke="hsl(var(--pattern-stroke))" strokeWidth="2" />
+      <path d={path} fill="hsl(var(--pattern-fill))" stroke="hsl(var(--pattern-stroke))" strokeWidth="2" />
 
-      {/* Hip line (reference) */}
-      <line
-        x1={e1X}
-        y1={hipY}
-        x2={hipSideX}
-        y2={hipY}
-        stroke="hsl(var(--muted-foreground))"
-        strokeWidth="1"
-        strokeDasharray="3,3"
-      />
+      {showMeasurements && (
+        <g>
+          {/* Waist width */}
+          <line x1={a1X} y1={offsetY - 18} x2={b1X} y2={offsetY - 18} stroke={ml} strokeWidth="1" />
+          <line x1={a1X} y1={offsetY - 24} x2={a1X} y2={offsetY - 12} stroke={ml} strokeWidth="1" />
+          <line x1={b1X} y1={offsetY - 24} x2={b1X} y2={offsetY - 12} stroke={ml} strokeWidth="1" />
+          <text x={(a1X + b1X) / 2} y={offsetY - 26} textAnchor="middle" className="fill-primary text-xs font-sans">
+            {((b1X - a1X) / scale).toFixed(1)}cm
+          </text>
 
-      {/* Crotch line (reference) */}
-      <line
-        x1={e1X}
-        y1={crotchY}
-        x2={thighSideX}
-        y2={crotchY}
-        stroke="hsl(var(--muted-foreground))"
-        strokeWidth="1"
-        strokeDasharray="3,3"
-      />
+          {/* Total length — vertical, left side */}
+          <line x1={a1X - 15} y1={offsetY} x2={a1X - 15} y2={hemY} stroke={ml} strokeWidth="1" />
+          <line x1={a1X - 21} y1={offsetY} x2={a1X - 9} y2={offsetY} stroke={ml} strokeWidth="1" />
+          <line x1={a1X - 21} y1={hemY} x2={a1X - 9} y2={hemY} stroke={ml} strokeWidth="1" />
+          <text
+            x={a1X - 26}
+            y={offsetY + panelHeight / 2}
+            textAnchor="middle"
+            className="fill-primary text-xs font-sans"
+            transform={`rotate(-90, ${a1X - 26}, ${offsetY + panelHeight / 2})`}
+          >
+            {totalLength}cm
+          </text>
 
-      {/* I-L line — thigh reference */}
-      <line
-        x1={thighInnerX}
-        y1={iY}
-        x2={thighSideX}
-        y2={iY}
-        stroke="hsl(var(--muted-foreground))"
-        strokeWidth="1"
-        strokeDasharray="2,4"
-      />
+          {/* Crotch width — horizontal, below crotch line */}
+          <line x1={e1X} y1={crotchY + 12} x2={hipSideX} y2={crotchY + 12} stroke={ml} strokeWidth="1" />
+          <line x1={e1X}     y1={crotchY + 6} x2={e1X}     y2={crotchY + 18} stroke={ml} strokeWidth="1" />
+          <line x1={hipSideX} y1={crotchY + 6} x2={hipSideX} y2={crotchY + 18} stroke={ml} strokeWidth="1" />
+          <text x={(e1X + hipSideX) / 2} y={crotchY + 28} textAnchor="middle" className="fill-primary text-xs font-sans">
+            {((hipSideX - e1X) / scale).toFixed(1)}cm
+          </text>
 
-      {/* Knee line (reference) */}
-      <line
-        x1={kneeInnerX}
-        y1={kneeYPos}
-        x2={kneeSideX}
-        y2={kneeYPos}
-        stroke="hsl(var(--muted-foreground))"
-        strokeWidth="1"
-        strokeDasharray="3,3"
-      />
+          {/* Hem width — horizontal, below hem */}
+          <line x1={hemInnerX} y1={hemY + 15} x2={hemSideX} y2={hemY + 15} stroke={ml} strokeWidth="1" />
+          <line x1={hemInnerX} y1={hemY + 9} x2={hemInnerX} y2={hemY + 21} stroke={ml} strokeWidth="1" />
+          <line x1={hemSideX} y1={hemY + 9} x2={hemSideX} y2={hemY + 21} stroke={ml} strokeWidth="1" />
+          <text x={(hemInnerX + hemSideX) / 2} y={hemY + 32} textAnchor="middle" className="fill-primary text-xs font-sans">
+            {((hemSideX - hemInnerX) / scale).toFixed(1)}cm
+          </text>
+        </g>
+      )}
 
-      {/* Grain line — DRITTO FILO / LINEA PIEGA */}
+      {/* Grain line */}
       <line
         x1={centerX}
-        y1={offsetY + s(3)}
+        y1={offsetY + panelHeight * 0.35}
         x2={centerX}
-        y2={hemY - s(3)}
+        y2={offsetY + panelHeight * 0.65}
         stroke="hsl(var(--pattern-stroke))"
-        strokeWidth="1.5"
+        strokeWidth="1"
+        strokeDasharray="8,4"
         markerEnd="url(#pantsArrow)"
+        markerStart="url(#pantsArrowReverse)"
       />
 
       {/* Labels */}
       <text
         x={centerX}
-        y={offsetY + panelHeight * 0.45}
+        y={offsetY + panelHeight * 0.35 - 62}
         textAnchor="middle"
         className="fill-foreground font-serif text-sm"
       >
         {t('piece.front')}
-      </text>
-      <text
-        x={centerX}
-        y={offsetY + panelHeight * 0.45 + 16}
-        textAnchor="middle"
-        className="fill-muted-foreground text-xs"
-      >
-        {t('piece.cut2')}
-      </text>
-
-      {/* Measurement labels */}
-      <text x={hipSideX + 5} y={hipY + 4} className="fill-muted-foreground text-[9px]">
-        {t('piece.hip')}
-      </text>
-      <text x={thighSideX + 5} y={crotchY + 4} className="fill-muted-foreground text-[9px]">
-        {t('piece.crotch')}
-      </text>
-      {/*  <text x={thighSideX + 5} y={iY + 4} className="fill-muted-foreground text-[9px]">
-        Thigh-->
-      </text>*/}
-      <text x={kneeSideX + 5} y={kneeYPos + 4} className="fill-muted-foreground text-[9px]">
-        {t('piece.knee')}
       </text>
     </g>
   );

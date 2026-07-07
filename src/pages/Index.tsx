@@ -567,14 +567,6 @@ const Index = () => {
                     )}
                   </div>
                   <div className="flex items-center gap-3">
-                    {isBodiceVariant && (
-                      <Tabs value={bodicePanel} onValueChange={(v) => setBodicePanel(v as 'front' | 'back')}>
-                        <TabsList className="h-8">
-                          <TabsTrigger value="front" className="text-xs px-3">Front</TabsTrigger>
-                          <TabsTrigger value="back" className="text-xs px-3">Back</TabsTrigger>
-                        </TabsList>
-                      </Tabs>
-                    )}
                     <div className="text-xs text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">
                       Scale: {patternType === 'skirt'
                         ? ((skirtMeasurements.hip / 4 + 1) / 10).toFixed(1)

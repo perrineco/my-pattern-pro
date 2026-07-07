@@ -7,11 +7,19 @@ interface PantsWithDartsFrontPanelProps {
   offsetY: number;
   scale: number;
   category: Category;
+  showMeasurements?: boolean;
 }
 
-export function PantsWithDartsFrontPanel({ measurements, offsetX, offsetY, scale, category }: PantsWithDartsFrontPanelProps) {
-  const { t } = useLanguage();
-  const { waist, hip, thigh, knee, ankle, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
+// Shared geometry — also consumed by the PDF export (src/lib/pdf-export.ts) so the
+// printed pattern always matches this preview exactly.
+export function computePantsFrontDartedGeometry(
+  measurements: PantsMeasurements,
+  offsetX: number,
+  offsetY: number,
+  scale: number,
+  category: Category,
+) {
+  const { waist, hip, knee, hipHeight, crotchDepth, outseamLength, inseamLength } = measurements;
   const ease = measurements.ease ?? 2;
 
   const s = (v: number) => v * scale;
@@ -24,7 +32,7 @@ export function PantsWithDartsFrontPanel({ measurements, offsetX, offsetY, scale
   const kneeY = crotchDepth + inseamLength * 0.4;
 
   // Front dart calculations
-  const frontDartWidth = category === "women" ? 2 : 1.5;
+  const frontDartWidth = category === "women" ? 2 : category === "kids" ? 2 : 1.5;
   const frontDartLength = category === "women" ? hipHeight * 0.75 : hipHeight * 0.6;
 
   // Waist reduction now accounts for dart
@@ -41,6 +49,7 @@ export function PantsWithDartsFrontPanel({ measurements, offsetX, offsetY, scale
 
   // Points
   const a1X = offsetX;
+  const a2X = category === "kids" ? a1X : a1X - s(1);
   const a1Y = offsetY;
   const b1X = offsetX + s(hipQuarter - waistReduction);
   const b1Y = offsetY - s(b1Rise);
@@ -64,22 +73,18 @@ export function PantsWithDartsFrontPanel({ measurements, offsetX, offsetY, scale
   const buildPath = () => {
     let path = "";
     path += `M ${a1X} ${a1Y}`;
-    // Waist to dart
     path += ` L ${dartCenterX - dartHalfWidth} ${a1Y}`;
-    // Dart
     path += ` L ${dartCenterX} ${a1Y + s(frontDartLength)}`;
     path += ` L ${dartCenterX + dartHalfWidth} ${a1Y}`;
-    // Dart to side waist
     path += ` L ${b1X} ${b1Y}`;
-    // Side seam
-    path += ` Q ${offsetX + s(hipQuarter + 0.5)} ${offsetY + s(hipHeight * 0.5)} ${hipSideX} ${hipY}`;
+    path += ` C ${b1X + (hipQuarter)*3/4} ${b1Y + s(hipHeight)/3}, ${hipSideX} ${b1Y + s(hipHeight)*2/3}, ${hipSideX} ${hipY}`;
     path += ` L ${hipSideX} ${crotchY}`;
-    path += ` L ${thighSideX} ${iY}`;
+    path += ` C ${hipSideX} ${crotchY+crotchDepth/2}, ${hipSideX} ${crotchY+crotchDepth*2/3}, ${thighSideX} ${iY}`;
     path += ` L ${hemSideX} ${hemY}`;
     path += ` L ${hemInnerX} ${hemY}`;
     path += ` L ${thighInnerX} ${iY}`;
     path += ` C ${thighInnerX} ${iY + ((crotchY - iY) * 3) / 4}, ${e1X} ${crotchY}, ${e1X} ${crotchY}`;
-    path += ` C ${e1X + (a1X - e1X) / 2} ${crotchY + (hipY - crotchY) / 20}, ${a1X - s(1)} ${hipY - (hipY - crotchY) / 4}, ${a1X - s(1)} ${hipY}`;
+    path += ` C ${e1X + (a1X - e1X) / 2} ${crotchY + (hipY - crotchY) / 20}, ${a2X} ${hipY - (hipY - crotchY) / 4}, ${a2X} ${hipY}`;
     path += ` L ${a1X} ${a1Y}`;
     path += ` Z`;
     return path;
@@ -87,34 +92,105 @@ export function PantsWithDartsFrontPanel({ measurements, offsetX, offsetY, scale
 
   const panelHeight = s(totalLength);
 
+  return {
+    path: buildPath(),
+    totalLength,
+    panelHeight,
+    a1X, a1Y, a2X, b1X, b1Y,
+    hipSideX, hipY,
+    crotchY, e1X,
+    centerX,
+    iY, thighSideX, thighInnerX,
+    kneeYPos, kneeSideX, kneeInnerX,
+    hemY, hemSideX, hemInnerX,
+    dartCenterX, dartHalfWidth, frontDartLength,
+    dartLeftX: dartCenterX - dartHalfWidth,
+    dartRightX: dartCenterX + dartHalfWidth,
+    dartBaseY: a1Y,
+    dartTipX: dartCenterX,
+    dartTipY: a1Y + s(frontDartLength),
+  };
+}
+
+export function PantsWithDartsFrontPanel({ measurements, offsetX, offsetY, scale, category, showMeasurements = true }: PantsWithDartsFrontPanelProps) {
+  const { t } = useLanguage();
+
+  const {
+    path,
+    panelHeight,
+    a1X, b1X,
+    hipSideX,
+    crotchY, e1X,
+    centerX,
+    hemY, hemSideX, hemInnerX,
+    totalLength,
+  } = computePantsFrontDartedGeometry(measurements, offsetX, offsetY, scale, category);
+
+  const ml = "hsl(var(--measure-line))";
+
   return (
     <g>
-      <path d={buildPath()} fill="hsl(var(--pattern-fill))" stroke="hsl(var(--pattern-stroke))" strokeWidth="2" />
+      <path d={path} fill="hsl(var(--pattern-fill))" stroke="hsl(var(--pattern-stroke))" strokeWidth="2" />
 
-      {/* Hip line */}
-      <line x1={e1X} y1={hipY} x2={hipSideX} y2={hipY} stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="3,3" />
-      {/* Crotch line */}
-      <line x1={e1X} y1={crotchY} x2={thighSideX} y2={crotchY} stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="3,3" />
-      {/* Thigh line */}
-      <line x1={thighInnerX} y1={iY} x2={thighSideX} y2={iY} stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="2,4" />
-      {/* Knee line */}
-      <line x1={kneeInnerX} y1={kneeYPos} x2={kneeSideX} y2={kneeYPos} stroke="hsl(var(--muted-foreground))" strokeWidth="1" strokeDasharray="3,3" />
+      {showMeasurements && (
+        <g>
+          {/* Waist width */}
+          <line x1={a1X} y1={offsetY - 18} x2={b1X} y2={offsetY - 18} stroke={ml} strokeWidth="1" />
+          <line x1={a1X} y1={offsetY - 24} x2={a1X} y2={offsetY - 12} stroke={ml} strokeWidth="1" />
+          <line x1={b1X} y1={offsetY - 24} x2={b1X} y2={offsetY - 12} stroke={ml} strokeWidth="1" />
+          <text x={(a1X + b1X) / 2} y={offsetY - 26} textAnchor="middle" className="fill-primary text-xs font-sans">
+            {((b1X - a1X) / scale).toFixed(1)}cm
+          </text>
+
+          {/* Total length — vertical, left side */}
+          <line x1={ e1X -2} y1={offsetY} x2={e1X - 2} y2={hemY} stroke={ml} strokeWidth="1" />
+          <line x1={e1X - 8} y1={offsetY} x2={e1X +6} y2={offsetY} stroke={ml} strokeWidth="1" />
+          <line x1={e1X-8} y1={hemY} x2={e1X +6} y2={hemY} stroke={ml} strokeWidth="1" />
+          <text
+            x={e1X-6}
+            y={offsetY + panelHeight / 2}
+            textAnchor="middle"
+            className="fill-primary text-xs font-sans"
+            transform={`rotate(-90, ${e1X-6}, ${offsetY + panelHeight / 2})`}
+          >
+            {totalLength}cm
+          </text>
+
+          {/* Crotch width — horizontal, below crotch line */}
+          <line x1={e1X} y1={crotchY + 12} x2={hipSideX} y2={crotchY + 12} stroke={ml} strokeWidth="1" />
+          <line x1={e1X}      y1={crotchY + 6} x2={e1X}      y2={crotchY + 18} stroke={ml} strokeWidth="1" />
+          <line x1={hipSideX} y1={crotchY + 6} x2={hipSideX} y2={crotchY + 18} stroke={ml} strokeWidth="1" />
+          <text x={(e1X + hipSideX) / 2} y={crotchY + 28} textAnchor="middle" className="fill-primary text-xs font-sans">
+            {((hipSideX - e1X) / scale).toFixed(1)}cm
+          </text>
+
+          {/* Hem width — horizontal, below hem */}
+          <line x1={hemInnerX} y1={hemY + 15} x2={hemSideX} y2={hemY + 15} stroke={ml} strokeWidth="1" />
+          <line x1={hemInnerX} y1={hemY + 9} x2={hemInnerX} y2={hemY + 21} stroke={ml} strokeWidth="1" />
+          <line x1={hemSideX} y1={hemY + 9} x2={hemSideX} y2={hemY + 21} stroke={ml} strokeWidth="1" />
+          <text x={(hemInnerX + hemSideX) / 2} y={hemY + 32} textAnchor="middle" className="fill-primary text-xs font-sans">
+            {((hemSideX - hemInnerX) / scale).toFixed(1)}cm
+          </text>
+        </g>
+      )}
 
       {/* Grain line */}
-      <line x1={centerX} y1={offsetY + s(3)} x2={centerX} y2={hemY - s(3)} stroke="hsl(var(--pattern-stroke))" strokeWidth="1.5" markerEnd="url(#pantsArrow)" />
+      <line
+        x1={centerX}
+        y1={offsetY + panelHeight * 0.40}
+        x2={centerX}
+        y2={offsetY + panelHeight * 0.65}
+        stroke="hsl(var(--pattern-stroke))"
+        strokeWidth="1"
+        strokeDasharray="8,4"
+        markerEnd="url(#pantsArrow)"
+        markerStart="url(#pantsArrowReverse)"
+      />
 
       {/* Labels */}
-      <text x={centerX} y={offsetY + panelHeight * 0.45} textAnchor="middle" className="fill-foreground font-serif text-sm">
+      <text x={centerX} y={offsetY + panelHeight * 0.35 - 66} textAnchor="middle" className="fill-foreground font-serif text-sm">
         {t('piece.front')}
       </text>
-      <text x={centerX} y={offsetY + panelHeight * 0.45 + 16} textAnchor="middle" className="fill-muted-foreground text-xs">
-        {t('piece.cut2')}
-      </text>
-
-      {/* Measurement labels */}
-      <text x={hipSideX + 5} y={hipY + 4} className="fill-muted-foreground text-[9px]">{t('piece.hip')}</text>
-      <text x={thighSideX + 5} y={crotchY + 4} className="fill-muted-foreground text-[9px]">{t('piece.crotch')}</text>
-      <text x={kneeSideX + 5} y={kneeYPos + 4} className="fill-muted-foreground text-[9px]">{t('piece.knee')}</text>
     </g>
   );
 }

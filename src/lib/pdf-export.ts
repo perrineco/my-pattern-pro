@@ -2,6 +2,12 @@ import jsPDF from 'jspdf';
 import { SkirtMeasurements, BodiceMeasurements, SleeveMeasurements, PantsMeasurements, Category } from '@/types/sloper';
 import { MeasurementUnit, cmToInches } from '@/components/UnitToggle';
 import { Language } from '@/contexts/LanguageContext';
+import { computePantsFrontDartlessGeometry } from '@/components/pants/PantsFrontPanel';
+import { computePantsBackDartlessGeometry } from '@/components/pants/PantsBackPanel';
+import { computePantsFrontDartedGeometry } from '@/components/pants/PantsWithDartsFrontPanel';
+import { computePantsBackDartedGeometry } from '@/components/pants/PantsWithDartsBackPanel';
+import { useDartlessBodicePath } from '@/components/dartless-bodice/DartlessBodicePanelPath';
+import { useBodiceDartsPath } from '@/components/bodice-darts/BodiceDartsPanelPath';
 
 // PDF string translations
 const pdfT = {
@@ -28,7 +34,7 @@ const pdfT = {
   instructions: {
     en: [
       '1. Print all pages at 100% scale (no scaling/fit to page).',
-      '2. Verify the 1cm test square on the first page measures exactly 1cm x 1cm.',
+      '2. Verify that the test square measures exactly {{SIZE}} x {{SIZE}}.',
       '3. Cut along the right and top edges of each page only',
       '   (keep the left and bottom margins for taping pages together).',
       '4. Match up the alignment marks and circles from adjacent pages.',
@@ -38,10 +44,9 @@ const pdfT = {
     ],
     fr: [
       "1. Imprimez toutes les pages à 100% (sans mise à l'échelle).",
-      '2. Vérifiez que le carré test de 1cm mesure exactement 1cm x 1cm.',
-      "3. Découpez le bord droit et le bord supérieur de chaque feuille uniquement",
-      "   (conserver les marges gauche et bas pour coller les feuilles ensemble).",
-      '4. Alignez les repères et cercles des pages adjacentes.',
+      '2. Vérifiez que le carré test mesure exactement {{SIZE}} x {{SIZE}}.',
+      "3. Découpez le bord droit et le bord supérieur de chaque feuille uniquement (conserver les marges gauche et bas pour coller les feuilles ensemble).",
+      '4. Alignez les repères triangulaires.',
       '5. Collez ou scotchez les pages en commençant par le coin supérieur gauche.',
       '6. Une fois assemblé, découpez le patron le long du trait plein noir.',
       '7. Ce patron est un bloc de base sans marges de couture.',
@@ -112,10 +117,6 @@ const PAGE_FORMATS = {
 } as const;
 type TiledFormat = keyof typeof PAGE_FORMATS;
 
-// Alignment mark size
-const MARK_SIZE = 8;
-const MARK_OFFSET = 5;
-
 interface PatternDimensions {
   widthCm: number;
   heightCm: number;
@@ -152,6 +153,32 @@ function calculateBodiceDimensions(measurements: BodiceMeasurements): PatternDim
   return { widthCm, heightCm };
 }
 
+// Real (un-padded) horizontal reach of each panel, in cm from its own fold edge —
+// sourced directly from the shared geometry (useDartlessBodicePath, scale=1 → cm) so
+// this never drifts from what actually gets drawn. Used to size/position each panel
+// individually so the gap between front and back reflects their actual widths rather
+// than the width of whichever panel happens to be wider.
+function calculateDartlessBodicePanelWidths(measurements: BodiceMeasurements, category: Category): { front: number; back: number } {
+  const widthFor = (panel: 'front' | 'back') => {
+    const g = useDartlessBodicePath({ measurements, offsetX: 0, offsetY: 0, scale: 1, panel, category });
+    return Math.max(g.bustQuarterScaled, g.shoulderEndX);
+  };
+
+  return { front: widthFor('front'), back: widthFor('back') };
+}
+
+function calculateDartlessBodiceDimensions(measurements: BodiceMeasurements, category: Category): PatternDimensions {
+  const { backLength } = measurements;
+  const { front, back } = calculateDartlessBodicePanelWidths(measurements, category);
+
+  // Small safety buffer only — drawDartlessBodicePiece already shifts the whole piece down
+  // so the neckline peak lands at offsetY, so the true height is just backLength (+ buffer).
+  const widthCm = Math.max(front, back) + 5;
+  const heightCm = backLength + 5;
+
+  return { widthCm, heightCm };
+}
+
 function calculateSleeveDimensions(measurements: SleeveMeasurements): PatternDimensions {
   const { upperArm, sleeveLength, armholeDepth, ease = 2 } = measurements;
   const upperArmWithEase = upperArm / 2 + ease;
@@ -173,68 +200,40 @@ function calculateTiles(dimensions: PatternDimensions, printableW = PRINTABLE_WI
 }
 
 function drawAlignmentMarks(doc: jsPDF, pageCol: number, pageRow: number, totalCols: number, totalRows: number, pageW = A4_WIDTH, pageH = A4_HEIGHT) {
-  doc.setDrawColor(100, 100, 100);
-  doc.setLineWidth(0.3);
+  doc.setFillColor(190, 190, 190);
+  doc.setDrawColor(190, 190, 190);
 
-  // TL corner
-  if (pageCol > 0 || pageRow > 0) {
-    doc.line(MARGIN, MARGIN, MARGIN + MARK_SIZE, MARGIN);
-    doc.line(MARGIN, MARGIN, MARGIN, MARGIN + MARK_SIZE);
-    doc.line(MARGIN, MARGIN, MARGIN + MARK_OFFSET * 2, MARGIN + MARK_OFFSET * 2);
-    doc.line(MARGIN + MARK_OFFSET * 2, MARGIN, MARGIN, MARGIN + MARK_OFFSET * 2);
-  }
+  // Isoceles triangle centered on the middle of each edge of the 1cm cut line, apex
+  // pointing inward — replaces the old cross/L/circle registration marks. Shown only
+  // on edges that actually border an adjacent tile.
+  const half = 3;
+  const triangle = (cx: number, cy: number, dirX: number, dirY: number) => {
+    const tipX = cx + dirX * half * 1.4;
+    const tipY = cy + dirY * half * 1.4;
+    const baseX1 = cx - dirY * half;
+    const baseY1 = cy + dirX * half;
+    const baseX2 = cx + dirY * half;
+    const baseY2 = cy - dirX * half;
+    doc.triangle(tipX, tipY, baseX1, baseY1, baseX2, baseY2, 'F');
+  };
 
-  // TR corner
-  if (pageCol < totalCols - 1 || pageRow > 0) {
-    doc.line(pageW - MARGIN - MARK_SIZE, MARGIN, pageW - MARGIN, MARGIN);
-    doc.line(pageW - MARGIN, MARGIN, pageW - MARGIN, MARGIN + MARK_SIZE);
-    doc.line(pageW - MARGIN, MARGIN, pageW - MARGIN - MARK_OFFSET * 2, MARGIN + MARK_OFFSET * 2);
-    doc.line(pageW - MARGIN - MARK_OFFSET * 2, MARGIN, pageW - MARGIN, MARGIN + MARK_OFFSET * 2);
-  }
-
-  // BL corner
-  if (pageCol > 0 || pageRow < totalRows - 1) {
-    doc.line(MARGIN, pageH - MARGIN - MARK_SIZE, MARGIN, pageH - MARGIN);
-    doc.line(MARGIN, pageH - MARGIN, MARGIN + MARK_SIZE, pageH - MARGIN);
-    doc.line(MARGIN, pageH - MARGIN, MARGIN + MARK_OFFSET * 2, pageH - MARGIN - MARK_OFFSET * 2);
-    doc.line(MARGIN + MARK_OFFSET * 2, pageH - MARGIN, MARGIN, pageH - MARGIN - MARK_OFFSET * 2);
-  }
-
-  // BR corner
-  if (pageCol < totalCols - 1 || pageRow < totalRows - 1) {
-    doc.line(pageW - MARGIN - MARK_SIZE, pageH - MARGIN, pageW - MARGIN, pageH - MARGIN);
-    doc.line(pageW - MARGIN, pageH - MARGIN - MARK_SIZE, pageW - MARGIN, pageH - MARGIN);
-    doc.line(pageW - MARGIN, pageH - MARGIN, pageW - MARGIN - MARK_OFFSET * 2, pageH - MARGIN - MARK_OFFSET * 2);
-    doc.line(pageW - MARGIN - MARK_OFFSET * 2, pageH - MARGIN, pageW - MARGIN, pageH - MARGIN - MARK_OFFSET * 2);
-  }
-
-  const circleRadius = 2;
-  doc.setFillColor(255, 255, 255);
-
-  if (pageCol > 0 && pageRow > 0) {
-    doc.circle(MARGIN, MARGIN, circleRadius, 'FD');
-  }
-  if (pageCol < totalCols - 1 && pageRow > 0) {
-    doc.circle(pageW - MARGIN, MARGIN, circleRadius, 'FD');
-  }
-  if (pageCol > 0 && pageRow < totalRows - 1) {
-    doc.circle(MARGIN, pageH - MARGIN, circleRadius, 'FD');
-  }
-  if (pageCol < totalCols - 1 && pageRow < totalRows - 1) {
-    doc.circle(pageW - MARGIN, pageH - MARGIN, circleRadius, 'FD');
-  }
+  if (pageRow > 0) triangle(pageW / 2, MARGIN, 0, 1);
+  if (pageRow < totalRows - 1) triangle(pageW / 2, pageH - MARGIN, 0, -1);
+  if (pageCol > 0) triangle(MARGIN, pageH / 2, 1, 0);
+  if (pageCol < totalCols - 1) triangle(pageW - MARGIN, pageH / 2, -1, 0);
 }
 
-function drawPageInfo(doc: jsPDF, pageNum: number, totalPages: number, col: number, row: number, lang: Language, pageW = A4_WIDTH, pageH = A4_HEIGHT) {
+function drawPageInfo(doc: jsPDF, tileNumber: number, pageW = A4_WIDTH, pageH = A4_HEIGHT) {
   doc.setFontSize(8);
   doc.setTextColor(120, 120, 120);
-  const pageStr = tr(pdfT.pageOf, lang)(pageNum, totalPages);
-  const rowColStr = tr(pdfT.rowCol, lang)(row + 1, col + 1);
-  doc.text(`${pageStr} ${rowColStr}`, pageW / 2, pageH - 3, { align: 'center' });
   doc.text('Petit Citron Studio', MARGIN, pageH - 3);
-  if (col === 0 && row === 0) {
-    doc.text(tr(pdfT.cutOnFold, lang), pageW - MARGIN, pageH - 3, { align: 'right' });
-  }
+
+  // Large, light-gray tile number — quick visual reference when assembling the pages
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(100);
+  doc.setTextColor(205, 205, 205);
+  doc.text(`${tileNumber}`, pageW / 2, pageH / 2, { align: 'center', baseline: 'middle' });
+  doc.setFont('helvetica', 'normal');
 }
 
 function drawSkirtPatternPiece(
@@ -332,17 +331,6 @@ function drawSkirtPatternPiece(
     doc.setFontSize(7);
     doc.setTextColor(80, 80, 80);
     doc.text(tr(pdfT.noSeamAllowance, lang), offsetX + patternWidth / 2, labelY + 5, { align: 'center' });
-
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    doc.text(tr(pdfT.cut1OnFold, lang), offsetX + patternWidth / 2, labelY + 10, { align: 'center' });
-
-    doc.setFontSize(7);
-    doc.setTextColor(80, 80, 80);
-    const dartWidthCm = isFront ? dartWidthBase : dartWidthBase * 1.2;
-    doc.text(`${tr(pdfT.quarterWaistDart, lang)} = ${formatMeasurement(waist / 4 + dartWidthCm + 1, unit)}`, offsetX + waistWidth / 2, offsetY - 5, { align: 'center' });
-    doc.text(`${tr(pdfT.length, lang)} = ${formatMeasurement(skirtLength, unit)}`, offsetX - 8, labelY, { angle: 90 });
-    doc.text(`${tr(pdfT.quarterHip, lang)} = ${formatMeasurement(hip / 4 + 1, unit)}`, offsetX + patternWidth + 8, offsetY + waistToHipMm + (lengthMm - waistToHipMm) / 2, { angle: 270 });
   }
 }
 
@@ -418,51 +406,66 @@ function drawBodicePatternPiece(
     doc.setFontSize(7);
     doc.setTextColor(80, 80, 80);
     doc.text(tr(pdfT.noSeamAllowance, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 5, { align: 'center' });
-
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    doc.text(tr(pdfT.cut1OnFold, lang), offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 10, { align: 'center' });
-
-    doc.setFontSize(7);
-    doc.setTextColor(80, 80, 80);
-    // quarterBust centered below the name label (stays within this tile's bounds)
-    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + 1, unit)}`, offsetX + bustQuarterMm / 2, offsetY + backLengthMm / 2 + 18, { align: 'center' });
-    // backLength along the fold edge (left margin)
-    doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, offsetY + backLengthMm / 2, { angle: 90 });
   }
 }
 
-// Mirrors categoryConfig in DartlessBodicePanelPath.tsx
-const dartlessBodiceConfig: Record<string, {
-  ease: number; neckWidthDivisor: number; neckWidthAdd: number;
-  frontNeckDepthDivisor: number; frontNeckDepthAdd: number;
-  backNeckDepthDivisor: number; backNeckDepthAdd: number;
-  armholeDepthRatio: number; midpointFrontAdd: number; midpointBackAdd: number;
-  riseBack: number; extraDropFront: number;
-  frontShoulderAdd: number; backShoulderAdd: number;
-}> = {
-  women: {
-    ease: 2, neckWidthDivisor: 6, neckWidthAdd: 1.6,
-    frontNeckDepthDivisor: 6, frontNeckDepthAdd: 2,
-    backNeckDepthDivisor: 16, backNeckDepthAdd: 0,
-    armholeDepthRatio: 0.5, midpointFrontAdd: -1.3, midpointBackAdd: 0,
-    riseBack: 4, extraDropFront: 5, frontShoulderAdd: 0, backShoulderAdd: 0,
-  },
-  men: {
-    ease: 3, neckWidthDivisor: 5, neckWidthAdd: 0,
-    frontNeckDepthDivisor: 5, frontNeckDepthAdd: 0.5,
-    backNeckDepthDivisor: 20, backNeckDepthAdd: 0,
-    armholeDepthRatio: 0.48, midpointFrontAdd: 0.25, midpointBackAdd: 0,
-    riseBack: 5, extraDropFront: 6, frontShoulderAdd: 0, backShoulderAdd: 0,
-  },
-  kids: {
-    ease: 2.5, neckWidthDivisor: 6, neckWidthAdd: 0.2,
-    frontNeckDepthDivisor: 6, frontNeckDepthAdd: 0.2,
-    backNeckDepthDivisor: 18, backNeckDepthAdd: 0,
-    armholeDepthRatio: 0.52, midpointFrontAdd: 0, midpointBackAdd: 0,
-    riseBack: 3.2, extraDropFront: 2.5, frontShoulderAdd: 0, backShoulderAdd: 0,
-  },
-};
+// "bodice-with-darts": sourced directly from useBodiceDartsPath (the same geometry the
+// SVG preview uses), so the printed pattern always matches it exactly.
+function drawBodiceDartsPatternPiece(
+  doc: jsPDF,
+  measurements: BodiceMeasurements,
+  category: Category,
+  offsetX: number,
+  offsetY: number,
+  panel: 'front' | 'back',
+  unit: MeasurementUnit,
+  lang: Language,
+  tileCol: number = 0,
+  tileRow: number = 0
+) {
+  // The neckline peak (neckEndY) and shoulder point (shoulderEndY) both sit above the
+  // panel's own offsetY anchor — probe at offsetY=0 first and push the real origin down
+  // so the true top of the piece lands exactly at the intended offsetY.
+  const probe = useBodiceDartsPath({ measurements, offsetX, offsetY: 0, scale: 10, panel, category });
+  const adjOffsetY = offsetY + topOvershootMm(probe.neckEndY, probe.shoulderEndY);
+  const g = useBodiceDartsPath({ measurements, offsetX, offsetY: adjOffsetY, scale: 10, panel, category });
+
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+  drawSvgPathToPdf(doc, g.path);
+
+  // Dart lines — highlighted, dashed
+  doc.setLineWidth(0.35);
+  doc.setLineDashPattern([1.5, 0.8], 0);
+  drawSvgPathToPdf(doc, g.dartPath);
+  doc.setLineDashPattern([], 0);
+  doc.setLineWidth(0.5);
+
+  // Grain line (same formula as BodiceDartsPanel.tsx)
+  const grainX = offsetX + g.bustQuarterScaled * 0.3;
+  const grainTop = adjOffsetY + g.backLengthScaled * 0.25;
+  const grainBot = adjOffsetY + g.backLengthScaled * 0.75;
+  doc.setLineDashPattern([3, 2], 0);
+  doc.line(grainX, grainTop, grainX, grainBot);
+  doc.setLineDashPattern([], 0);
+  const a = 4;
+  doc.line(grainX - a, grainTop + a, grainX, grainTop);
+  doc.line(grainX + a, grainTop + a, grainX, grainTop);
+  doc.line(grainX - a, grainBot - a, grainX, grainBot);
+  doc.line(grainX + a, grainBot - a, grainX, grainBot);
+
+  if (tileCol === 0 && tileRow === 0) {
+    const isFront = panel === 'front';
+    const cx = offsetX + g.bustQuarterScaled / 2;
+    const cy = adjOffsetY + g.backLengthScaled / 2;
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), cx, cy - 5, { align: 'center' });
+    doc.setFontSize(7);
+    doc.setTextColor(80, 80, 80);
+    doc.text(tr(pdfT.noSeamAllowance, lang), cx, cy, { align: 'center' });
+  }
+}
 
 function drawDartlessBodicePiece(
   doc: jsPDF,
@@ -476,104 +479,20 @@ function drawDartlessBodicePiece(
   tileCol: number = 0,
   tileRow: number = 0
 ) {
-  const { bust, neckCircumference, shoulderLength, backWidth, backLength, ease: customEase } = measurements;
-  const cfg = dartlessBodiceConfig[category] ?? dartlessBodiceConfig['women'];
-  const mm = (cm: number) => cm * 10;
-  const ease = customEase ?? cfg.ease;
-
-  // Neckline dimensions (same formulas as DartlessBodicePanelPath)
-  const neckHalfWidthCm = neckCircumference / cfg.neckWidthDivisor + cfg.neckWidthAdd;
-  const neckHalfWidthMm = mm(neckHalfWidthCm);
-  const frontNeckDepthCm = neckCircumference / cfg.frontNeckDepthDivisor + cfg.frontNeckDepthAdd;
-  const backNeckDepthCm  = neckCircumference / cfg.backNeckDepthDivisor  + cfg.backNeckDepthAdd;
-  const neckHalfHeightMm = panel === 'front' ? mm(frontNeckDepthCm) : mm(backNeckDepthCm);
-
-  // Shift the whole pattern down so the neckline arc peak (which goes
-  // backNeckDepthCm above the neck centre) lands at offsetY, not above the clip margin.
-  const neckShiftY = mm(backNeckDepthCm);
-
-  // Front panel also shifted so both panels share the same waist Y
-  const newOffsetY = panel === 'front'
-    ? offsetY + neckShiftY + mm(frontNeckDepthCm - backNeckDepthCm)
-    : offsetY + neckShiftY;
-
-  // Shoulder slope — trig-based (same as SVG component)
-  const angleBack  = Math.atan2(cfg.riseBack,       backWidth / 2 + cfg.midpointBackAdd  - neckHalfWidthCm);
-  const angleFront = Math.atan2(cfg.extraDropFront, backWidth / 2 + cfg.midpointFrontAdd - neckHalfWidthCm);
-  const angle = panel === 'back' ? angleBack : angleFront;
-  const L     = panel === 'back'
-    ? shoulderLength + cfg.backShoulderAdd
-    : shoulderLength + cfg.backShoulderAdd + cfg.frontShoulderAdd;
-
-  const shoulderWidthX = mm(Math.cos(angle) * L);
-  const shoulderSlopeY = mm(Math.sin(angle) * L);
-
-  const bustQuarterMm = mm(bust / 4 + ease);
-  const backLengthMm  = panel === 'front'
-    ? mm(backLength) + mm(backNeckDepthCm) - mm(frontNeckDepthCm)
-    : mm(backLength);
-
-  // Key geometry points
-  const neckEndX     = offsetX + neckHalfWidthMm;
-  const neckEndY     = newOffsetY - neckHalfHeightMm;
-  const shoulderEndX = neckEndX + shoulderWidthX;
-  const shoulderEndY = neckEndY + shoulderSlopeY;
-
-  const armholeRetreatX = mm(bust / 4 + ease - backWidth / 2 - cfg.midpointFrontAdd);
-  const midPointX = offsetX + bustQuarterMm - armholeRetreatX;
-  const midPointY = offsetY + backLengthMm / 3;
-
-  const armholeEndX = offsetX + bustQuarterMm;
-  const armholeEndY = newOffsetY + backLengthMm - mm(backLength) / 2 + mm(1);
-
-  const waistY = newOffsetY + backLengthMm;
+  // Same top-overshoot issue as bodice-with-darts (see topOvershootMm) — the neckline
+  // peak and shoulder point both sit above offsetY, so probe first and push down.
+  const probe = useDartlessBodicePath({ measurements, offsetX, offsetY: 0, scale: 10, panel, category });
+  const adjOffsetY = offsetY + topOvershootMm(probe.neckEndY, probe.shoulderEndY);
+  const g = useDartlessBodicePath({ measurements, offsetX, offsetY: adjOffsetY, scale: 10, panel, category });
 
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.5);
+  drawSvgPathToPdf(doc, g.path);
 
-  // Fold edge (center front / center back)
-  doc.line(offsetX, newOffsetY, offsetX, waistY);
-
-  // Neckline bezier curve
-  drawCubicBezier(doc,
-    offsetX, newOffsetY,
-    offsetX + neckHalfWidthMm * 0.65, newOffsetY,
-    offsetX + neckHalfWidthMm * 0.85, newOffsetY - neckHalfHeightMm * 0.5,
-    neckEndX, neckEndY,
-    12
-  );
-
-  // Shoulder line
-  doc.line(neckEndX, neckEndY, shoulderEndX, shoulderEndY);
-
-  // Armhole — first bezier (shoulder → midpoint)
-  drawCubicBezier(doc,
-    shoulderEndX, shoulderEndY,
-    shoulderEndX, shoulderEndY,
-    midPointX, midPointY + (shoulderEndY - midPointY) * 0.5,
-    midPointX, midPointY,
-    10
-  );
-
-  // Armhole — second bezier (midpoint → side seam)
-  drawCubicBezier(doc,
-    midPointX, midPointY,
-    midPointX, midPointY + (armholeEndY - midPointY) * 0.8,
-    armholeEndX - (armholeEndX - midPointX) * 0.5, armholeEndY,
-    armholeEndX, armholeEndY,
-    10
-  );
-
-  // Side seam
-  doc.line(armholeEndX, armholeEndY, offsetX + bustQuarterMm, waistY);
-
-  // Waist
-  doc.line(offsetX + bustQuarterMm, waistY, offsetX, waistY);
-
-  // Grain line
-  const grainX = offsetX + bustQuarterMm * 0.4;
-  const grainTop = newOffsetY + backLengthMm * 0.2;
-  const grainBot = newOffsetY + backLengthMm * 0.8;
+  // Grain line (same formula as DartlessBodicePanel.tsx)
+  const grainX = offsetX + g.bustQuarterScaled * 0.3;
+  const grainTop = adjOffsetY + g.backLengthScaled * 0.25;
+  const grainBot = adjOffsetY + g.backLengthScaled * 0.75;
   doc.setLineDashPattern([3, 2], 0);
   doc.line(grainX, grainTop, grainX, grainBot);
   doc.setLineDashPattern([], 0);
@@ -585,21 +504,14 @@ function drawDartlessBodicePiece(
 
   if (tileCol === 0 && tileRow === 0) {
     const isFront = panel === 'front';
-    const cx = offsetX + bustQuarterMm / 2;
-    const cy = newOffsetY + backLengthMm / 2;
+    const cx = offsetX + g.bustQuarterScaled / 2;
+    const cy = adjOffsetY + g.backLengthScaled / 2;
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
     doc.text(isFront ? tr(pdfT.front, lang) : tr(pdfT.back, lang), cx, cy, { align: 'center' });
     doc.setFontSize(7);
     doc.setTextColor(80, 80, 80);
     doc.text(tr(pdfT.noSeamAllowance, lang), cx, cy + 5, { align: 'center' });
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0);
-    doc.text(tr(pdfT.cut1OnFold, lang), cx, cy + 10, { align: 'center' });
-    doc.setFontSize(7);
-    doc.setTextColor(80, 80, 80);
-    doc.text(`${tr(pdfT.quarterBust, lang)} = ${formatMeasurement(bust / 4 + ease, unit)}`, cx, cy + 18, { align: 'center' });
-    doc.text(`${tr(pdfT.backLength, lang)} = ${formatMeasurement(backLength, unit)}`, offsetX - 8, newOffsetY + backLengthMm / 2, { angle: 90 });
   }
 }
 
@@ -700,14 +612,23 @@ function drawSleevePatternPiece(
   doc.text(`${tr(pdfT.capHeight, lang)} = ${formatMeasurement(armholeDepth, unit)}`, centerX + halfUpperWidth + 8, capTop + capHeightMm / 2, { angle: 270 });
 }
 
-function draw1cmTestSquare(doc: jsPDF, unit: MeasurementUnit, lang: Language) {
+// The test square is 4in x 4in on letter pages and 10cm x 10cm on A4/A0 pages —
+// shared by drawTestSquare and the assembly-instructions text so both always agree.
+function testSquareSizeLabel(format: TiledFormat): string {
+  return format === 'letter' ? '4 in' : '10 cm';
+}
+
+function drawTestSquare(doc: jsPDF, format: TiledFormat, lang: Language, x: number, y: number) {
+  const sizeMm = format === 'letter' ? 4 * 25.4 : 100;
+  const sizeLabel = testSquareSizeLabel(format);
+
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.3);
-  doc.rect(MARGIN + 5, MARGIN + 5, 10, 10);
-  doc.setFontSize(6);
+  doc.rect(x, y, sizeMm, sizeMm);
+  doc.setFontSize(9);
   doc.setTextColor(0, 0, 0);
-  const label = unit === 'inches' ? `${tr(pdfT.testSquare, lang)} / 0.39″` : tr(pdfT.testSquare, lang);
-  doc.text(label, MARGIN + 10, MARGIN + 20, { align: 'center' });
+  const label = lang === 'fr' ? `Test ${sizeLabel} / ${sizeLabel}` : `${sizeLabel} test / ${sizeLabel}`;
+  doc.text(label, x + sizeMm / 2, y + sizeMm / 2, { align: 'center', baseline: 'middle' });
 }
 
 function drawDiagramSkirt(
@@ -742,7 +663,7 @@ function drawDiagramSkirt(
   // Side seam bezier: from (waistWidth, -waistRise) to (patternWidth, waistToHipMm + waistRise)
   const sDx = patternWidth - waistWidth;
 
-  doc.setFillColor(238, 246, 225);
+  // Outline only (no fill), matching the pants diagram style.
   doc.setDrawColor(110, 150, 60);
   doc.setLineWidth(0.3);
   doc.lines(
@@ -763,7 +684,7 @@ function drawDiagramSkirt(
       [-patternWidth * scaleX, 0],
       // Fold edge closed automatically
     ] as number[][],
-    startX, startY, [1, 1], 'FD', true
+    startX, startY, [1, 1], 'D', true
   );
 }
 
@@ -800,6 +721,24 @@ function drawDiagramBodice(
   );
 }
 
+function drawDiagramBodiceDarts(
+  doc: jsPDF,
+  m: BodiceMeasurements,
+  category: Category,
+  startX: number,
+  startY: number,
+  panel: 'front' | 'back',
+  scaleX: number
+) {
+  const probe = useBodiceDartsPath({ measurements: m, offsetX: startX, offsetY: 0, scale: 10 * scaleX, panel, category });
+  const adjStartY = startY + topOvershootMm(probe.neckEndY, probe.shoulderEndY);
+  const g = useBodiceDartsPath({ measurements: m, offsetX: startX, offsetY: adjStartY, scale: 10 * scaleX, panel, category });
+
+  doc.setDrawColor(110, 150, 60);
+  doc.setLineWidth(0.3);
+  drawSvgPathToPdf(doc, g.path);
+}
+
 function drawDiagramDartlessBodice(
   doc: jsPDF,
   m: BodiceMeasurements,
@@ -810,67 +749,15 @@ function drawDiagramDartlessBodice(
   scaleX: number,
   scaleY: number
 ) {
-  const cfg = dartlessBodiceConfig[category] ?? dartlessBodiceConfig['women'];
-  const mm = (cm: number) => cm * 10;
-  const ease = m.ease ?? cfg.ease;
-  const { bust, neckCircumference, shoulderLength, backWidth, backLength } = m;
+  // scaleX/scaleY are always equal in practice (a single diagram shrink factor);
+  // combine with the usual 10mm-per-cm to get the effective scale for the hook.
+  const probe = useDartlessBodicePath({ measurements: m, offsetX: startX, offsetY: 0, scale: 10 * scaleX, panel, category });
+  const adjStartY = startY + topOvershootMm(probe.neckEndY, probe.shoulderEndY);
+  const g = useDartlessBodicePath({ measurements: m, offsetX: startX, offsetY: adjStartY, scale: 10 * scaleX, panel, category });
 
-  const neckHalfWidthCm = neckCircumference / cfg.neckWidthDivisor + cfg.neckWidthAdd;
-  const nW = mm(neckHalfWidthCm);
-  const frontNeckDepthCm = neckCircumference / cfg.frontNeckDepthDivisor + cfg.frontNeckDepthAdd;
-  const backNeckDepthCm  = neckCircumference / cfg.backNeckDepthDivisor  + cfg.backNeckDepthAdd;
-  const nH = panel === 'front' ? mm(frontNeckDepthCm) : mm(backNeckDepthCm);
-
-  // Shift down so the neckline arc peak aligns with startY (arc goes up by backNeckDepth)
-  const topOffset = mm(backNeckDepthCm) * scaleY;
-  const newOffsetY = panel === 'front'
-    ? startY + topOffset + mm(frontNeckDepthCm - backNeckDepthCm) * scaleY
-    : startY + topOffset;
-
-  const angleBack  = Math.atan2(cfg.riseBack,       backWidth / 2 + cfg.midpointBackAdd  - neckHalfWidthCm);
-  const angleFront = Math.atan2(cfg.extraDropFront,  backWidth / 2 + cfg.midpointFrontAdd - neckHalfWidthCm);
-  const angle = panel === 'back' ? angleBack : angleFront;
-  const L = panel === 'back'
-    ? shoulderLength + cfg.backShoulderAdd
-    : shoulderLength + cfg.backShoulderAdd + cfg.frontShoulderAdd;
-  const sWx = mm(Math.cos(angle) * L);
-  const sWy = mm(Math.sin(angle) * L);
-
-  const bqMm = mm(bust / 4 + ease);
-  const blMm = panel === 'front'
-    ? mm(backLength) + mm(backNeckDepthCm) - mm(frontNeckDepthCm)
-    : mm(backLength);
-
-  const arX = mm(bust / 4 + ease - backWidth / 2 - cfg.midpointFrontAdd);
-  const mPx = bqMm - arX;
-  const mPy = blMm / 3;
-  const aEy = blMm - mm(backLength) / 2 + mm(1);
-
-  // Relative coordinates in mm for each intermediate point (from neck-center origin)
-  const sEndX = nW + sWx;
-  const sEndY = -nH + sWy;
-
-  doc.setFillColor(238, 246, 225);
   doc.setDrawColor(110, 150, 60);
   doc.setLineWidth(0.3);
-  doc.lines(
-    [
-      // Neckline bezier: neck center → shoulder start
-      [nW * 0.65 * scaleX, 0, nW * 0.85 * scaleX, -nH * 0.5 * scaleY, nW * scaleX, -nH * scaleY],
-      // Shoulder line
-      [sWx * scaleX, sWy * scaleY],
-      // Armhole part 1: shoulder → midpoint
-      [0, 0, (mPx - sEndX) * scaleX, (mPy - sEndY) * 0.5 * scaleY, (mPx - sEndX) * scaleX, (mPy - sEndY) * scaleY],
-      // Armhole part 2: midpoint → armhole end
-      [0, (aEy - mPy) * 0.8 * scaleY, (bqMm - mPx) * 0.5 * scaleX, (aEy - mPy) * scaleY, (bqMm - mPx) * scaleX, (aEy - mPy) * scaleY],
-      // Side seam (straight down)
-      [0, (blMm - aEy) * scaleY],
-      // Waist
-      [-bqMm * scaleX, 0],
-      // Fold edge closed automatically
-    ] as number[][],
-    startX, newOffsetY, [1, 1], 'FD', true
-  );
+  drawSvgPathToPdf(doc, g.path);
 }
 
 function drawDiagramSleeve(
@@ -913,15 +800,76 @@ function drawDiagramSleeve(
   );
 }
 
+function drawDiagramPants(
+  doc: jsPDF,
+  m: PantsMeasurements,
+  startX: number,
+  startY: number,
+  panel: 'front' | 'back',
+  scale: number,
+  category: Category,
+  hasDarts: boolean
+) {
+  const compute = panel === 'front'
+    ? (hasDarts ? computePantsFrontDartedGeometry : computePantsFrontDartlessGeometry)
+    : (hasDarts ? computePantsBackDartedGeometry : computePantsBackDartlessGeometry);
+
+  // `scale` here is the diagram shrink ratio (tileWDiag / printableW), a fraction of 1.
+  // The geometry functions expect mm-per-cm (10 in the real render, see drawPantsFrontPanel)
+  // — passing the shrink ratio straight through was rendering the outline ~10x too small.
+  const geometryScale = scale * 10;
+  const probe = compute(m, 0, 0, geometryScale, category) as { e1X: number; a1Y?: number; a2Y?: number; b1Y: number };
+  const hipOriginX = startX - probe.e1X;
+  const topShift = topOvershootMm(probe.a1Y ?? probe.a2Y ?? 0, probe.b1Y);
+  const g = compute(m, hipOriginX, startY + topShift, geometryScale, category);
+
+  doc.setDrawColor(110, 150, 60);
+  doc.setLineWidth(0.3);
+  drawSvgPathToPdf(doc, g.path);
+}
+
 // ─────────────────────────────── PANTS ───────────────────────────────────────
 
 function calculatePantsDimensions(m: PantsMeasurements, category: Category): PatternDimensions {
-  const ease = m.ease ?? 2;
-  const crotchExt = category === 'men' ? m.hip / 16 - 1 : m.hip / 16 + 3;
-  return {
-    widthCm: crotchExt + m.hip / 4 + ease + 4,
-    heightCm: m.outseamLength + 4,
-  };
+  // Derived from the same shared geometry the panels are drawn with (scale=1 → values in cm),
+  // so the estimated page/tile size always matches what actually gets drawn.
+  const front = computePantsFrontDartlessGeometry(m, 0, 0, 1, category);
+  const back = computePantsBackDartlessGeometry(m, 0, 0, 1, category);
+
+  const widthCm = Math.max(front.hipSideX - front.e1X, back.hipSideX - back.e1X) + 2;
+  const heightCm = Math.max(front.hemY, back.hemY) + 2;
+
+  return { widthCm, heightCm };
+}
+
+// Gap left between the front and back panels when they share one tile grid (see
+// getPanelWidthsCm) — wide enough to cut/tape without the two pieces touching.
+const PANEL_GAP_CM = 2;
+
+// Real per-panel width (cm), used to lay front and back side by side in one shared
+// tile grid instead of giving each panel its own full page set. Falls back to the
+// shared worst-case dimensions.widthCm when front/back are the same width (skirt,
+// bodice-with-darts) since there's nothing panel-specific to compute there.
+function getPanelWidthsCm(
+  patternType: string,
+  dimensions: PatternDimensions,
+  measurements: SkirtMeasurements | BodiceMeasurements | SleeveMeasurements | PantsMeasurements,
+  category: Category
+): { front: number; back: number } {
+  if (patternType === 'bodice-dartless') {
+    const w = calculateDartlessBodicePanelWidths(measurements as BodiceMeasurements, category);
+    return { front: w.front + 3, back: w.back + 3 };
+  }
+  if (patternType === 'pants' || patternType === 'pants-dartless' || patternType === 'pants-with-darts') {
+    const pm = measurements as PantsMeasurements;
+    const front = computePantsFrontDartlessGeometry(pm, 0, 0, 1, category);
+    const back = computePantsBackDartlessGeometry(pm, 0, 0, 1, category);
+    return {
+      front: front.hipSideX - front.e1X + 2,
+      back: back.hipSideX - back.e1X + 2,
+    };
+  }
+  return { front: dimensions.widthCm, back: dimensions.widthCm };
 }
 
 function drawCubicBezier(
@@ -943,6 +891,82 @@ function drawCubicBezier(
   }
 }
 
+function drawQuadraticBezier(
+  doc: jsPDF,
+  x0: number, y0: number,
+  cx: number, cy: number,
+  x1: number, y1: number,
+  steps = 8
+) {
+  let px = x0, py = y0;
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    const u = 1 - t;
+    const nx = u*u*x0 + 2*u*t*cx + t*t*x1;
+    const ny = u*u*y0 + 2*u*t*cy + t*t*y1;
+    doc.line(px, py, nx, ny);
+    px = nx; py = ny;
+  }
+}
+
+// Several panel geometries (pants back panel, bodice necklines) rise above their own
+// `offsetY` origin — e.g. the pants back waist point is raised by `a2Shift`, and a
+// bodice neckline peak sits above its neck-center anchor. None of the shared geometry
+// functions compensate for that internally, so left alone the peak can end up above the
+// page's top margin (or, worse, above the tile's clip rect and simply not print). Pass
+// the candidate topmost-point Y values (probed with offsetY=0) and this returns how much
+// to push the real offsetY down so the highest point lands exactly at the intended top.
+function topOvershootMm(...candidateYs: number[]): number {
+  return Math.max(0, -Math.min(...candidateYs));
+}
+
+// Replays an SVG path string ("M/L/Q/C/Z", the same format the pants preview
+// components build for their <path d=...>) as jsPDF drawing calls. Since the pants
+// PDF panels draw from the exact same shared geometry functions as the SVG preview,
+// this guarantees the printed outline always matches the preview — no separate
+// control-point transcription to keep in sync.
+function drawSvgPathToPdf(doc: jsPDF, d: string) {
+  const tokens = d.match(/[MLCQZ]|-?\d*\.?\d+(?:e-?\d+)?/gi) ?? [];
+  let i = 0;
+  let curX = 0, curY = 0;
+  let startX = 0, startY = 0;
+  const next = () => parseFloat(tokens[i++]);
+  while (i < tokens.length) {
+    const cmd = tokens[i++];
+    switch (cmd) {
+      case 'M':
+        curX = next(); curY = next();
+        startX = curX; startY = curY;
+        break;
+      case 'L': {
+        const x = next(), y = next();
+        doc.line(curX, curY, x, y);
+        curX = x; curY = y;
+        break;
+      }
+      case 'Q': {
+        const cx = next(), cy = next(), x = next(), y = next();
+        drawQuadraticBezier(doc, curX, curY, cx, cy, x, y);
+        curX = x; curY = y;
+        break;
+      }
+      case 'C': {
+        const cx1 = next(), cy1 = next(), cx2 = next(), cy2 = next(), x = next(), y = next();
+        drawCubicBezier(doc, curX, curY, cx1, cy1, cx2, cy2, x, y);
+        curX = x; curY = y;
+        break;
+      }
+      case 'Z':
+        // Close path — SVG 'Z' draws a straight line back to the last 'M' point.
+        doc.line(curX, curY, startX, startY);
+        curX = startX; curY = startY;
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 function drawPantsGrainLine(doc: jsPDF, x: number, yTop: number, yBot: number) {
   doc.setLineDashPattern([3, 2], 0);
   doc.line(x, yTop, x, yBot);
@@ -955,8 +979,10 @@ function drawPantsGrainLine(doc: jsPDF, x: number, yTop: number, yBot: number) {
 }
 
 // Back panel.
-// offsetX = left edge of pattern piece = innermost crotch point (e1/e2 x-coordinate).
-// Center-back hip line is at offsetX + crotchExtMm.
+// offsetX (this function's own param) = innermost crotch point (e1X in the shared
+// geometry's convention). The shared compute functions expect the hip-quarter
+// reference point instead (their own `offsetX`) — shift between the two once, using
+// a throwaway probe call, rather than re-deriving the crotch-extension formula here.
 function drawPantsBackPanel(
   doc: jsPDF,
   m: PantsMeasurements,
@@ -965,147 +991,65 @@ function drawPantsBackPanel(
   category: Category,
   hasDarts: boolean,
   unit: MeasurementUnit,
-  lang: Language
+  lang: Language,
+  isA0 = false
 ) {
-  const ease = m.ease ?? 2;
-  const v = (cm: number) => cm * 10;
+  const scale = 10; // mm per cm, matching the rest of this file's cm→mm convention
 
-  const crotchExtMm = category === 'men' ? v(m.hip / 16 - 1) : v(m.hip / 16 + 3);
-  const O = offsetX + crotchExtMm;  // center-back hip reference X
-
-  const hipQ   = v(m.hip / 4 + ease);
-  const waistQ = v(m.waist / 4);
-  const waistEase = category === 'men' ? 40 : 50;  // mm
-  const excedent = hipQ - waistQ - waistEase;
-
-  // Dart widths
-  const dartW = hasDarts
-    ? (category === 'women' ? 10 : category === 'kids' ? 25 : 0)
-    : 0;
-
-  // CB waist shift and side-seam reduction
-  let cbShift: number, sideRed: number;
-  if (category === 'men') {
-    cbShift = Math.max(0, excedent / 2);
-    sideRed = Math.max(0, excedent / 2);
-  } else {
-    cbShift = category === 'kids' ? 15 : 35;   // 1.5 cm kids, 3.5 cm women (mm)
-    sideRed = Math.max(0, excedent - dartW);
-  }
-  const cbRaise = category === 'men' ? 20 : v(m.outseamLength * 0.027);
-
-  const a2X = O + cbShift;
-  const a2Y = offsetY - cbRaise;
-  const b1X = O + hipQ - sideRed;
-  const b1Y = category === 'women' ? offsetY - 10 : offsetY;
-
-  const hipSideX = O + hipQ;
-  const hipY   = offsetY + v(m.hipHeight);
-  const crotchY = offsetY + v(m.crotchDepth);
-  const e2Y    = crotchY - 10;
-
-  const centerX = O + (hipQ - crotchExtMm) / 2;
-  const iY      = offsetY + v(m.crotchDepth * (1 + 2 / 3));
-  const hemHalfW = v(m.hip / 10 + 1.5);
-  const thighSpread = hemHalfW + 10;
-  const hemY     = offsetY + v(m.outseamLength);
-  const hemSideX  = (centerX - 10) + hemHalfW;
-  const hemInnerX = (centerX - 10) - hemHalfW;
-  const thighSideX  = centerX + thighSpread;
-  const thighInnerX = centerX - thighSpread;
-
-  // Dart position
-  let dartCX = 0, dartTipY = 0;
-  if (dartW > 0) {
-    if (category === 'women') {
-      dartCX   = a2X + 10;       // 10 mm from CB waist (spreadsheet spec)
-      dartTipY = a2Y + 120;      // 120 mm below waist  (spreadsheet spec)
-    } else {
-      dartCX   = (a2X + b1X) / 2;
-      dartTipY = a2Y + v(m.hipHeight) * 0.75;
-    }
-  }
-  const dHalf = dartW / 2;
+  const compute = hasDarts ? computePantsBackDartedGeometry : computePantsBackDartlessGeometry;
+  const probe = compute(m, 0, 0, scale, category);
+  const hipOriginX = offsetX - probe.e1X;
+  // Back's waist point (a2Y) sits above offsetY (raised by a2Shift) — push the real
+  // origin down so that raised point lands at the intended offsetY instead of poking
+  // above it (and potentially above the page's clip rect).
+  const topShift = topOvershootMm(probe.a2Y, probe.b1Y);
+  const adjOffsetY = offsetY + topShift;
+  const g = compute(m, hipOriginX, adjOffsetY, scale, category);
 
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.5);
 
-  // ── Waist line (with or without dart) ──
-  if (dartW > 0) {
-    doc.line(a2X, a2Y, dartCX - dHalf, a2Y);
-    doc.line(dartCX - dHalf, a2Y, dartCX, dartTipY);   // left side of dart
-    doc.line(dartCX, dartTipY, dartCX + dHalf, a2Y);   // right side
-    doc.line(dartCX + dHalf, a2Y, b1X, b1Y);
+  drawSvgPathToPdf(doc, g.path);
+
+  const dg = hasDarts ? (g as ReturnType<typeof computePantsBackDartedGeometry>) : null;
+  if (dg) {
     // notch at dart tip
     doc.setLineWidth(0.25);
-    doc.line(dartCX - 3, dartTipY, dartCX + 3, dartTipY);
+    doc.line(dg.dartTipX - 3, dg.dartTipY, dg.dartTipX + 3, dg.dartTipY);
     doc.setLineWidth(0.5);
-  } else {
-    doc.line(a2X, a2Y, b1X, b1Y);
   }
-
-  // ── Side seam ──
-  doc.line(b1X, b1Y, hipSideX, hipY);
-  doc.line(hipSideX, hipY, hipSideX, crotchY);
-  doc.line(hipSideX, crotchY, thighSideX, iY);
-  doc.line(thighSideX, iY, hemSideX, hemY);
-
-  // ── Hem ──
-  doc.line(hemSideX, hemY, hemInnerX, hemY);
-
-  // ── Inner seam ──
-  doc.line(hemInnerX, hemY, thighInnerX, iY);
-  doc.line(thighInnerX, iY, offsetX, e2Y);
-
-  // ── Crotch curve (cubic Bezier) ──
-  drawCubicBezier(doc,
-    offsetX, e2Y,
-    offsetX + (O - offsetX) * 0.8, crotchY - (hipY - crotchY) / 8,
-    O - (a2X - O) / 4, hipY - (a2Y - hipY) / 4,
-    O, hipY
-  );
-
-  // ── Center-back seam ──
-  doc.line(O, hipY, a2X, a2Y);
 
   // ── Reference lines ──
   doc.setLineWidth(0.2);
   doc.setLineDashPattern([2, 2], 0);
   doc.setDrawColor(160, 160, 160);
-  doc.line(offsetX, hipY, hipSideX, hipY);
-  doc.line(offsetX, crotchY, hipSideX, crotchY);
+  doc.line(offsetX, g.hipY, g.hipSideX, g.hipY);
+  doc.line(offsetX, g.crotchY, g.hipSideX, g.crotchY);
   doc.setLineDashPattern([], 0);
   doc.setDrawColor(0, 0, 0);
 
   // ── Grain line ──
   doc.setLineWidth(0.4);
-  drawPantsGrainLine(doc, centerX, offsetY + 30, hemY - 30);
+  drawPantsGrainLine(doc, g.centerX, adjOffsetY + 30, g.hemY - 30);
 
   // ── Labels ──
-  const midY = offsetY + Math.min(v(m.outseamLength) / 2, PRINTABLE_HEIGHT * 0.45);
+  const midY = adjOffsetY + Math.min(g.panelHeight / 2, PRINTABLE_HEIGHT * 0.45);
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.back, lang), centerX, midY - 5, { align: 'center' });
+  doc.text(tr(pdfT.back, lang), g.centerX, midY - 5, { align: 'center' });
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
-  doc.text(tr(pdfT.noSeamAllowance, lang), centerX, midY, { align: 'center' });
-  doc.setFontSize(8);
-  doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.cut2, lang), centerX, midY + 8, { align: 'center' });
-
-  if (dartW > 0) {
-    doc.setFontSize(7);
-    doc.setTextColor(80, 80, 80);
-    doc.text(`${tr(pdfT.dart, lang)} = ${dartW}mm`, dartCX + 4, a2Y + (dartTipY - a2Y) / 2);
+  doc.text(tr(pdfT.noSeamAllowance, lang), g.centerX, midY, { align: 'center' });
+  if (!isA0) {
+    doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
+    doc.text(tr(pdfT.cut2, lang), g.centerX, midY + 8, { align: 'center' });
   }
-
-  doc.setFontSize(7);
-  doc.setTextColor(80, 80, 80);
-  doc.text(`${tr(pdfT.outseam, lang)} = ${formatMeasurement(m.outseamLength, unit)}`, O - 8, offsetY + v(m.outseamLength) / 2, { angle: 90 });
 }
 
 // Front panel.
-// offsetX = left edge = e1X (innermost crotch). CF seam is at offsetX + crotchExtMm.
+// offsetX (this function's own param) = innermost crotch point (e1X in the shared
+// geometry's convention). See drawPantsBackPanel for why we shift via a probe call.
 function drawPantsFrontPanel(
   doc: jsPDF,
   m: PantsMeasurements,
@@ -1114,137 +1058,58 @@ function drawPantsFrontPanel(
   category: Category,
   hasDarts: boolean,
   unit: MeasurementUnit,
-  lang: Language
+  lang: Language,
+  isA0 = false
 ) {
-  const ease = m.ease ?? 2;
-  const v = (cm: number) => cm * 10;
+  const scale = 10; // mm per cm, matching the rest of this file's cm→mm convention
 
-  const crotchExtMm = category === 'men' ? v(m.hip / 20) : v(m.hip / 20);
-  const O = offsetX + crotchExtMm;  // CF seam reference X
-
-  const hipQ   = v(m.hip / 4 + ease);
-  const waistQ = v(m.waist / 4);
-  const waistEase = category === 'men' ? 40 : 50;
-  const excedent = hipQ - waistQ - waistEase;
-
-  // Front dart widths per dart
-  const dartW = hasDarts ? (category === 'kids' ? 10 : category === 'women' ? 10 : 0) : 0;
-  const numDarts = category === 'women' && hasDarts ? 2 : (dartW > 0 ? 1 : 0);
-
-  // Side-seam reduction absorbs remaining excess
-  const totalDartMm = dartW * numDarts;
-  const waistRed = category === 'men' ? Math.max(0, excedent) : Math.max(0, excedent - totalDartMm);
-
-  const b1Rise = category === 'women' ? 10 : 0;
-
-  const a1X = O;
-  const a1Y = offsetY;
-  const b1X = O + hipQ - waistRed;
-  const b1Y = offsetY - b1Rise;
-
-  const hipSideX = O + hipQ;
-  const hipY    = offsetY + v(m.hipHeight);
-  const crotchY  = offsetY + v(m.crotchDepth);
-  const e1X     = offsetX;
-
-  const iY      = offsetY + v(m.crotchDepth * 2);
-  const centerX = O + (hipQ - crotchExtMm) / 2;
-  const hemHalfW  = v(m.hip / 10 + 1.5);
-  const thighSpread = hemHalfW + 10;
-  const hemY      = offsetY + v(m.outseamLength);
-  const hemSideX  = centerX + hemHalfW;
-  const hemInnerX = centerX - hemHalfW;
-  const thighSideX  = centerX + thighSpread;
-  const thighInnerX = centerX - thighSpread;
-  const dartDepth  = v(m.hipHeight * 0.6);
-  const dHalf = dartW / 2;
+  const compute = hasDarts ? computePantsFrontDartedGeometry : computePantsFrontDartlessGeometry;
+  const probe = compute(m, 0, 0, scale, category);
+  const hipOriginX = offsetX - probe.e1X;
+  // b1Y (side waist, raised 1cm for women) can sit above offsetY — same top-shift as
+  // the back panel, so front's own peak lands exactly at the intended offsetY too.
+  const topShift = topOvershootMm(probe.a1Y, probe.b1Y);
+  const adjOffsetY = offsetY + topShift;
+  const g = compute(m, hipOriginX, adjOffsetY, scale, category);
 
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.5);
 
-  // ── Waist line ──
-  if (numDarts === 2) {
-    const d1X = a1X + (b1X - a1X) * 0.35;
-    const d2X = a1X + (b1X - a1X) * 0.65;
-    doc.line(a1X, a1Y, d1X - dHalf, a1Y);
-    doc.line(d1X - dHalf, a1Y, d1X, a1Y + dartDepth);
-    doc.line(d1X, a1Y + dartDepth, d1X + dHalf, a1Y);
-    doc.line(d1X + dHalf, a1Y, d2X - dHalf, a1Y);
-    doc.line(d2X - dHalf, a1Y, d2X, a1Y + dartDepth);
-    doc.line(d2X, a1Y + dartDepth, d2X + dHalf, a1Y);
-    doc.line(d2X + dHalf, a1Y, b1X, b1Y);
+  drawSvgPathToPdf(doc, g.path);
+
+  const dg = hasDarts ? (g as ReturnType<typeof computePantsFrontDartedGeometry>) : null;
+  if (dg) {
     doc.setLineWidth(0.25);
-    doc.line(d1X - 3, a1Y + dartDepth, d1X + 3, a1Y + dartDepth);
-    doc.line(d2X - 3, a1Y + dartDepth, d2X + 3, a1Y + dartDepth);
+    doc.line(dg.dartTipX - 3, dg.dartTipY, dg.dartTipX + 3, dg.dartTipY);
     doc.setLineWidth(0.5);
-  } else if (numDarts === 1) {
-    const dCX = (a1X + b1X) / 2;
-    doc.line(a1X, a1Y, dCX - dHalf, a1Y);
-    doc.line(dCX - dHalf, a1Y, dCX, a1Y + dartDepth);
-    doc.line(dCX, a1Y + dartDepth, dCX + dHalf, a1Y);
-    doc.line(dCX + dHalf, a1Y, b1X, b1Y);
-    doc.setLineWidth(0.25);
-    doc.line(dCX - 3, a1Y + dartDepth, dCX + 3, a1Y + dartDepth);
-    doc.setLineWidth(0.5);
-  } else {
-    doc.line(a1X, a1Y, b1X, b1Y);
   }
-
-  // ── Side seam ──
-  doc.line(b1X, b1Y, hipSideX, hipY);
-  doc.line(hipSideX, hipY, hipSideX, crotchY);
-  doc.line(hipSideX, crotchY, thighSideX, iY);
-  doc.line(thighSideX, iY, hemSideX, hemY);
-
-  // ── Hem ──
-  doc.line(hemSideX, hemY, hemInnerX, hemY);
-
-  // ── Inner seam with crotch curves ──
-  doc.line(hemInnerX, hemY, thighInnerX, iY);
-  drawCubicBezier(doc,
-    thighInnerX, iY,
-    thighInnerX, iY + (crotchY - iY) * 0.75,
-    e1X, crotchY,
-    e1X, crotchY
-  );
-  drawCubicBezier(doc,
-    e1X, crotchY,
-    e1X + (a1X - e1X) / 2, crotchY + (hipY - crotchY) / 20,
-    a1X - 10, hipY - (hipY - crotchY) / 4,
-    a1X - 10, hipY
-  );
-
-  // ── CF seam ──
-  doc.line(a1X - 10, hipY, a1X, a1Y);
 
   // ── Reference lines ──
   doc.setLineWidth(0.2);
   doc.setLineDashPattern([2, 2], 0);
   doc.setDrawColor(160, 160, 160);
-  doc.line(e1X, hipY, hipSideX, hipY);
-  doc.line(e1X, crotchY, hipSideX, crotchY);
+  doc.line(offsetX, g.hipY, g.hipSideX, g.hipY);
+  doc.line(offsetX, g.crotchY, g.hipSideX, g.crotchY);
   doc.setLineDashPattern([], 0);
   doc.setDrawColor(0, 0, 0);
 
   // ── Grain line ──
   doc.setLineWidth(0.4);
-  drawPantsGrainLine(doc, centerX, offsetY + 30, hemY - 30);
+  drawPantsGrainLine(doc, g.centerX, adjOffsetY + 30, g.hemY - 30);
 
   // ── Labels ──
-  const midY = offsetY + Math.min(v(m.outseamLength) / 2, PRINTABLE_HEIGHT * 0.45);
+  const midY = adjOffsetY + Math.min(g.panelHeight / 2, PRINTABLE_HEIGHT * 0.45);
   doc.setFontSize(12);
   doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.front, lang), centerX, midY - 5, { align: 'center' });
+  doc.text(tr(pdfT.front, lang), g.centerX, midY - 5, { align: 'center' });
   doc.setFontSize(7);
   doc.setTextColor(80, 80, 80);
-  doc.text(tr(pdfT.noSeamAllowance, lang), centerX, midY, { align: 'center' });
-  doc.setFontSize(8);
-  doc.setTextColor(0, 0, 0);
-  doc.text(tr(pdfT.cut2, lang), centerX, midY + 8, { align: 'center' });
-
-  doc.setFontSize(7);
-  doc.setTextColor(80, 80, 80);
-  doc.text(`${tr(pdfT.outseam, lang)} = ${formatMeasurement(m.outseamLength, unit)}`, O - 8, offsetY + v(m.outseamLength) / 2, { angle: 90 });
+  doc.text(tr(pdfT.noSeamAllowance, lang), g.centerX, midY, { align: 'center' });
+  if (!isA0) {
+    doc.setFontSize(8);
+    doc.setTextColor(0, 0, 0);
+    doc.text(tr(pdfT.cut2, lang), g.centerX, midY + 8, { align: 'center' });
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1292,7 +1157,9 @@ export async function generateTiledPDF(
   const dimensions = isSleeve
     ? calculateSleeveDimensions(slm)
     : isBodice
-      ? calculateBodiceDimensions(bm)
+      ? patternType === 'bodice-dartless'
+        ? calculateDartlessBodiceDimensions(bm, category)
+        : calculateBodiceDimensions(bm)
       : isPants
         ? calculatePantsDimensions(pm, category)
         : calculateSkirtDimensions(sm);
@@ -1303,14 +1170,27 @@ export async function generateTiledPDF(
   const printableW = fmtW - MARGIN * 2;
   const printableH = fmtH - MARGIN * 2;
 
-  const tiles = calculateTiles(dimensions, printableW, printableH);
+  const panels: ('front' | 'back')[] = isSleeve ? ['front'] : ['front', 'back'];
+
+  // Front and back share one tile grid, placed side by side, instead of each getting its
+  // own full page set — halves the sheet count for two-panel patterns since the empty
+  // margin at the end of one panel's columns is filled by the start of the other's.
+  const panelWidthsCm = isSleeve
+    ? { front: dimensions.widthCm, back: 0 }
+    : getPanelWidthsCm(patternType, dimensions, measurements, category);
+  const panelGapCm = isSleeve ? 0 : PANEL_GAP_CM;
+  const combinedDimensions: PatternDimensions = {
+    widthCm: panelWidthsCm.front + panelGapCm + panelWidthsCm.back,
+    heightCm: dimensions.heightCm,
+  };
+
+  const tiles = calculateTiles(combinedDimensions, printableW, printableH);
   const isA0 = format === 'a0';
 
   // Cover page always A4; tile pages use the target format
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 297] });
 
   const patternMarginMm = 20;
-  const panels: ('front' | 'back')[] = isSleeve ? ['front'] : ['front', 'back'];
 
   const logoBase64 = await loadLogoBase64();
 
@@ -1378,8 +1258,10 @@ export async function generateTiledPDF(
   // 4. Two columns
   const colY = 88;
   const leftColX = MARGIN;
-  const leftColW = 104;
-  const rightColX = MARGIN + leftColW + 11;
+  // Narrower when the test square sits on this page (A4/letter), so instructions text
+  // never runs under it; the right column (page-layout diagram) keeps its own fixed slot.
+  const leftColW = format === 'a0' ? 104 : 85;
+  const rightColX = 125;
   const rightColW = 75;
 
   // Left column — measurements
@@ -1435,7 +1317,7 @@ export async function generateTiledPDF(
   measY += 2;
   doc.setFontSize(9);
   color(GRAY88);
-  doc.text(`${tr(pdfT.totalPages, lang)}: ${tiles.totalPages * panels.length}`, leftColX, measY);
+  doc.text(`${tr(pdfT.totalPages, lang)}: ${tiles.totalPages + 1}`, leftColX, measY);
   measY += 10;
 
   stroke(OLIVE);
@@ -1454,9 +1336,11 @@ export async function generateTiledPDF(
   doc.setFont(bodyFont, 'normal');
   doc.setFontSize(9);
   doc.setTextColor(40, 40, 40);
+  const testSquareLabel = testSquareSizeLabel(format);
   for (const step of tr(pdfT.instructions, lang)) {
     if (!step) { measY += 3; continue; }
-    const stepLines = doc.splitTextToSize(step, leftColW - 2) as string[];
+    const resolvedStep = step.replace(/\{\{SIZE\}\}/g, testSquareLabel);
+    const stepLines = doc.splitTextToSize(resolvedStep, leftColW - 2) as string[];
     for (const line of stepLines) {
       if (measY < 267) doc.text(line, leftColX, measY);
       measY += 5.5;
@@ -1472,61 +1356,70 @@ export async function generateTiledPDF(
   doc.setLineWidth(0.5);
   doc.line(rightColX, colY + 3, rightColX + rightColW, colY + 3);
 
-  const panelGapDiag = 8;
-  const tileWDiag = Math.max(6, Math.min(18,
-    Math.floor((rightColW - (panels.length - 1) * panelGapDiag) / (panels.length * tiles.cols))
-  ));
+  // Front and back are drawn on the same shared page grid (see panelWidthsCm above),
+  // so the diagram mirrors that with one grid and two overlaid pattern outlines.
+  const tileWDiag = Math.max(6, Math.min(18, Math.floor(rightColW / tiles.cols)));
   const tileHDiag = Math.round(tileWDiag * printableH / printableW);
   const diagScaleDiag = tileWDiag / printableW;
-  const diagStartY = colY + 10;
+  const diagramX = rightColX;
+  const diagramY = colY + 10;
 
-  panels.forEach((diagPanel, panelIndex) => {
-    const panelDiagramX = rightColX + panelIndex * (tiles.cols * tileWDiag + panelGapDiag);
-    const panelDiagramY = diagStartY;
-
-    for (let row = 0; row < tiles.rows; row++) {
-      for (let col = 0; col < tiles.cols; col++) {
-        const tileX = panelDiagramX + col * tileWDiag;
-        const tileY = panelDiagramY + row * tileHDiag;
-        const pageNumber = panelIndex * tiles.totalPages + row * tiles.cols + col + 2;
-        doc.setFillColor(245, 245, 245);
-        doc.setDrawColor(160, 160, 160);
-        doc.setLineWidth(0.3);
-        doc.rect(tileX, tileY, tileWDiag, tileHDiag, 'FD');
-        doc.setFontSize(6);
-        doc.setTextColor(100, 100, 100);
-        doc.text(String(pageNumber), tileX + tileWDiag / 2, tileY + tileHDiag / 2 + 2, { align: 'center' });
-      }
+  for (let row = 0; row < tiles.rows; row++) {
+    for (let col = 0; col < tiles.cols; col++) {
+      const tileX = diagramX + col * tileWDiag;
+      const tileY = diagramY + row * tileHDiag;
+      const pageNumber = row * tiles.cols + col + 1;
+      doc.setFillColor(245, 245, 245);
+      doc.setDrawColor(160, 160, 160);
+      doc.setLineWidth(0.3);
+      doc.rect(tileX, tileY, tileWDiag, tileHDiag, 'FD');
+      doc.setFontSize(6);
+      doc.setTextColor(100, 100, 100);
+      doc.text(String(pageNumber), tileX + tileWDiag / 2, tileY + tileHDiag / 2 + 2, { align: 'center' });
     }
+  }
 
-    const patternStartX = panelDiagramX + patternMarginMm * diagScaleDiag;
-    const patternStartY = panelDiagramY + patternMarginMm * diagScaleDiag;
+  const patternStartY = diagramY + patternMarginMm * diagScaleDiag;
+  const frontStartX = diagramX + patternMarginMm * diagScaleDiag;
+  const backStartX = diagramX + (patternMarginMm + panelWidthsCm.front * 10 + panelGapCm * 10) * diagScaleDiag;
+
+  panels.forEach((diagPanel) => {
+    const patternStartX = diagPanel === 'front' ? frontStartX : backStartX;
 
     if (isSleeve) {
       drawDiagramSleeve(doc, slm, patternStartX, patternStartY, diagScaleDiag, diagScaleDiag);
     } else if (isBodice) {
       if (patternType === 'bodice-dartless') {
         drawDiagramDartlessBodice(doc, bm, category, patternStartX, patternStartY, diagPanel, diagScaleDiag, diagScaleDiag);
+      } else if (patternType === 'bodice-with-darts') {
+        drawDiagramBodiceDarts(doc, bm, category, patternStartX, patternStartY, diagPanel, diagScaleDiag);
       } else {
         drawDiagramBodice(doc, bm, patternStartX, patternStartY, diagPanel, diagScaleDiag, diagScaleDiag);
       }
-    } else if (!isPants) {
+    } else if (isPants) {
+      drawDiagramPants(doc, pm, patternStartX, patternStartY, diagPanel, diagScaleDiag, category, pantsHasDarts);
+    } else {
       drawDiagramSkirt(doc, sm, patternStartX, patternStartY, diagPanel, diagScaleDiag, diagScaleDiag, category);
     }
-
-    doc.setFontSize(7);
-    doc.setTextColor(50, 50, 50);
-    const panelLabel = (isSleeve
-      ? tr(pdfT.sleeve, lang)
-      : diagPanel === 'front' ? tr(pdfT.front, lang) : tr(pdfT.back, lang)
-    ).toUpperCase();
-    doc.text(
-      panelLabel,
-      panelDiagramX + (tiles.cols * tileWDiag) / 2,
-      panelDiagramY + tiles.rows * tileHDiag + 5,
-      { align: 'center' }
-    );
   });
+
+  doc.setFontSize(7);
+  doc.setTextColor(50, 50, 50);
+  const diagramLabel = isSleeve
+    ? tr(pdfT.sleeve, lang).toUpperCase()
+    : `${tr(pdfT.front, lang)} + ${tr(pdfT.back, lang)}`.toUpperCase();
+  doc.text(
+    diagramLabel,
+    diagramX + (tiles.cols * tileWDiag) / 2,
+    diagramY + tiles.rows * tileHDiag + 5,
+    { align: 'center' }
+  );
+
+  // Test square — right of the assembly instructions, bottom-aligned with them
+  if (format !== 'a0') {
+    const testSquareSize = format === 'letter' ? 4 * 25.4 : 100;
+    drawTestSquare(doc, format, lang, 210 - MARGIN - testSquareSize, 267 - testSquareSize);
+  }
 
   // 5. Footer
   stroke(OLIVE);
@@ -1544,71 +1437,93 @@ export async function generateTiledPDF(
   // ── End cover page ────────────────────────────────────────────────────────────
 
   // ── PATTERN TILE PAGES ────────────────────────────────────────────────────────
+  // Page 1 = cover, tile pages start at 2. Front and back are drawn on every page from
+  // the one shared grid computed above — each piece's geometry is clipped to the current
+  // page's printable rect below, so only whichever panel(s) actually fall on this page show up.
+  const totalTilePages = tiles.totalPages;
   let pageNum = 0;
 
-  for (const panel of panels) {
-    for (let row = 0; row < tiles.rows; row++) {
-      for (let col = 0; col < tiles.cols; col++) {
-        doc.addPage([fmtW, fmtH]);
-        pageNum++;
+  // Which page column contains the back panel's own local origin — lets drawSkirtPatternPiece
+  // / drawBodicePatternPiece / drawDartlessBodicePiece know when they're on the back panel's
+  // *own* first tile (for the front/back name label), even though that's rarely page column 0.
+  const backOriginXMm = patternMarginMm + panelWidthsCm.front * 10 + panelGapCm * 10;
+  const backStartCol = Math.floor(backOriginXMm / printableW);
 
-        const viewOffsetX = col * printableW;
-        const viewOffsetY = row * printableH;
+  for (let row = 0; row < tiles.rows; row++) {
+    for (let col = 0; col < tiles.cols; col++) {
+      doc.addPage([fmtW, fmtH]);
+      pageNum++;
 
-        const totalTilePages = tiles.totalPages * panels.length;
-        const showAlignmentMarks = !isA0 || totalTilePages > 1;
-        if (showAlignmentMarks) {
-          drawAlignmentMarks(doc, col, row, tiles.cols, tiles.rows, fmtW, fmtH);
-        }
-        drawPageInfo(doc, pageNum, totalTilePages, col, row, lang, fmtW, fmtH);
+      const viewOffsetX = col * printableW;
+      const viewOffsetY = row * printableH;
 
-        if (pageNum === 1) draw1cmTestSquare(doc, unit, lang);
-
-        // A0 traceur footer
-        if (isA0) {
-          doc.setFont(bodyFont, 'normal');
-          doc.setFontSize(7);
-          doc.setTextColor(120, 120, 120);
-          const traceurFooter = s(
-            'Impression traceur A0 recommandée — 100% sans mise à l\'échelle',
-            'A0 plotter printing recommended — 100% no scaling'
-          );
-          doc.text(traceurFooter, fmtW / 2, fmtH - 5, { align: 'center' });
-        }
-
-        doc.saveGraphicsState();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const pdfInt = (doc as any).internal;
-        const k: number = pdfInt.scaleFactor;
-        const pH: number = pdfInt.pageSize.getHeight();
-        pdfInt.write(
-          `${(MARGIN * k).toFixed(3)} ${((pH - MARGIN - printableH) * k).toFixed(3)} ` +
-          `${(printableW * k).toFixed(3)} ${(printableH * k).toFixed(3)} re W n`
-        );
-
-        const patternX = patternMarginMm - viewOffsetX + MARGIN;
-        const patternY = patternMarginMm - viewOffsetY + MARGIN;
-
-        if (isSleeve) {
-          drawSleevePatternPiece(doc, slm, patternX, patternY, unit, lang);
-        } else if (isBodice) {
-          if (patternType === 'bodice-dartless') {
-            drawDartlessBodicePiece(doc, bm, category, patternX, patternY, panel, unit, lang, col, row);
-          } else {
-            drawBodicePatternPiece(doc, bm, patternX, patternY, panel, unit, lang, col, row);
-          }
-        } else if (isPants) {
-          if (panel === 'back') {
-            drawPantsBackPanel(doc, pm, patternX, patternY, category, pantsHasDarts, unit, lang);
-          } else {
-            drawPantsFrontPanel(doc, pm, patternX, patternY, category, pantsHasDarts, unit, lang);
-          }
-        } else {
-          drawSkirtPatternPiece(doc, sm, patternX, patternY, panel, unit, lang, col, row, category);
-        }
-
-        doc.restoreGraphicsState();
+      const showAlignmentMarks = !isA0 || totalTilePages > 1;
+      if (showAlignmentMarks) {
+        drawAlignmentMarks(doc, col, row, tiles.cols, tiles.rows, fmtW, fmtH);
       }
+
+      // Trim/cut line, 1 cm from the page edge (A4/letter only)
+      if (!isA0) {
+        doc.setDrawColor(150, 150, 150);
+        doc.setLineWidth(0.2);
+        doc.rect(MARGIN, MARGIN, fmtW - MARGIN * 2, fmtH - MARGIN * 2);
+      }
+
+      drawPageInfo(doc, pageNum, fmtW, fmtH);
+
+      // A4/letter: test square lives on the cover page instead (next to the instructions).
+      if (pageNum === 1 && format === 'a0') {
+        drawTestSquare(doc, format, lang, fmtW - MARGIN - 5 - 100, MARGIN + 5);
+      }
+
+      // A0 traceur footer
+      if (isA0) {
+        doc.setFont(bodyFont, 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(120, 120, 120);
+        const traceurFooter = s(
+          'Impression traceur A0 recommandée — 100% sans mise à l\'échelle',
+          'A0 plotter printing recommended — 100% no scaling'
+        );
+        doc.text(traceurFooter, fmtW / 2, fmtH - 5, { align: 'center' });
+      }
+
+      doc.saveGraphicsState();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pdfInt = (doc as any).internal;
+      const k: number = pdfInt.scaleFactor;
+      const pH: number = pdfInt.pageSize.getHeight();
+      pdfInt.write(
+        `${(MARGIN * k).toFixed(3)} ${((pH - MARGIN - printableH) * k).toFixed(3)} ` +
+        `${(printableW * k).toFixed(3)} ${(printableH * k).toFixed(3)} re W n`
+      );
+
+      const patternXFront = patternMarginMm - viewOffsetX + MARGIN;
+      const patternXBack = patternMarginMm + panelWidthsCm.front * 10 + panelGapCm * 10 - viewOffsetX + MARGIN;
+      const patternY = patternMarginMm - viewOffsetY + MARGIN;
+
+      if (isSleeve) {
+        drawSleevePatternPiece(doc, slm, patternXFront, patternY, unit, lang);
+      } else if (isBodice) {
+        if (patternType === 'bodice-dartless') {
+          drawDartlessBodicePiece(doc, bm, category, patternXFront, patternY, 'front', unit, lang, col, row);
+          drawDartlessBodicePiece(doc, bm, category, patternXBack, patternY, 'back', unit, lang, col - backStartCol, row);
+        } else if (patternType === 'bodice-with-darts') {
+          drawBodiceDartsPatternPiece(doc, bm, category, patternXFront, patternY, 'front', unit, lang, col, row);
+          drawBodiceDartsPatternPiece(doc, bm, category, patternXBack, patternY, 'back', unit, lang, col - backStartCol, row);
+        } else {
+          drawBodicePatternPiece(doc, bm, patternXFront, patternY, 'front', unit, lang, col, row);
+          drawBodicePatternPiece(doc, bm, patternXBack, patternY, 'back', unit, lang, col - backStartCol, row);
+        }
+      } else if (isPants) {
+        drawPantsFrontPanel(doc, pm, patternXFront, patternY, category, pantsHasDarts, unit, lang, isA0);
+        drawPantsBackPanel(doc, pm, patternXBack, patternY, category, pantsHasDarts, unit, lang, isA0);
+      } else {
+        drawSkirtPatternPiece(doc, sm, patternXFront, patternY, 'front', unit, lang, col, row, category);
+        drawSkirtPatternPiece(doc, sm, patternXBack, patternY, 'back', unit, lang, col - backStartCol, row, category);
+      }
+
+      doc.restoreGraphicsState();
     }
   }
 
@@ -1641,7 +1556,9 @@ export async function generateProjectionPDF(
   const dimensions = isSleeve
     ? calculateSleeveDimensions(slm)
     : isBodice
-      ? calculateBodiceDimensions(bm)
+      ? patternType === 'bodice-dartless'
+        ? calculateDartlessBodiceDimensions(bm, category)
+        : calculateBodiceDimensions(bm)
       : isPants
         ? calculatePantsDimensions(pm, category)
         : calculateSkirtDimensions(sm);
@@ -1651,11 +1568,24 @@ export async function generateProjectionPDF(
   const panels: ('front' | 'back')[] = isSleeve ? ['front'] : ['front', 'back'];
   const gap = 30;
 
-  const totalPatternW = panels.length === 1 ? pieceW : pieceW * 2 + gap;
+  // Front and back can have noticeably different widths (e.g. dartless bodice, where the
+  // shoulder projection differs per panel) — position each panel by its own real width
+  // instead of the shared worst-case estimate, so the gap between pieces stays consistent.
+  const dartlessPanelWidthsMm = patternType === 'bodice-dartless'
+    ? (() => {
+        const w = calculateDartlessBodicePanelWidths(bm, category);
+        return { front: (w.front + 3) * 10, back: (w.back + 3) * 10 };
+      })()
+    : null;
+
+  const totalPatternW = dartlessPanelWidthsMm
+    ? dartlessPanelWidthsMm.front + gap + dartlessPanelWidthsMm.back
+    : panels.length === 1 ? pieceW : pieceW * 2 + gap;
   const projMargin = 40;
+  const projMarginRight = projMargin + 50; // extra breathing room past the last piece
   const projHeaderH = 20;
   const projFooterH = 15;
-  const projW = totalPatternW + projMargin * 2;
+  const projW = totalPatternW + projMargin + projMarginRight;
   const projH = pieceH + projMargin * 2 + projHeaderH + projFooterH;
 
   // ── COVER PAGE (A4 format, première page) ─────────────────────────────────────
@@ -1818,11 +1748,11 @@ export async function generateProjectionPDF(
     measY += 5.5;
   }
 
-  // Right column — single projection page diagram
+  // Right column — single projection page diagram ("Plan")
   doc.setFont(titleFont, 'bold');
   doc.setFontSize(12);
   color(OLIVE);
-  doc.text(tr(pdfT.pageLayout, lang), rightColX, colY);
+  doc.text(s('Plan', 'Layout'), rightColX, colY);
   stroke(OLIVE);
   doc.setLineWidth(0.5);
   doc.line(rightColX, colY + 3, rightColX + rightColW, colY + 3);
@@ -1831,13 +1761,38 @@ export async function generateProjectionPDF(
   const diagBoxH = Math.min(80, diagBoxW * projH / projW);
   const diagBoxX = rightColX + 2;
   const diagBoxY = colY + 10;
-  doc.setFillColor(245, 245, 245);
+  const diagScale = diagBoxW / projW;
+  const diagStartY = projHeaderH + projMargin;
+
+  doc.setFillColor(250, 250, 250);
   doc.setDrawColor(160, 160, 160);
   doc.setLineWidth(0.3);
   doc.rect(diagBoxX, diagBoxY, diagBoxW, diagBoxH, 'FD');
-  doc.setFontSize(6);
-  doc.setTextColor(100, 100, 100);
-  doc.text('2', diagBoxX + diagBoxW / 2, diagBoxY + diagBoxH / 2 + 2, { align: 'center' });
+
+  panels.forEach((panel, panelIndex) => {
+    const panelStartX = dartlessPanelWidthsMm
+      ? projMargin + (panelIndex === 0 ? 0 : dartlessPanelWidthsMm.front + gap)
+      : projMargin + panelIndex * (pieceW + gap);
+    const pieceDiagX = diagBoxX + panelStartX * diagScale;
+    const pieceDiagY = diagBoxY + diagStartY * diagScale;
+
+    if (isSleeve) {
+      drawDiagramSleeve(doc, slm, pieceDiagX, pieceDiagY, diagScale, diagScale);
+    } else if (isBodice) {
+      if (patternType === 'bodice-dartless') {
+        drawDiagramDartlessBodice(doc, bm, category, pieceDiagX, pieceDiagY, panel, diagScale, diagScale);
+      } else if (patternType === 'bodice-with-darts') {
+        drawDiagramBodiceDarts(doc, bm, category, pieceDiagX, pieceDiagY, panel, diagScale);
+      } else {
+        drawDiagramBodice(doc, bm, pieceDiagX, pieceDiagY, panel, diagScale, diagScale);
+      }
+    } else if (isPants) {
+      drawDiagramPants(doc, pm, pieceDiagX, pieceDiagY, panel, diagScale, category, pantsHasDarts);
+    } else {
+      drawDiagramSkirt(doc, sm, pieceDiagX, pieceDiagY, panel, diagScale, diagScale, category);
+    }
+  });
+
   doc.setFontSize(7);
   doc.setTextColor(50, 50, 50);
   doc.text(s('PROJECTION', 'PROJECTION'), diagBoxX + diagBoxW / 2, diagBoxY + diagBoxH + 5, { align: 'center' });
@@ -1880,12 +1835,16 @@ export async function generateProjectionPDF(
   // Pattern pieces side by side
   const startY = projHeaderH + projMargin;
   panels.forEach((panel, panelIndex) => {
-    const startX = projMargin + panelIndex * (pieceW + gap);
+    const startX = dartlessPanelWidthsMm
+      ? projMargin + (panelIndex === 0 ? 0 : dartlessPanelWidthsMm.front + gap)
+      : projMargin + panelIndex * (pieceW + gap);
     if (isSleeve) {
       drawSleevePatternPiece(doc, slm, startX, startY, unit, lang);
     } else if (isBodice) {
       if (patternType === 'bodice-dartless') {
         drawDartlessBodicePiece(doc, bm, category, startX, startY, panel, unit, lang, 0, 0);
+      } else if (patternType === 'bodice-with-darts') {
+        drawBodiceDartsPatternPiece(doc, bm, category, startX, startY, panel, unit, lang, 0, 0);
       } else {
         drawBodicePatternPiece(doc, bm, startX, startY, panel, unit, lang, 0, 0);
       }
@@ -1914,6 +1873,21 @@ export async function generateProjectionPDF(
   doc.setFontSize(7);
   doc.setTextColor(0, 0, 0);
   doc.text('10 cm', rulerX + 50, rulerY + 4, { align: 'center' });
+
+  // 4 inch ruler (stacked below the cm ruler)
+  const inchMm = 25.4;
+  const rulerInchY = rulerY + 9;
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+  doc.line(rulerX, rulerInchY, rulerX + 4 * inchMm, rulerInchY);
+  for (let i = 0; i <= 4; i++) {
+    const tickX = rulerX + i * inchMm;
+    const tickH = i % 2 === 0 ? 3 : 1.5;
+    doc.line(tickX, rulerInchY - tickH, tickX, rulerInchY);
+  }
+  doc.setFontSize(7);
+  doc.setTextColor(0, 0, 0);
+  doc.text('4 in', rulerX + 2 * inchMm, rulerInchY + 4, { align: 'center' });
 
   // Footer
   doc.setFont(bodyFont, 'normal');

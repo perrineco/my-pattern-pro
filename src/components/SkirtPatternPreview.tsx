@@ -188,6 +188,19 @@ export function SkirtPatternPreview({ measurements, category }: SkirtPatternPrev
         <g transform={`translate(${backMirrorX}, 0) scale(-1, 1)`}>
           <SkirtBackPanel {...backProps} offsetX={backOffsetX} mirrored />
         </g>
+
+        {/* Reference lines — drawn last to appear above both panels */}
+        {showMeasurements && (() => {
+          const hipY          = offsetY + waistToHipScaled;
+          const col           = "hsl(var(--muted-foreground))";
+          const backRightEdge = backOffsetX + patternWidthBack;
+          const lineX2        = backRightEdge + 50;
+          const labelX        = backRightEdge + 55;
+          return (<>
+            <line x1={frontOffsetX / 2} y1={hipY} x2={lineX2} y2={hipY} stroke={col} strokeWidth="1" strokeDasharray="3,3" />
+            <text x={labelX} y={hipY + 4} textAnchor="start" className="fill-muted-foreground text-[9px]">{t('piece.hip')}</text>
+          </>);
+        })()}
       </svg>
 
       {/* Legend */}

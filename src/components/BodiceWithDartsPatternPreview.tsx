@@ -3,6 +3,9 @@ import { BodiceMeasurements, Category } from "@/types/sloper";
 import { BodiceDartsPanel } from "./bodice-darts/BodiceDartsPanel";
 import { BodiceDartsLegend } from "./bodice-darts/BodiceDartsLegend";
 import { ZoomablePatternWrapper } from "./ZoomablePatternWrapper";
+import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BodiceWithDartsPatternPreviewProps {
   measurements: BodiceMeasurements;
@@ -12,6 +15,8 @@ interface BodiceWithDartsPatternPreviewProps {
 export function BodiceWithDartsPatternPreview({ measurements, category }: BodiceWithDartsPatternPreviewProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
+  const [showMeasurements, setShowMeasurements] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -26,17 +31,17 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
     return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
-  const { bust, backLength, backWidth, ease } = measurements;
+  const { bust, ease } = measurements;
 
   // Calculate pattern dimensions
   const bustQuarter = bust / 4;
   const easeValue = ease ?? 2;
   const patternWidth = bustQuarter + easeValue + 5;
-  const patternHeight = backLength + 5;
+  const patternHeight = measurements.backLength + 5;
 
   // Calculate scale to fit both panels side by side
   const padding = 60;
-  const gap = 20;
+  const gap = 100; // extra room for the side-seam / bust / back width measurement labels
   const availableWidth = dimensions.width - padding * 2 - gap;
   const availableHeight = dimensions.height - padding * 2;
   const scale = Math.min(availableWidth / (patternWidth * 2), availableHeight / patternHeight, 8);
@@ -55,6 +60,27 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
 
   return (
     <ZoomablePatternWrapper minHeight="400px">
+      {/* Work-in-progress notice */}
+      <div className="absolute top-2 left-2 z-10 text-xs font-semibold text-destructive bg-card/90 backdrop-blur-sm px-2 py-1 rounded-md">
+        {t('misc.inDevelopment')}
+      </div>
+
+      {/* Measurements toggle */}
+      <div className="absolute top-2 right-2 z-10">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 gap-1.5 text-xs bg-card/90 backdrop-blur-sm"
+          onClick={() => setShowMeasurements(prev => !prev)}
+        >
+          {showMeasurements ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+          {t('piece.showMeasures')}
+        </Button>
+      </div>
+
+      {/* Legend */}
+      <BodiceDartsLegend />
+
     <svg ref={svgRef} viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full min-h-[400px]">
       {/* Grid background */}
       <defs>
@@ -74,6 +100,7 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
         scale={scale}
         panel="front"
         category={category}
+        showMeasurements={showMeasurements}
       />
 
       {/* Back panel - mirrored */}
@@ -86,30 +113,9 @@ export function BodiceWithDartsPatternPreview({ measurements, category }: Bodice
           panel="back"
           category={category}
           mirrored
+          showMeasurements={showMeasurements}
         />
       </g>
-
-      {/* Measurement annotations */}
-      <g className="text-[10px]">
-        {/* Bust measurement */}
-        <text x={frontOffsetX + scaledWidth + 15} y={offsetY + scaledHeight * 0.5} className="fill-primary">
-          Bust/4: {(bust / 4).toFixed(1)}cm
-        </text>
-
-        {/* Back length */}
-        <text
-          x={frontOffsetX - 5}
-          y={offsetY + scaledHeight / 2}
-          textAnchor="end"
-          className="fill-muted-foreground"
-          transform={`rotate(-90 ${frontOffsetX - 5} ${offsetY + scaledHeight / 2})`}
-        >
-          {backLength}cm
-        </text>
-      </g>
-
-      {/* Legend */}
-      <BodiceDartsLegend x={dimensions.width - 135} y={dimensions.height - 70} />
     </svg>
     </ZoomablePatternWrapper>
   );

@@ -147,12 +147,10 @@ export function SkirtFrontPanel({
       )}
 
       {/* Labels */}
-      <text x={offsetX + patternWidth / 2} y={offsetY + patternHeight / 2} textAnchor="middle" className="fill-foreground font-serif text-sm">
+      <text x={offsetX + patternWidth / 2} y={grainY1 - 22} textAnchor="middle" className="fill-foreground font-serif text-sm">
         {t('piece.front')}
       </text>
-      <text x={offsetX + patternWidth / 2} y={offsetY + patternHeight / 2 + 18} textAnchor="middle" className="fill-muted-foreground text-xs font-sans">
-        {t('piece.cutOnFold')}
-      </text>
+      
     </g>
   );
 }
