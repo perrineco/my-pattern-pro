@@ -329,6 +329,16 @@ const translations: Record<string, Record<Language, string>> = {
   'misc.upgradePrompt': { en: 'Upgrade to access dress, pants, and sleeve patterns.', fr: 'Passez à un abonnement supérieur pour accéder aux patrons de robe, pantalon et manche.' },
   'misc.language': { en: 'Language', fr: 'Langue' },
 
+  // Newsletter signup
+  'newsletter.title': { en: 'Coming soon', fr: 'En cours de finalisation' },
+  'newsletter.desc': { en: "We're putting the finishing touches on Petit Citron Studio. Sign up to get the news and be first to know when it's ready.", fr: 'Petit Citron Studio est en cours de finalisation. Inscrivez-vous pour recevoir des nouvelles et être averti·e dès que ce sera prêt.' },
+  'newsletter.placeholder': { en: 'Your email address', fr: 'Votre adresse email' },
+  'newsletter.cta': { en: 'Sign up', fr: "S'inscrire" },
+  'newsletter.success': { en: "Thanks! We'll keep you posted.", fr: 'Merci ! Nous vous tiendrons informé·e.' },
+  'newsletter.alreadySubscribed': { en: "You're already signed up!", fr: 'Vous êtes déjà inscrit·e !' },
+  'newsletter.invalidEmail': { en: 'Please enter a valid email address.', fr: 'Veuillez entrer une adresse email valide.' },
+  'newsletter.error': { en: 'Something went wrong. Please try again.', fr: "Une erreur est survenue. Veuillez réessayer." },
+
   // Welcome page
   'welcome.badge': { en: 'Pattern drafting made personal', fr: 'Le patronage sur mesure' },
   'welcome.heroTitle1': { en: 'Sewing patterns built', fr: 'Des patrons de couture' },

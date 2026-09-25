@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Scissors, Ruler, Download, Users, Star, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { LegalFooter } from '@/components/LegalFooter';
+import { NewsletterSignup } from '@/components/NewsletterSignup';
 
 export default function Welcome() {
   const navigate = useNavigate();
@@ -81,6 +82,7 @@ export default function Welcome() {
             {t('welcome.heroTitle1')}{' '}
             <span className="text-primary">{t('welcome.heroTitle2')}</span>
           </h2>
+          <NewsletterSignup />
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-10 leading-relaxed">
             {t('welcome.heroDesc')}
           </p>
