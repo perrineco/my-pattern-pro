@@ -1,0 +1,2 @@
+echo "Running Studio Petit Citron regression suite before commit..."
+npm test
