@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Scissors, User, LogOut, CreditCard, MessageSquare, Wrench, Settings } from 'lucide-react';
+import { CurrencySwitcher } from '@/components/CurrencySwitcher';
 
 
 
@@ -40,6 +41,7 @@ export function Header() {
           </button>
 
           <div className="flex items-center gap-2 shrink-0">
+            <CurrencySwitcher />
             {!loading && (
               <>
                 {user ? (

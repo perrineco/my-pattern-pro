@@ -26,6 +26,7 @@ import { PantsPatternPreview } from '@/components/PantsPatternPreview';
 import { PantsWithDartsPatternPreview } from '@/components/PantsWithDartsPatternPreview';
 import { SleevePatternPreview } from '@/components/SleevePatternPreview';
 import { ProfileManager } from '@/components/ProfileManager';
+import { PatternErrorBoundary } from '@/components/PatternErrorBoundary';
 import { ProfileManagerSimple } from '@/components/ProfileManagerSimple';
 import { UnifiedMeasurementForm, defaultUnifiedMeasurements } from '@/components/UnifiedMeasurementForm';
 import { UnitToggle, MeasurementUnit } from '@/components/UnitToggle';
@@ -42,6 +43,14 @@ import { getPatternsLimit, STRIPE_CONFIG } from '@/lib/stripe-config';
 import { generateTiledPDF, generateProjectionPDF } from '@/lib/pdf-export';
 
 const DRAFT_KEY = (cat: Category) => `pcs_draft_${cat}`;
+
+// Admin accounts can early-preview "coming soon" patterns (e.g. "Corsage avec pinces",
+// whose front bust dart isn't drafted correctly yet — see BodiceDartsPanelPath.tsx) that
+// are otherwise locked for everyone else. Set via VITE_ADMIN_EMAILS (.env, gitignored,
+// comma-separated) rather than hardcoded, so it isn't committed to the repo — must also
+// be set in Netlify's env vars to take effect in prod.
+const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS as string | undefined)
+  ?.split(',').map(e => e.trim().toLowerCase()).filter(Boolean) ?? [];
 
 interface DraftMeasurements {
   skirt: SkirtMeasurements;
@@ -69,34 +78,31 @@ const Index = () => {
   const { user, session, subscription, purchasedPatterns, loading } = useAuth();
   const { t, language } = useLanguage();
   const { unit: measurementUnit, setUnit: handleUnitChange } = useUnit();
-  const { symbol: currencySymbol, currency } = useCurrency();
-  const singlePrice = STRIPE_CONFIG.singlePurchase.price;
-  const priceFormatted = currency === 'USD' || currency === 'CAD'
-    ? `${currencySymbol}${singlePrice.toFixed(2)}`
-    : `${singlePrice.toFixed(2)} ${currencySymbol}`;
+  const { format } = useCurrency();
+  const priceFormatted = format(STRIPE_CONFIG.singlePurchase.price);
 
   const [category, setCategory] = useState<Category>('women');
   const [patternType, setPatternType] = useState<PatternType>('skirt');
   const [skirtMeasurements, setSkirtMeasurements] = useState<SkirtMeasurements>(() => {
-    const d = loadDraft('women'); return d?.skirt ?? defaultSkirtMeasurements.women;
+    const d = loadDraft('women'); return { ...defaultSkirtMeasurements.women, ...d?.skirt };
   });
   const [bodiceMeasurements, setBodiceMeasurements] = useState<BodiceMeasurements>(() => {
-    const d = loadDraft('women'); return d?.bodice ?? defaultBodiceMeasurements.women;
+    const d = loadDraft('women'); return { ...defaultBodiceMeasurements.women, ...d?.bodice };
   });
   const [dartlessBodiceMeasurements, setDartlessBodiceMeasurements] = useState<BodiceMeasurements>(() => {
-    const d = loadDraft('women'); return d?.dartlessBodice ?? defaultDartlessBodiceMeasurements.women;
+    const d = loadDraft('women'); return { ...defaultDartlessBodiceMeasurements.women, ...d?.dartlessBodice };
   });
   const [knitBodiceMeasurements, setKnitBodiceMeasurements] = useState<BodiceMeasurements>(() => {
-    const d = loadDraft('women'); return d?.knitBodice ?? defaultKnitBodiceMeasurements.women;
+    const d = loadDraft('women'); return { ...defaultKnitBodiceMeasurements.women, ...d?.knitBodice };
   });
   const [bodiceDartsMeasurements, setBodiceDartsMeasurements] = useState<BodiceMeasurements>(() => {
-    const d = loadDraft('women'); return d?.bodiceDarts ?? defaultBodiceDartsMeasurements.women;
+    const d = loadDraft('women'); return { ...defaultBodiceDartsMeasurements.women, ...d?.bodiceDarts };
   });
   const [pantsMeasurements, setPantsMeasurements] = useState<PantsMeasurements>(() => {
-    const d = loadDraft('women'); return d?.pants ?? defaultPantsMeasurements.women;
+    const d = loadDraft('women'); return { ...defaultPantsMeasurements.women, ...d?.pants };
   });
   const [sleeveMeasurements, setSleeveMeasurements] = useState<SleeveMeasurements>(() => {
-    const d = loadDraft('women'); return d?.sleeve ?? defaultSleeveMeasurements.women;
+    const d = loadDraft('women'); return { ...defaultSleeveMeasurements.women, ...d?.sleeve };
   });
   const [bodicePanel, setBodicePanel] = useState<'front' | 'back'>('front');
   const [selectedProfileName, setSelectedProfileName] = useState<string | null>(null);
@@ -110,13 +116,13 @@ const Index = () => {
   const handleCategoryChange = (newCategory: Category) => {
     setCategory(newCategory);
     const d = loadDraft(newCategory);
-    setSkirtMeasurements(d?.skirt ?? defaultSkirtMeasurements[newCategory]);
-    setBodiceMeasurements(d?.bodice ?? defaultBodiceMeasurements[newCategory]);
-    setDartlessBodiceMeasurements(d?.dartlessBodice ?? defaultDartlessBodiceMeasurements[newCategory]);
-    setKnitBodiceMeasurements(d?.knitBodice ?? defaultKnitBodiceMeasurements[newCategory]);
-    setBodiceDartsMeasurements(d?.bodiceDarts ?? defaultBodiceDartsMeasurements[newCategory]);
-    setPantsMeasurements(d?.pants ?? defaultPantsMeasurements[newCategory]);
-    setSleeveMeasurements(d?.sleeve ?? defaultSleeveMeasurements[newCategory]);
+    setSkirtMeasurements({ ...defaultSkirtMeasurements[newCategory], ...d?.skirt });
+    setBodiceMeasurements({ ...defaultBodiceMeasurements[newCategory], ...d?.bodice });
+    setDartlessBodiceMeasurements({ ...defaultDartlessBodiceMeasurements[newCategory], ...d?.dartlessBodice });
+    setKnitBodiceMeasurements({ ...defaultKnitBodiceMeasurements[newCategory], ...d?.knitBodice });
+    setBodiceDartsMeasurements({ ...defaultBodiceDartsMeasurements[newCategory], ...d?.bodiceDarts });
+    setPantsMeasurements({ ...defaultPantsMeasurements[newCategory], ...d?.pants });
+    setSleeveMeasurements({ ...defaultSleeveMeasurements[newCategory], ...d?.sleeve });
     setUnifiedMeasurements(defaultUnifiedMeasurements[newCategory]);
     setSelectedProfileId(null);
   };
@@ -172,6 +178,8 @@ const Index = () => {
     return skirtMeasurements;
   };
 
+  const isAdmin = !!user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
+
   // Check if user can access the current pattern
   const canAccessPattern = (type: PatternType): boolean => {
     if (type === 'skirt') return true;
@@ -191,6 +199,28 @@ const Index = () => {
     setBodiceDartsMeasurements(toBodiceMeasurements(loadedMeasurements));
     setPantsMeasurements(toPantsMeasurements(loadedMeasurements));
     setSleeveMeasurements(toSleeveMeasurements(loadedMeasurements));
+  };
+
+  // ProfileManager (per-garment pattern screens) only ever hands back measurements
+  // shaped for the currently active patternType, not a full UnifiedMeasurements —
+  // route it to that one garment's own state instead of treating it as unified
+  // (which would wrongly cascade into every other garment via handleLoadProfile).
+  const handleLoadGarmentProfile = (loaded: Measurements) => {
+    if (isBodiceDartless) {
+      setDartlessBodiceMeasurements(loaded as BodiceMeasurements);
+    } else if (isBodiceWithDarts) {
+      setBodiceDartsMeasurements(loaded as BodiceMeasurements);
+    } else if (isBodiceKnit) {
+      setKnitBodiceMeasurements(loaded as BodiceMeasurements);
+    } else if (patternType === 'bodice') {
+      setBodiceMeasurements(loaded as BodiceMeasurements);
+    } else if (isPantsVariant || patternType === 'pants') {
+      setPantsMeasurements(loaded as PantsMeasurements);
+    } else if (patternType === 'sleeve') {
+      setSleeveMeasurements(loaded as SleeveMeasurements);
+    } else {
+      setSkirtMeasurements(loaded as SkirtMeasurements);
+    }
   };
 
   const handlePatternPurchase = async (type: PatternType) => {
@@ -217,6 +247,21 @@ const Index = () => {
   };
 
   const isPatternLocked = !canAccessPattern(patternType) && patternType !== 'skirt';
+
+  const garmentTitle = patternType === 'skirt' ? t('title.basicSkirt')
+    : patternType === 'bodice' ? t('title.basicBodice')
+    : patternType === 'bodice-dartless' ? t('title.dartlessBodice')
+    : patternType === 'bodice-with-darts' ? t('title.bodiceWithDarts')
+    : patternType === 'bodice-knit' ? t('title.knitBodice')
+    : patternType === 'pants-dartless' || patternType === 'pants' ? t('title.dartlessPants')
+    : patternType === 'pants-with-darts' ? t('title.pantsWithDarts')
+    : patternType === 'sleeve' ? t('title.basicSleeve')
+    : t('title.patternPreview');
+
+  // A plain "garment - name" separator sidesteps the English/French possessive grammar
+  // entirely (the previous version hardcoded the English "'s", producing garbage like
+  // "Bas's Jupe de base" in French) and reads the same way in both languages.
+  const patternTitle = selectedProfileName ? `${garmentTitle} - ${selectedProfileName}` : garmentTitle;
 
   const handleDownload = async (format: 'a4' | 'letter' | 'a0' | 'projection') => {
     try {
@@ -287,9 +332,10 @@ const Index = () => {
                 userId={user.id}
                 category={category}
                 currentMeasurements={unifiedMeasurements}
-                onLoadProfile={(m) => setUnifiedMeasurements(m)}
+                onLoadProfile={(m) => { setUnifiedMeasurements(m); handleLoadProfile(m); }}
                 selectedProfileId={selectedProfileId}
                 onSelectProfile={setSelectedProfileId}
+                onProfileSaved={() => handleLoadProfile(unifiedMeasurements)}
               />
             )}
 
@@ -319,11 +365,17 @@ const Index = () => {
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">
                   {t('label.garmentType')}
                 </label>
-                <PatternTypeNav selected={patternType} onSelect={handlePatternTypeChange} category={category} />
+                <PatternTypeNav
+                  selected={patternType}
+                  onSelect={handlePatternTypeChange}
+                  category={category}
+                  isAdmin={isAdmin}
+                />
               </div>
             </div>
 
             {/* Main content */}
+            <PatternErrorBoundary resetKey={patternType}>
             <div className="grid lg:grid-cols-[360px_1fr] gap-8">
               {/* Left panel - Measurements (order-2 on mobile so pattern shows first) */}
               <div className="space-y-6 order-2 lg:order-1">
@@ -335,7 +387,7 @@ const Index = () => {
                       category={category}
                       patternType={patternType}
                       currentMeasurements={getCurrentMeasurements() as Measurements}
-                      onLoadProfile={(m) => handleLoadProfile(m as UnifiedMeasurements)}
+                      onLoadProfile={handleLoadGarmentProfile}
                       onProfileNameChange={setSelectedProfileName}
                     />
                   </div>
@@ -529,16 +581,7 @@ const Index = () => {
                 <div className="p-4 border-b border-border flex items-center justify-between">
                   <div>
                     <h2 className="font-serif text-2xl font-bold text-foreground">
-                      {selectedProfileName ? `${selectedProfileName}'s ` : ''}
-                      {patternType === 'skirt' ? t('title.basicSkirt')
-                        : patternType === 'bodice' ? t('title.basicBodice')
-                        : patternType === 'bodice-dartless' ? t('title.dartlessBodice')
-                        : patternType === 'bodice-with-darts' ? t('title.bodiceWithDarts')
-                        : patternType === 'bodice-knit' ? t('title.knitBodice')
-                        : patternType === 'pants-dartless' || patternType === 'pants' ? t('title.dartlessPants')
-                        : patternType === 'pants-with-darts' ? t('title.pantsWithDarts')
-                        : patternType === 'sleeve' ? t('title.basicSleeve')
-                        : t('title.patternPreview')}
+                      {patternTitle}
                     </h2>
                     {!isPantsVariant && patternType !== 'pants' && (
                       <div className="flex items-center gap-2 mt-1">
@@ -623,6 +666,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
+            </PatternErrorBoundary>
 
             {/* Info section */}
             <div className="mt-12 grid md:grid-cols-3 gap-6">

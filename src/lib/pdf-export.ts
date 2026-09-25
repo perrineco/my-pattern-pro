@@ -52,6 +52,23 @@ const pdfT = {
       '7. Ce patron est un bloc de base sans marges de couture.',
     ],
   },
+  // Used instead of `instructions` whenever the pattern fits on a single sheet (common on
+  // A0) — the cutting/taping/alignment-mark steps only make sense when there's more than
+  // one page to assemble, and were confusing testers by showing up with nothing to tape.
+  instructionsSinglePage: {
+    en: [
+      '1. Print at 100% scale (no scaling/fit to page).',
+      '2. Verify that the test square measures exactly {{SIZE}} x {{SIZE}}.',
+      '3. Cut out the pattern piece along the solid black line.',
+      '4. This pattern is a basic block with no seam allowances.',
+    ],
+    fr: [
+      "1. Imprimez à 100% (sans mise à l'échelle).",
+      '2. Vérifiez que le carré test mesure exactement {{SIZE}} x {{SIZE}}.',
+      '3. Découpez le patron le long du trait plein noir.',
+      '4. Ce patron est un bloc de base sans marges de couture.',
+    ],
+  },
   patternLabel: { en: 'Pattern', fr: 'Patron' },
   basicBlock: { en: 'basic block', fr: 'patron de base' },
   dart: { en: 'dart', fr: 'pince' },
@@ -59,7 +76,7 @@ const pdfT = {
   inseamWarning: { en: '⚠ Front/back inseam mismatch', fr: '⚠ Entrejambe avant/dos différent' },
   patternTypes: {
     en: { skirt: 'Skirt', bodice: 'Bodice', 'bodice-dartless': 'Dartless Bodice', 'bodice-with-darts': 'Bodice with Darts', 'bodice-knit': 'Knit Bodice', dress: 'Dress', sleeve: 'Sleeve', pants: 'Pants', 'pants-dartless': 'Pants (dartless)', 'pants-with-darts': 'Pants (with darts)' },
-    fr: { skirt: 'Jupe', bodice: 'Corsage', 'bodice-dartless': 'Corsage sans pinces', 'bodice-with-darts': 'Corsage avec pinces', 'bodice-knit': 'Corsage jersey', dress: 'Robe', sleeve: 'Manche', pants: 'Pantalon', 'pants-dartless': 'Pantalon (sans pinces)', 'pants-with-darts': 'Pantalon (avec pinces)' },
+    fr: { skirt: 'Jupe', bodice: 'Corsage', 'bodice-dartless': 'Corsage sans pinces', 'bodice-with-darts': 'Corsage avec pinces', 'bodice-knit': 'Corsage maille', dress: 'Robe', sleeve: 'Manche', pants: 'Pantalon', 'pants-dartless': 'Pantalon (sans pinces)', 'pants-with-darts': 'Pantalon (avec pinces)' },
   },
   totalPages: { en: 'Total pages', fr: 'Total pages' },
   measurementsUsed: { en: 'Measurements used:', fr: 'Mesures utilisées :' },
@@ -189,7 +206,7 @@ function calculateSleeveDimensions(measurements: SleeveMeasurements): PatternDim
   return { widthCm, heightCm };
 }
 
-function calculateTiles(dimensions: PatternDimensions, printableW = PRINTABLE_WIDTH, printableH = PRINTABLE_HEIGHT): TileInfo {
+export function calculateTiles(dimensions: PatternDimensions, printableW = PRINTABLE_WIDTH, printableH = PRINTABLE_HEIGHT): TileInfo {
   const widthMm = dimensions.widthCm * 10;
   const heightMm = dimensions.heightCm * 10;
 
@@ -197,6 +214,38 @@ function calculateTiles(dimensions: PatternDimensions, printableW = PRINTABLE_WI
   const rows = Math.ceil(heightMm / printableH);
 
   return { cols, rows, totalPages: cols * rows };
+}
+
+export interface TileBounds {
+  col: number;
+  row: number;
+  xStart: number;
+  yStart: number;
+  xEnd: number;
+  yEnd: number;
+}
+
+// Single source of truth for where each tile page sits on the pattern's shared coordinate
+// space, in row-major order (matching the page numbering used when printing). Kept in pure
+// floating point end to end — no intermediate Math.round/floor — so adjacent tiles are always
+// exactly contiguous (tile[n].xEnd === tile[n+1].xStart) with no cumulative drift by the last
+// column/row of a grid, however oddly the pattern width divides into page-sized tiles.
+export function getTileGrid(dimensions: PatternDimensions, printableW = PRINTABLE_WIDTH, printableH = PRINTABLE_HEIGHT): TileBounds[] {
+  const tiles = calculateTiles(dimensions, printableW, printableH);
+  const grid: TileBounds[] = [];
+  for (let row = 0; row < tiles.rows; row++) {
+    for (let col = 0; col < tiles.cols; col++) {
+      grid.push({
+        col,
+        row,
+        xStart: col * printableW,
+        yStart: row * printableH,
+        xEnd: (col + 1) * printableW,
+        yEnd: (row + 1) * printableH,
+      });
+    }
+  }
+  return grid;
 }
 
 function drawAlignmentMarks(doc: jsPDF, pageCol: number, pageRow: number, totalCols: number, totalRows: number, pageW = A4_WIDTH, pageH = A4_HEIGHT) {
@@ -631,6 +680,21 @@ function drawTestSquare(doc: jsPDF, format: TiledFormat, lang: Language, x: numb
   doc.text(label, x + sizeMm / 2, y + sizeMm / 2, { align: 'center', baseline: 'middle' });
 }
 
+// Lets the user check their projector's focus/keystone before cutting: if the printed
+// square doesn't measure exactly sizeMm once projected, the projector setting has drifted.
+function drawCalibrationSquare(doc: jsPDF, lang: Language, x: number, y: number, sizeMm = 50) {
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.3);
+  doc.rect(x, y, sizeMm, sizeMm);
+  const sizeCm = sizeMm / 10;
+  doc.setFontSize(6.5);
+  doc.setTextColor(0, 0, 0);
+  const label = lang === 'fr'
+    ? `Calibrage ${sizeCm}×${sizeCm} cm`
+    : `Calibration ${sizeCm}×${sizeCm} cm`;
+  doc.text(doc.splitTextToSize(label, sizeMm - 4) as string[], x + sizeMm / 2, y + sizeMm / 2, { align: 'center', baseline: 'middle' });
+}
+
 function drawDiagramSkirt(
   doc: jsPDF,
   m: SkirtMeasurements,
@@ -830,13 +894,31 @@ function drawDiagramPants(
 
 // ─────────────────────────────── PANTS ───────────────────────────────────────
 
-function calculatePantsDimensions(m: PantsMeasurements, category: Category): PatternDimensions {
+// Real horizontal reach of a pants panel, from its own e1X anchor (the crotch-extension
+// point that drawPantsFrontPanel/drawPantsBackPanel treat as the piece's left edge — see
+// their `hipOriginX = offsetX - probe.e1X` positioning).
+//
+// hipSideX is usually the rightmost point, but the waist-side point (a1X/a2X/b1X, after
+// the front/back waist-dart reduction) can land further right than the hip curve once the
+// waist gets close to — or exceeds — the hip (a small waist-to-hip difference, common on
+// straighter/larger figures). Taking the max over every key x-coordinate the geometry
+// produces, instead of assuming hipSideX always wins, keeps the estimated width correct
+// at any body proportion instead of clipping that side of the piece in export.
+function pantsPanelRightExtentCm(g: {
+  a1X?: number; a2X?: number; b1X: number; hipSideX: number; e1X: number;
+  thighSideX: number; hemSideX: number;
+}): number {
+  const rightmostX = Math.max(g.a1X ?? g.a2X ?? -Infinity, g.b1X, g.hipSideX, g.thighSideX, g.hemSideX);
+  return rightmostX - g.e1X;
+}
+
+function calculatePantsDimensions(m: PantsMeasurements, category: Category, hasDarts: boolean): PatternDimensions {
   // Derived from the same shared geometry the panels are drawn with (scale=1 → values in cm),
   // so the estimated page/tile size always matches what actually gets drawn.
-  const front = computePantsFrontDartlessGeometry(m, 0, 0, 1, category);
-  const back = computePantsBackDartlessGeometry(m, 0, 0, 1, category);
+  const front = (hasDarts ? computePantsFrontDartedGeometry : computePantsFrontDartlessGeometry)(m, 0, 0, 1, category);
+  const back = (hasDarts ? computePantsBackDartedGeometry : computePantsBackDartlessGeometry)(m, 0, 0, 1, category);
 
-  const widthCm = Math.max(front.hipSideX - front.e1X, back.hipSideX - back.e1X) + 2;
+  const widthCm = Math.max(pantsPanelRightExtentCm(front), pantsPanelRightExtentCm(back)) + 2;
   const heightCm = Math.max(front.hemY, back.hemY) + 2;
 
   return { widthCm, heightCm };
@@ -854,7 +936,8 @@ function getPanelWidthsCm(
   patternType: string,
   dimensions: PatternDimensions,
   measurements: SkirtMeasurements | BodiceMeasurements | SleeveMeasurements | PantsMeasurements,
-  category: Category
+  category: Category,
+  hasDarts = false
 ): { front: number; back: number } {
   if (patternType === 'bodice-dartless') {
     const w = calculateDartlessBodicePanelWidths(measurements as BodiceMeasurements, category);
@@ -862,14 +945,25 @@ function getPanelWidthsCm(
   }
   if (patternType === 'pants' || patternType === 'pants-dartless' || patternType === 'pants-with-darts') {
     const pm = measurements as PantsMeasurements;
-    const front = computePantsFrontDartlessGeometry(pm, 0, 0, 1, category);
-    const back = computePantsBackDartlessGeometry(pm, 0, 0, 1, category);
+    const front = (hasDarts ? computePantsFrontDartedGeometry : computePantsFrontDartlessGeometry)(pm, 0, 0, 1, category);
+    const back = (hasDarts ? computePantsBackDartedGeometry : computePantsBackDartlessGeometry)(pm, 0, 0, 1, category);
     return {
-      front: front.hipSideX - front.e1X + 2,
-      back: back.hipSideX - back.e1X + 2,
+      front: pantsPanelRightExtentCm(front) + 2,
+      back: pantsPanelRightExtentCm(back) + 2,
     };
   }
   return { front: dimensions.widthCm, back: dimensions.widthCm };
+}
+
+function dist(ax: number, ay: number, bx: number, by: number): number {
+  return Math.hypot(bx - ax, by - ay);
+}
+
+// Segment count so each chord stays ~2mm regardless of the curve's overall span — a fixed
+// step count looks smooth on short curves (necklines, darts) but facets visibly on long ones
+// (e.g. the pants crotch/side-seam curves, which can run tens of cm).
+function adaptiveSteps(controlPolygonLengthMm: number): number {
+  return Math.min(64, Math.max(8, Math.round(controlPolygonLengthMm / 2)));
 }
 
 function drawCubicBezier(
@@ -878,8 +972,9 @@ function drawCubicBezier(
   cx1: number, cy1: number,
   cx2: number, cy2: number,
   x1: number, y1: number,
-  steps = 8
+  steps?: number
 ) {
+  steps ??= adaptiveSteps(dist(x0, y0, cx1, cy1) + dist(cx1, cy1, cx2, cy2) + dist(cx2, cy2, x1, y1));
   let px = x0, py = y0;
   for (let i = 1; i <= steps; i++) {
     const t = i / steps;
@@ -896,8 +991,9 @@ function drawQuadraticBezier(
   x0: number, y0: number,
   cx: number, cy: number,
   x1: number, y1: number,
-  steps = 8
+  steps?: number
 ) {
+  steps ??= adaptiveSteps(dist(x0, y0, cx, cy) + dist(cx, cy, x1, y1));
   let px = x0, py = y0;
   for (let i = 1; i <= steps; i++) {
     const t = i / steps;
@@ -1161,7 +1257,7 @@ export async function generateTiledPDF(
         ? calculateDartlessBodiceDimensions(bm, category)
         : calculateBodiceDimensions(bm)
       : isPants
-        ? calculatePantsDimensions(pm, category)
+        ? calculatePantsDimensions(pm, category, pantsHasDarts)
         : calculateSkirtDimensions(sm);
 
   const fmt = PAGE_FORMATS[format];
@@ -1177,7 +1273,7 @@ export async function generateTiledPDF(
   // margin at the end of one panel's columns is filled by the start of the other's.
   const panelWidthsCm = isSleeve
     ? { front: dimensions.widthCm, back: 0 }
-    : getPanelWidthsCm(patternType, dimensions, measurements, category);
+    : getPanelWidthsCm(patternType, dimensions, measurements, category, pantsHasDarts);
   const panelGapCm = isSleeve ? 0 : PANEL_GAP_CM;
   const combinedDimensions: PatternDimensions = {
     widthCm: panelWidthsCm.front + panelGapCm + panelWidthsCm.back,
@@ -1337,7 +1433,11 @@ export async function generateTiledPDF(
   doc.setFontSize(9);
   doc.setTextColor(40, 40, 40);
   const testSquareLabel = testSquareSizeLabel(format);
-  for (const step of tr(pdfT.instructions, lang)) {
+  // Steps about cutting page margins, matching alignment marks, and taping pages together
+  // only make sense when there's more than one sheet — common on A0, where most patterns
+  // fit on a single plotter sheet with nothing to assemble.
+  const instructionSteps = tiles.totalPages > 1 ? pdfT.instructions : pdfT.instructionsSinglePage;
+  for (const step of tr(instructionSteps, lang)) {
     if (!step) { measY += 3; continue; }
     const resolvedStep = step.replace(/\{\{SIZE\}\}/g, testSquareLabel);
     const stepLines = doc.splitTextToSize(resolvedStep, leftColW - 2) as string[];
@@ -1449,13 +1549,10 @@ export async function generateTiledPDF(
   const backOriginXMm = patternMarginMm + panelWidthsCm.front * 10 + panelGapCm * 10;
   const backStartCol = Math.floor(backOriginXMm / printableW);
 
-  for (let row = 0; row < tiles.rows; row++) {
-    for (let col = 0; col < tiles.cols; col++) {
+  for (const { col, row, xStart: viewOffsetX, yStart: viewOffsetY } of getTileGrid(combinedDimensions, printableW, printableH)) {
+    {
       doc.addPage([fmtW, fmtH]);
       pageNum++;
-
-      const viewOffsetX = col * printableW;
-      const viewOffsetY = row * printableH;
 
       const showAlignmentMarks = !isA0 || totalTilePages > 1;
       if (showAlignmentMarks) {
@@ -1560,7 +1657,7 @@ export async function generateProjectionPDF(
         ? calculateDartlessBodiceDimensions(bm, category)
         : calculateBodiceDimensions(bm)
       : isPants
-        ? calculatePantsDimensions(pm, category)
+        ? calculatePantsDimensions(pm, category, pantsHasDarts)
         : calculateSkirtDimensions(sm);
 
   const pieceW = dimensions.widthCm * 10;
@@ -1811,7 +1908,11 @@ export async function generateProjectionPDF(
   doc.text('studio.petitcitron.com', 200, 280, { align: 'right' });
 
   // ── PAGE PROJECTION (page 2, format dynamique) ───────────────────────────────
-  doc.addPage([projW, projH]);
+  // jsPDF's addPage() otherwise inherits the cover page's portrait orientation and swaps
+  // width/height to enforce it — the pattern pieces are drawn using the un-swapped projW/projH
+  // coordinates, so without an explicit orientation the page comes out too narrow and content
+  // past the swapped width gets clipped.
+  doc.addPage([projW, projH], projW >= projH ? 'landscape' : 'portrait');
 
   // Grid layers — drawn first so pattern pieces appear on top
   doc.setLineWidth(0.2);
@@ -1824,6 +1925,11 @@ export async function generateProjectionPDF(
   doc.setDrawColor(225, 185, 200);
   for (let x = 0; x <= projW + 1; x += twoInchMm) { doc.line(x, 0, x, projH); }
   for (let y = 0; y <= projH + 1; y += twoInchMm) { doc.line(0, y, projW, y); }
+
+  // Calibration square, top-left — pattern pieces never start drawing before y = projHeaderH +
+  // projMargin, so this stays clear regardless of page width. Anchored near the origin (rather
+  // than the right margin) so it's still the first thing visible on very wide pages (large sizes).
+  drawCalibrationSquare(doc, lang, 6, 6, 50);
 
   // Header
   doc.setFont(bodyFont, 'normal');

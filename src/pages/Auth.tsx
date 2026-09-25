@@ -110,7 +110,7 @@ export default function Auth() {
           navigate('/');
         }
       } catch (err) {
-        toast.error('An unexpected error occurred');
+        toast.error(t('auth.unexpectedError'));
       } finally {
         setLoading(false);
       }

@@ -8,33 +8,44 @@ interface PatternTypeNavProps {
   selected: PatternType;
   onSelect: (type: PatternType) => void;
   category: Category;
+  // Admin accounts (see ADMIN_EMAILS in Index.tsx) can preview any "coming soon" pattern
+  // that's actually wired up in the app — see `adminPreviewable` below.
+  isAdmin?: boolean;
 }
 
 interface PatternTypeConfig {
   value: PatternType;
   labelKey: string;
   available: boolean;
+  // Marks a "soon" entry as safe for admins to unlock early: the measurement form, preview
+  // and PDF export all already support it, it's just not released to regular users yet.
+  // Leave unset for entries with no real implementation (e.g. "dress") — unlocking those
+  // would show broken/empty UI rather than an early preview.
+  adminPreviewable?: boolean;
+  // Computed per-render (see filteredPatternTypes): true when the entry started out locked,
+  // independent of whether an admin override then made it clickable.
+  soon?: boolean;
   hasSubmenu?: boolean;
-  submenu?: { value: PatternType; labelKey: string; available: boolean }[];
+  submenu?: { value: PatternType; labelKey: string; available: boolean; adminPreviewable?: boolean; soon?: boolean }[];
 }
 
 const patternTypes: PatternTypeConfig[] = [
   { value: 'skirt', labelKey: 'pattern.skirt', available: true },
-  { 
-    value: 'bodice', 
-    labelKey: 'pattern.bodice', 
+  {
+    value: 'bodice',
+    labelKey: 'pattern.bodice',
     available: true,
     hasSubmenu: true,
     submenu: [
       { value: 'bodice-dartless', labelKey: 'pattern.dartless', available: true },
-      { value: 'bodice-with-darts', labelKey: 'pattern.withDarts', available: true },
-      { value: 'bodice-knit', labelKey: 'pattern.forKnit', available: false },
+      { value: 'bodice-with-darts', labelKey: 'pattern.withDarts', available: false, adminPreviewable: true },
+      { value: 'bodice-knit', labelKey: 'pattern.forKnit', available: false, adminPreviewable: true },
     ]
   },
   { value: 'dress', labelKey: 'pattern.dress', available: false },
-  { 
-    value: 'pants', 
-    labelKey: 'pattern.pants', 
+  {
+    value: 'pants',
+    labelKey: 'pattern.pants',
     available: true,
     hasSubmenu: true,
     submenu: [
@@ -42,27 +53,44 @@ const patternTypes: PatternTypeConfig[] = [
       { value: 'pants-with-darts', labelKey: 'pattern.withDarts', available: true },
     ]
   },
-  { value: 'sleeve', labelKey: 'pattern.sleeve', available: false },
+  { value: 'sleeve', labelKey: 'pattern.sleeve', available: false, adminPreviewable: true },
 ];
 
-export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavProps) {
+export function PatternTypeNav({ selected, onSelect, category, isAdmin = false }: PatternTypeNavProps) {
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const submenuRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
 
-  // Filter pattern types based on category
+  // Filter pattern types based on category, then let admins early-preview "soon" entries
+  // that are actually wired up in the app (adminPreviewable).
   const filteredPatternTypes = patternTypes
     .filter(type => !(type.value === 'skirt' && category === 'men'))
     .map(type => {
+      let next = type;
       if (type.value === 'pants' && category === 'men') {
-        return {
-          ...type,
-          submenu: type.submenu?.map(s =>
+        next = {
+          ...next,
+          submenu: next.submenu?.map(s =>
             s.value === 'pants-dartless' ? { ...s, available: false } : s
           ),
         };
       }
-      return type;
+      // "soon" tracks the original locked state so the badge stays visible for admins even
+      // once `available` is overridden below — the point is to preview it, not pretend it
+      // shipped.
+      next = {
+        ...next,
+        soon: !next.available,
+        submenu: next.submenu?.map(s => ({ ...s, soon: !s.available })),
+      };
+      if (isAdmin) {
+        next = {
+          ...next,
+          available: next.available || !!next.adminPreviewable,
+          submenu: next.submenu?.map(s => ({ ...s, available: s.available || !!s.adminPreviewable })),
+        };
+      }
+      return next;
     });
 
   const isBodiceVariant = selected.startsWith('bodice');
@@ -138,7 +166,7 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
                 openSubmenu === type.value && "rotate-180"
               )} />
             )}
-            {!type.available && (
+            {type.soon && (
               <span className="absolute -top-1 -right-1 text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">
                 {t('misc.soon')}
               </span>
@@ -162,7 +190,7 @@ export function PatternTypeNav({ selected, onSelect, category }: PatternTypeNavP
                   )}
                 >
                   {t(subType.labelKey)}
-                  {!subType.available && (
+                  {subType.soon && (
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full">
                       {t('misc.soon')}
                     </span>

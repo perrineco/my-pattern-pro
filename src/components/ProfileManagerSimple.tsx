@@ -40,6 +40,7 @@ interface ProfileManagerSimpleProps {
   onLoadProfile: (measurements: UnifiedMeasurements) => void;
   selectedProfileId: string | null;
   onSelectProfile: (id: string | null) => void;
+  onProfileSaved?: () => void;
 }
 
 export function ProfileManagerSimple({
@@ -49,6 +50,7 @@ export function ProfileManagerSimple({
   onLoadProfile,
   selectedProfileId,
   onSelectProfile,
+  onProfileSaved,
 }: ProfileManagerSimpleProps) {
   const { t } = useLanguage();
   const [profiles, setProfiles] = useState<SavedProfile[]>([]);
@@ -142,6 +144,7 @@ export function ProfileManagerSimple({
       setSaveDialogOpen(false);
       setNewProfileName('');
       toast.success(`"${newProfile.name}" ${t('profile.saved')}`);
+      onProfileSaved?.();
     } catch (err) {
       console.error('Save error:', err);
       toast.error(t('profile.failedSave'));
@@ -171,6 +174,7 @@ export function ProfileManagerSimple({
       );
 
       toast.success(`"${profile.name}" ${t('profile.updated')}`);
+      onProfileSaved?.();
     } catch (err) {
       console.error('Update error:', err);
       toast.error(t('profile.failedUpdate'));

@@ -974,6 +974,7 @@ const translations: Record<string, Record<Language, string>> = {
   // Toasts
   'toast.signInToPurchase': { en: 'Please sign in to purchase patterns', fr: 'Veuillez vous connecter pour acheter des patrons' },
   'toast.checkoutFailed': { en: 'Failed to start checkout', fr: 'Échec du lancement du paiement' },
+  'toast.subscriptionPortalFailed': { en: 'Failed to open subscription management', fr: 'Échec de l\'ouverture de la gestion d\'abonnement' },
   'toast.pdfDownloaded': { en: 'PDF downloaded!', fr: 'PDF téléchargé !' },
   'toast.pdfError': { en: 'Failed to generate PDF', fr: 'Échec de la génération du PDF' },
 

@@ -12,17 +12,13 @@ export default function Welcome() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { t } = useLanguage();
-  const { symbol, currency } = useCurrency();
+  const { format: fmt } = useCurrency();
 
   if (!loading && user) return <Navigate to="/app" replace />;
 
   const handleGetStarted = () => {
     navigate(user ? '/app' : '/auth');
   };
-
-  const fmt = (price: number) => currency === 'USD' || currency === 'CAD'
-    ? `${symbol}${price.toFixed(2)}`
-    : `${price.toFixed(2)}${symbol}`;
 
   const features = [
     { icon: Ruler, title: t('welcome.feat.measurements'), description: t('welcome.feat.measurementsDesc') },
@@ -36,7 +32,7 @@ export default function Welcome() {
       name: t('welcome.plan.free'), desc: t('welcome.plan.freeDesc'), price: fmt(0), period: '',
       features: [t('welcome.plan.feat.skirt'), t('welcome.plan.feat.pdfExport'), t('welcome.plan.feat.livePreview')],
       cta: t('welcome.plan.getStarted'), highlighted: false,
-      note: 'Ou achetez un patron individuel à 4,99 € depuis l\'application.',
+      note: `Ou achetez un patron individuel à ${fmt(STRIPE_CONFIG.singlePurchase.price)} depuis l'application.`,
     },
     {
       name: t('welcome.plan.basic'), desc: t('welcome.plan.basicDesc'), price: fmt(STRIPE_CONFIG.subscriptions.basic.price), period: '/mo',

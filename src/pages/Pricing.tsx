@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 
 export default function Pricing() {
   const { user, session, subscription } = useAuth();
-  const { symbol } = useCurrency();
+  const { format } = useCurrency();
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [loading, setLoading] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export default function Pricing() {
       }
     } catch (err) {
       console.error('Checkout error:', err);
-      toast.error('Failed to start checkout');
+      toast.error(t('toast.checkoutFailed'));
     } finally {
       setLoading(null);
     }
@@ -62,7 +62,7 @@ export default function Pricing() {
       }
     } catch (err) {
       console.error('Portal error:', err);
-      toast.error('Failed to open subscription management');
+      toast.error(t('toast.subscriptionPortalFailed'));
     } finally {
       setLoading(null);
     }
@@ -121,7 +121,7 @@ export default function Pricing() {
               {(expanded['single'] || true) && <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.single.desc')}</p>}
             </div>
             <div className="mb-2 sm:mb-6">
-              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.singlePurchase.price.toFixed(2)}{symbol}</span>
+              <span className="text-2xl sm:text-4xl font-bold">{format(STRIPE_CONFIG.singlePurchase.price)}</span>
               <span className="text-xs sm:text-base text-muted-foreground"> {t('pricing.perPattern')}</span>
             </div>
             <ul className="space-y-1 sm:space-y-3 mb-2 sm:mb-6">
@@ -166,7 +166,7 @@ export default function Pricing() {
               <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.basic.desc')}</p>
             </div>
             <div className="mb-2 sm:mb-6">
-              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.subscriptions.basic.price.toFixed(2)}{symbol}</span>
+              <span className="text-2xl sm:text-4xl font-bold">{format(STRIPE_CONFIG.subscriptions.basic.price)}</span>
               <span className="text-xs sm:text-base text-muted-foreground"> {t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-1 sm:space-y-3 mb-2 sm:mb-6">
@@ -230,7 +230,7 @@ export default function Pricing() {
               <p className="hidden sm:block text-sm text-muted-foreground">{t('pricing.pro.desc')}</p>
             </div>
             <div className="mb-2 sm:mb-6">
-              <span className="text-2xl sm:text-4xl font-bold">{STRIPE_CONFIG.subscriptions.pro.price.toFixed(2)}{symbol}</span>
+              <span className="text-2xl sm:text-4xl font-bold">{format(STRIPE_CONFIG.subscriptions.pro.price)}</span>
               <span className="text-xs sm:text-base text-muted-foreground"> {t('pricing.perMonth')}</span>
             </div>
             <ul className="space-y-1 sm:space-y-3 mb-2 sm:mb-6">

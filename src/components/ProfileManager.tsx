@@ -28,13 +28,37 @@ import {
 } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Category, PatternType, Measurements } from '@/types/sloper';
+import {
+  Category,
+  PatternType,
+  Measurements,
+  UnifiedMeasurements,
+  toSkirtMeasurements,
+  toBodiceMeasurements,
+  toPantsMeasurements,
+  toSleeveMeasurements,
+} from '@/types/sloper';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { defaultUnifiedMeasurements } from '@/components/UnifiedMeasurementForm';
+
+// Profiles are stored as full body-measurement sets shared across every garment
+// (pattern_type 'unified'), matching ProfileManagerSimple. Older profiles saved
+// before this was unified only ever held one garment's fields (e.g. a 'skirt' row
+// has no thigh/hipHeight/etc.) — fill any missing field from category defaults
+// first so switching to a garment absent from a legacy row never yields
+// `undefined` measurements (which crashes the pattern preview's `.toFixed()` calls).
+function toGarmentMeasurements(patternType: PatternType, category: Category, u: UnifiedMeasurements): Measurements {
+  const full: UnifiedMeasurements = { ...defaultUnifiedMeasurements[category], ...u };
+  if (patternType.startsWith('bodice')) return toBodiceMeasurements(full);
+  if (patternType.startsWith('pants')) return toPantsMeasurements(full);
+  if (patternType === 'sleeve') return toSleeveMeasurements(full);
+  return toSkirtMeasurements(full);
+}
 
 interface SavedProfile {
   id: string;
   name: string;
-  measurements: Measurements;
+  measurements: UnifiedMeasurements;
   created_at: string;
 }
 
@@ -68,7 +92,20 @@ export function ProfileManager({
 
   useEffect(() => {
     fetchProfiles();
-  }, [userId, category, patternType]);
+  }, [userId, category]);
+
+  // The garment tab (patternType) can change without this component unmounting
+  // (no key prop on <ProfileManager>). Re-derive the garment-specific measurements
+  // from the already-selected shared profile so switching tabs doesn't leave the
+  // pattern preview showing stale/default values for the new tab.
+  useEffect(() => {
+    if (!selectedProfileId) return;
+    const profile = profiles.find((p) => p.id === selectedProfileId);
+    if (profile) {
+      onLoadProfile(toGarmentMeasurements(patternType, category, profile.measurements));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patternType]);
 
   const fetchProfiles = async () => {
     setLoading(true);
@@ -78,23 +115,30 @@ export function ProfileManager({
         .select('id, name, measurements, created_at')
         .eq('user_id', userId)
         .eq('category', category)
-        .eq('pattern_type', patternType)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      const parsed = (data || []).map((item) => ({
-        id: item.id,
-        name: item.name,
-        measurements: item.measurements as unknown as Measurements,
-        created_at: item.created_at,
-      }));
+      // Profiles are body-measurement sets shared across garments; dedupe by name
+      // the same way ProfileManagerSimple does, so both screens show the same list.
+      const uniqueProfiles = new Map<string, SavedProfile>();
+      (data || []).forEach((item) => {
+        if (!uniqueProfiles.has(item.name)) {
+          uniqueProfiles.set(item.name, {
+            id: item.id,
+            name: item.name,
+            measurements: item.measurements as unknown as UnifiedMeasurements,
+            created_at: item.created_at,
+          });
+        }
+      });
+      const parsed = Array.from(uniqueProfiles.values());
 
       setProfiles(parsed);
 
       if (parsed.length > 0 && !selectedProfileId) {
         setSelectedProfileId(parsed[0].id);
-        onLoadProfile(parsed[0].measurements);
+        onLoadProfile(toGarmentMeasurements(patternType, category, parsed[0].measurements));
         onProfileNameChange?.(parsed[0].name);
       } else if (parsed.length === 0) {
         onProfileNameChange?.(null);
@@ -110,28 +154,34 @@ export function ProfileManager({
     setSelectedProfileId(profileId);
     const profile = profiles.find((p) => p.id === profileId);
     if (profile) {
-      onLoadProfile(profile.measurements);
+      onLoadProfile(toGarmentMeasurements(patternType, category, profile.measurements));
       onProfileNameChange?.(profile.name);
-      toast.success(`Loaded "${profile.name}"`);
+      toast.success(`${t('profile.loaded')} "${profile.name}"`);
     }
   };
 
   const handleSaveNew = async () => {
     if (!newProfileName.trim()) {
-      toast.error('Please enter a profile name');
+      toast.error(t('profile.enterName'));
       return;
     }
 
     setSaving(true);
     try {
+      // currentMeasurements only carries this garment's fields; fill the rest of the
+      // shared profile from category defaults so other garments' data isn't lost.
+      const unifiedMeasurements: UnifiedMeasurements = {
+        ...defaultUnifiedMeasurements[category],
+        ...currentMeasurements,
+      };
       const { data, error } = await supabase
         .from('saved_measurements')
         .insert([{
           user_id: userId,
           category,
-          pattern_type: patternType,
+          pattern_type: 'unified',
           name: newProfileName.trim(),
-          measurements: JSON.parse(JSON.stringify(currentMeasurements)),
+          measurements: JSON.parse(JSON.stringify(unifiedMeasurements)),
         }])
         .select('id, name, measurements, created_at')
         .single();
@@ -141,7 +191,7 @@ export function ProfileManager({
       const newProfile: SavedProfile = {
         id: data.id,
         name: data.name,
-        measurements: data.measurements as unknown as Measurements,
+        measurements: data.measurements as unknown as UnifiedMeasurements,
         created_at: data.created_at,
       };
 
@@ -149,11 +199,11 @@ export function ProfileManager({
       setSelectedProfileId(newProfile.id);
       setSaveDialogOpen(false);
       setNewProfileName('');
-      toast.success(`Profile "${newProfile.name}" saved!`);
+      toast.success(`"${newProfile.name}" ${t('profile.saved')}`);
       onProfileSaved?.();
     } catch (err) {
       console.error('Save error:', err);
-      toast.error('Failed to save profile');
+      toast.error(t('profile.failedSave'));
     } finally {
       setSaving(false);
     }
@@ -166,22 +216,31 @@ export function ProfileManager({
 
     setSaving(true);
     try {
+      // Only this garment's fields changed locally; merge them onto the existing
+      // shared profile instead of overwriting it, so other garments' measurements
+      // saved on this same profile are preserved. Also backfills any field a
+      // pre-unification legacy row never had, healing it going forward.
+      const unifiedMeasurements: UnifiedMeasurements = {
+        ...defaultUnifiedMeasurements[category],
+        ...profile.measurements,
+        ...currentMeasurements,
+      };
       const { error } = await supabase
         .from('saved_measurements')
-        .update({ measurements: JSON.parse(JSON.stringify(currentMeasurements)) })
+        .update({ measurements: JSON.parse(JSON.stringify(unifiedMeasurements)) })
         .eq('id', selectedProfileId);
 
       if (error) throw error;
 
       setProfiles((prev) =>
-        prev.map((p) => p.id === selectedProfileId ? { ...p, measurements: currentMeasurements } : p)
+        prev.map((p) => p.id === selectedProfileId ? { ...p, measurements: unifiedMeasurements } : p)
       );
 
-      toast.success(`Profile "${profile.name}" updated!`);
+      toast.success(`"${profile.name}" ${t('profile.updated')}`);
       onProfileSaved?.();
     } catch (err) {
       console.error('Update error:', err);
-      toast.error('Failed to update profile');
+      toast.error(t('profile.failedUpdate'));
     } finally {
       setSaving(false);
     }
@@ -205,16 +264,16 @@ export function ProfileManager({
 
       if (remaining.length > 0) {
         setSelectedProfileId(remaining[0].id);
-        onLoadProfile(remaining[0].measurements);
+        onLoadProfile(toGarmentMeasurements(patternType, category, remaining[0].measurements));
       } else {
         setSelectedProfileId(null);
       }
 
       setDeleteDialogOpen(false);
-      toast.success(`Profile "${profile.name}" deleted`);
+      toast.success(`"${profile.name}" ${t('profile.deleted')}`);
     } catch (err) {
       console.error('Delete error:', err);
-      toast.error('Failed to delete profile');
+      toast.error(t('profile.failedDelete'));
     }
   };
 

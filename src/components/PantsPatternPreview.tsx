@@ -150,7 +150,7 @@ export function PantsPatternPreview({ measurements, category }: PantsPatternPrev
             <line x1={gapX1 - 6} y1={offsetY} x2={gapX1 + 6} y2={offsetY} stroke={ml} strokeWidth="1" />
             <line x1={gapX1 - 6} y1={hipY}    x2={gapX1 + 6} y2={hipY}    stroke={ml} strokeWidth="1" />
             <text x={gapX1 + 10} y={(offsetY + hipY) / 2} textAnchor="middle" className="fill-primary text-xs font-sans" transform={`rotate(90, ${gapX1 + 10}, ${(offsetY + hipY) / 2})`}>
-              {measurements.hipHeight.toFixed(1)}cm
+              {(measurements.hipHeight ?? 0).toFixed(1)}cm
             </text>
 
             {/* Taille-entrejambe */}
@@ -158,7 +158,7 @@ export function PantsPatternPreview({ measurements, category }: PantsPatternPrev
             <line x1={gapX2 - 6} y1={offsetY} x2={gapX2 + 6} y2={offsetY} stroke={ml} strokeWidth="1" />
             <line x1={gapX2 - 6} y1={crotchY} x2={gapX2 + 6} y2={crotchY} stroke={ml} strokeWidth="1" />
             <text x={gapX2 + 10} y={(offsetY + crotchY) / 2} textAnchor="middle" className="fill-primary text-xs font-sans" transform={`rotate(90, ${gapX2 + 10}, ${(offsetY + crotchY) / 2})`}>
-              {measurements.crotchDepth.toFixed(1)}cm
+              {(measurements.crotchDepth ?? 0).toFixed(1)}cm
             </text>
           </>);
         })()}

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useUnit } from '@/contexts/UnitContext';
-import { useCurrency, Currency, CURRENCY_SYMBOLS } from '@/contexts/CurrencyContext';
+import { useCurrency, Currency } from '@/contexts/CurrencyContext';
 import { Switch } from '@/components/ui/switch';
 import {
   Select,
@@ -18,9 +18,7 @@ import {
 
 const CURRENCIES: { value: Currency; label: string }[] = [
   { value: 'EUR', label: '€ Euro' },
-  { value: 'USD', label: '$ Dollar américain' },
-  { value: 'GBP', label: '£ Livre sterling' },
-  { value: 'CAD', label: 'CA$ Dollar canadien' },
+  { value: 'USD', label: '$ Dollar américain (US)' },
 ];
 
 export default function Settings() {
